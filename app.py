@@ -1,5 +1,5 @@
 """Module for creating Flask App"""
-from flask import Flask, render_template, request
+from flask import Flask
 from views import views
 from auth import auth
 
@@ -13,17 +13,6 @@ app.config.from_pyfile('config.py')
 app.register_blueprint(views, url_prefix='/')
 app.register_blueprint(auth, url_prefix='/')
 
-# """Set routes/endpoints"""
-# @app.route("/", methods=['GET', 'POST'])
-# def index():
-#     if request.method == 'GET':
-#         pass
-
-#     if request.method == 'POST':
-#         pass
-
-#     return render_template("index.html", title=
-#                            "Pitt Digital Scholarship Database")
 
 if __name__ == "__main__":
     app.run(debug=True)
