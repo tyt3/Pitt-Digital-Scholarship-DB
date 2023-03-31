@@ -3,7 +3,11 @@ from flask import Flask, render_template, request
 #from views import views
 #from auth import auth
 
+# Create a Flask Instance
 app = Flask(__name__)
+
+# Configure app
+app.config.from_pyfile('config.py')
 
 """Set routes/endpoints"""
 @app.route("/", methods=['GET', 'POST'])
