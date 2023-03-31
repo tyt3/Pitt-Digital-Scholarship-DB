@@ -9,11 +9,11 @@ import models
 # Create a Flask Instance
 app = Flask(__name__)
 
-# Create database object
-db = SQLAlchemy(app)
-
 # Configure app
 app.config.from_pyfile('config.py')
+
+# Create database object
+db = SQLAlchemy(app)
 
 # Register Blueprints
 app.register_blueprint(views, url_prefix='/')
