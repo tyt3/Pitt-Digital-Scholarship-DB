@@ -1,5 +1,6 @@
 """Module for Auth"""
 from flask import Blueprint, render_template, request
+from models import User
 
 auth = Blueprint('auth', __name__)
 

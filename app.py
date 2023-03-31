@@ -1,10 +1,16 @@
 """Module for creating Flask App"""
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from views import views
 from auth import auth
+import models
 
 # Create a Flask Instance
 app = Flask(__name__)
+
+# Create database object
+db = SQLAlchemy(app)
 
 # Configure app
 app.config.from_pyfile('config.py')
