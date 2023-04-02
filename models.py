@@ -36,15 +36,16 @@ class Affiliation(Base):
     fk_persons = relationship('Person', secondary='person_affiliation')
 
 
-class Category(Base):
-    __tablename__ = 'category'
+class Area(Base):
+    __tablename__ = 'area'
 
-    category_id = Column(Integer, primary_key=True)
-    category_name = Column(String(50), nullable=False)
+    area_id = Column(Integer, primary_key=True)
+    area_name = Column(String(50), nullable=False)
 
-    fk_methods = relationship('Method', secondary='method_category')
-    fk_resources = relationship('Resource', secondary='resource_category')
-    fk_tools = relationship('Tool', secondary='tool_category')
+    fk_methods = relationship('Method', secondary='method_area')
+    fk_persons = relationship('Person', secondary='person_area')
+    fk_resources = relationship('Resource', secondary='resource_area')
+    fk_tools = relationship('Tool', secondary='tool_area')
 
 
 class Funding(Base):
@@ -109,7 +110,7 @@ class Unit(Base):
     email = Column(String(50))
     web_address = Column(String(50))
     preferred_contact = Column(String(50))
-    last_modified = Column(DateTime, nullable=False)
+    descrption = Column(String(500))
 
 
 class User(Base):
@@ -134,7 +135,8 @@ class Department(Base):
     department_name = Column(String(50), nullable=False)
     email = Column(String(50))
     web_address = Column(String(50))
-    fk_unit_id = Column(ForeignKey('unit.unit_id'), index=True)
+    fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
+    descrption = Column(String(500))
     last_modified = Column(DateTime, nullable=False)
 
     fk_unit = relationship('Unit')
@@ -143,10 +145,10 @@ class Department(Base):
     fk_persons = relationship('Person', secondary='person_department')
 
 
-t_method_category = Table(
-    'method_category', metadata,
+t_method_area = Table(
+    'method_area', metadata,
     Column('fk_method_id', ForeignKey('method.method_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
-    Column('fk_category_id', ForeignKey('category.category_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
 
 
@@ -184,6 +186,7 @@ class Person(Base):
     scheduler_address = Column(String(50))
     preferred_contact = Column(String(50))
     support_type = Column(String(50), nullable=False)
+    bio = Column(String(500), nullable=False)
     added_by = Column(ForeignKey('user.user_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     date_added = Column(DateTime, nullable=False)
     last_modified = Column(DateTime, nullable=False)
@@ -194,10 +197,10 @@ class Person(Base):
     fk_units = relationship('Unit', secondary='person_unit')
 
 
-t_resource_category = Table(
-    'resource_category', metadata,
+t_resource_area = Table(
+    'resource_area', metadata,
     Column('fk_resource_id', ForeignKey('resource.resource_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
-    Column('fk_category_id', ForeignKey('category.category_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
 
 
@@ -207,17 +210,18 @@ class Subunit(Base):
     subunit_id = Column(Integer, primary_key=True)
     subunit_name = Column(String(50), nullable=False)
     subunit_type = Column(String(50), nullable=False)
-    fk_unit_id = Column(ForeignKey('unit.unit_id'), nullable=False, index=True)
+    fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
+    descrption = Column(String(500))
     last_modified = Column(DateTime, nullable=False)
 
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
 
 
-t_tool_category = Table(
-    'tool_category', metadata,
+t_tool_area = Table(
+    'tool_area', metadata,
     Column('fk_tool_id', ForeignKey('tool.tool_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
-    Column('fk_category_id', ForeignKey('category.category_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
 
 
@@ -285,6 +289,13 @@ t_person_affiliation = Table(
     'person_affiliation', metadata,
     Column('fk_person_id', ForeignKey('person.person_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
     Column('fk_affiliation_id', ForeignKey('affiliation.affiliation_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+)
+
+
+t_person_area = Table(
+    'person_area', metadata,
+    Column('fk_person_id', ForeignKey('person.person_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
 
 
