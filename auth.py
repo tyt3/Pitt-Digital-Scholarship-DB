@@ -6,11 +6,11 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    return "<p>Login</<p>"
+    return "<h1>Login</h1>"
 
 @auth.route('/logout')
 def logout():
-    return "<p>Logout</p>"
+    return "<h1>Logout</h1>"
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -19,4 +19,4 @@ def sign_up():
   
     # if request.method == 'POST':
     #   pass
-    return "<p>Sign Up</p>"
+    return "<h1>Sign Up</h1>"
