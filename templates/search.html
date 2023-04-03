@@ -1,2 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}Search | Pitt Digital Scholarship Databse{% endblock %}
+  {% block title %}Search | Pitt Digital Scholarship Databse{% endblock %}
+  {% block navbar %}
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="/search">Search</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/create">Create</a>
+    </li>
+  {% endblock %}
+  {% block content %}
+    <h1>Search</h1>
+  {% endblock %}
