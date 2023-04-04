@@ -7,8 +7,19 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {% block navbar %}
-          <li class="nav-item">
-            <a class="nav-link" href="/search">Search</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Search
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/search/people">People</a></li>
+              <li><a class="dropdown-item" href="/search/units">Units</a></li>
+              <li><a class="dropdown-item" href="/search/areas">Supported Areas</a></li>
+              <li><a class="dropdown-item" href="/search/resources">Resources</a></li>
+              <li><a class="dropdown-item" href="/search/methods">Methods</a></li>
+              <li><a class="dropdown-item" href="/search/tools">Tools</a></li>
+              <li><a class="dropdown-item" href="/search/funding">Funding</a></li>
+            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/create">Create</a>
