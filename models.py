@@ -7,7 +7,7 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
-class Addres(Base):
+class Address(Base):
     __tablename__ = 'address'
 
     address_id = Column(Integer, primary_key=True)
