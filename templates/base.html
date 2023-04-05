@@ -15,13 +15,15 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% block navbar_about %}
               <li class="nav-item">
                 <a class="nav-link" href="/about">About</a>
               </li>
-              {% block navbar %}
+              {% endblock %}
+              {% block navbar_search %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Search
+                  {% block navbar_search_active %}Search{% endblock %}
                 </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/search/people">People</a></li>
@@ -33,18 +35,58 @@
                   <li><a class="dropdown-item" href="/search/funding">Funding</a></li>
                 </ul>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/create">Create</a>
+              {% endblock %}
+              {% block navbar_add %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="/create" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% block navbar_add_active %}Add Info{% endblock %}
+                </a>
+                <ul class="dropdown-menu">
+                  <span style="margin-left: 15px; color: gray">Add info about a...</span>
+                  <li><a class="dropdown-item" href="/add/person">Person</a></li>
+                  <li><a class="dropdown-item" href="/add/unit">Unit</a></li>
+                  <li><a class="dropdown-item" href="/add/area">Supported Area</a></li>
+                  <li><a class="dropdown-item" href="/add/method">Supported Method</a></li>
+                  <li><a class="dropdown-item" href="/add/tool">Supported Tool</a></li>
+                  <li><a class="dropdown-item" href="/add/resource">Resource</a></li>
+                  <li><a class="dropdown-item" href="/add/funding">Funding Opportunity</a></li>
+                </ul>
               </li>
+              {% endblock %}
+              {% block navbar_documentation %}
+              <li class="nav-item">
+                <a class="nav-link" href="/documentation">Documentation</a>
+              </li>
+              {% endblock %}
+              {% block navbar_contact %}
+              <li class="nav-item">
+                <a class="nav-link" href="/contact">Contact Us</a>
+              </li>
+              {% endblock %}
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right: 20px;">
+              {% block navbar_logged_out %}
+              {% block navbar_login %}
               <li class="nav-item">
                 <a class="nav-link" href="/login">Login</a>
               </li>
+              {% endblock %}
+              {% block navbar_sign_up %}
               <li class="nav-item">
                 <a class="nav-link" href="/sign-up">Sign Up</a>
               </li>
-            {% endblock %}
+              {% endblock %}
+              {% endblock %}
+              {% block navbar_logged_in %}
+              {% block navbar_account %}
+              <li class="nav-item">
+                <a class="nav-link"  href="account">Account</a>
+              </li>
+              {% endblock %}
+              <li class="nav-item">
+                <a class="nav-link"  href="logout">Logout</a>
+              </li>
+              {% endblock %}
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">

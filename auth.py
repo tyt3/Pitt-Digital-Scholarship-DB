@@ -20,3 +20,7 @@ def login():
 @auth.route('/logout')
 def logout():
     return render_template("logout.html", title="Logout | Pitt Digital Scholarship Database")
+
+@auth.route('/account')
+def account():
+    return render_template("account.html", title="Account | Pitt Digital Scholarship Database")

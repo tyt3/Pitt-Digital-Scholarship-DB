@@ -1,20 +1,11 @@
 {% extends 'base.html' %}
   {% block title %}Sign Up | Pitt Digital Scholarship Databse{% endblock %}
-  {% block navbar %}
-      <li class="nav-item">
-        <a class="nav-link" href="/search">Search</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/create">Create</a>
-      </li>
-    </ul>
-    <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right: 20px;">
-      <li class="nav-item">
-        <a class="nav-link" href="/login">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/sign-up">Sign Up</a>
-      </li>
+  {% block navbar_sign_up %}
+    <li class="nav-item">
+      <a class="nav-link active" href="/sign_up">Sign Up</a>
+    </li>
+  {% endblock %}
+  {% block navbar_logged_in %}
   {% endblock %}
   {% block content %}
     <h1>Sign Up</h1>

@@ -1,24 +1,10 @@
 {% extends 'base.html' %}
   {% block title %}Search Resources | Pitt Digital Scholarship Databse{% endblock %}
-  {% block navbar %}
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Search
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="/search/people">People</a></li>
-        <li><a class="dropdown-item" href="/search/units">Units</a></li>
-        <li><a class="dropdown-item" href="/search/areas">Supported Areas</a></li>
-        <li><a class="dropdown-item" href="/search/methods">Supported Methods</a></li>
-        <li><a class="dropdown-item" href="/search/tools">Supported Tools</a></li>
-        <li><a class="dropdown-item" href="/search/resources">Resources</a></li>
-        <li><a class="dropdown-item" href="/search/funding">Funding Opportunities</a></li>
-      </ul>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/create">Create</a>
-    </li>
+  {% block navbar_search_active %}
+    <span style="color: black;">Search</span>
+  {% endblock %}
+  {% block navbar_logged_in %}
   {% endblock %}
   {% block content %}
-    <h1>Search</h1>
+    <h1>Search Resources</h1>
   {% endblock %}

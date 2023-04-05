@@ -9,6 +9,11 @@ views = Blueprint('views', __name__)
 def index():
     return render_template("index.html", title="Pitt Digital Scholarship Database")
 
+"""Function to Show About Page"""
+@views.route('/about')
+def about():
+    return render_template("about.html", title="Pitt Digital Scholarship Database")
+
 """Functions to Show Search Pages"""
 @views.route('/search')
 def search():
@@ -42,7 +47,45 @@ def search_resources():
 def search_funding():
     return render_template("search/funding.html", title="Search Funding| Pitt Digital Scholarship Database")
 
-"""Function to Show Create Page"""
-@views.route('/create')
-def create():
-    return render_template("create.html", title="Create | Pitt Digital Scholarship Database")
+"""Functions to Show Add Pages"""
+@views.route('/add')
+def add():
+    return render_template("add.html", title="Add Info | Pitt Digital Scholarship Database")
+
+@views.route('/add/person')
+def add_person():
+    return render_template("add/person.html", title="Add a Person | Pitt Digital Scholarship Database")
+
+@views.route('/add/unit')
+def add_unit():
+    return render_template("add/unit.html", title="Add a Unit | Pitt Digital Scholarship Database")
+
+@views.route('/add/area')
+def add_area():
+    return render_template("add/area.html", title="Add an Area | Pitt Digital Scholarship Database")
+
+@views.route('/add/method')
+def add_method():
+    return render_template("add/method.html", title="Add a Method | Pitt Digital Scholarship Database")
+
+@views.route('/add/tool')
+def add_tool():
+    return render_template("add/tool.html", title="Add a Tool | Pitt Digital Scholarship Database")
+
+@views.route('/add/resource')
+def add_resource():
+    return render_template("add/resource.html", title="Add a Resource | Pitt Digital Scholarship Database")
+
+@views.route('/add/funding')
+def add_funding():
+    return render_template("add/funding.html", title="Add a Funding Opportunity | Pitt Digital Scholarship Database")
+
+"""Function to Show Documentation Page"""
+@views.route('/documentation')
+def documentation():
+    return render_template("documentation.html", title="Documentation | Pitt Digital Scholarship Database")
+
+"""Function to Show Contact Page"""
+@views.route('/contact')
+def contact():
+    return render_template("contact.html", title="Contact Us | Pitt Digital Scholarship Database")
