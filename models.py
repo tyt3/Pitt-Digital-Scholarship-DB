@@ -1,11 +1,12 @@
 # coding: utf-8
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, SmallInteger, String, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from database import Base
 
-Base = declarative_base()
+"""Models/Classes"""
 metadata = Base.metadata
-
 
 class Address(Base):
     __tablename__ = 'address'
@@ -73,6 +74,9 @@ class Method(Base):
     method_name = Column(String(50), nullable=False)
 
     fk_tools = relationship('Tool', secondary='method_tool')
+
+    def __init__(self, method_name):
+        self.method_name = method_name
 
 
 class Proficiency(Base):

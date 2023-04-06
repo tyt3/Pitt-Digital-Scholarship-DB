@@ -1,6 +1,5 @@
 """Module for Views"""
-from flask import Blueprint, render_template, request
-import models
+from flask import Blueprint, render_template
 
 views = Blueprint('views', __name__)
 
