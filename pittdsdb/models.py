@@ -1,12 +1,16 @@
 # coding: utf-8
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, SmallInteger, String, Table, Text
+from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, \
+    SmallInteger, String, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from .database import Base
 
-"""Models/Classes"""
+
+# Set metadata
 metadata = Base.metadata
+
+"""Model Classes"""
 
 class Address(Base):
     __tablename__ = 'address'
@@ -26,6 +30,19 @@ class Address(Base):
     fk_persons = relationship('Person', secondary='person_address')
     fk_subunits = relationship('Subunit', secondary='subunit_address')
     fk_units = relationship('Unit', secondary='unit_address')
+
+    def __init__(self, address_id, building_name, room_number, address_1, 
+                 address_2, address_3, city, state, zipcode, campus):
+        self.address = address_id
+        self.building_name = building_name
+        self.room_number = room_number
+        self.address_1 = address_1
+        self.address_2 = address_2 
+        self.address_3 = address_3
+        self.city = city
+        self.state = state
+        self.zipcode = zipcode
+        self.campus = campus
 
 
 class Affiliation(Base):
@@ -199,6 +216,26 @@ class Person(Base):
     user = relationship('User')
     fk_subunits = relationship('Subunit', secondary='person_subunit')
     fk_units = relationship('Unit', secondary='person_unit')
+
+    def __init__(self, person_id, first_name, last_name, title, pronouns, email,
+                 web_address, phone, scheduler_address, preferred_contact, 
+                 support_type, bio, added_by, date_added, last_modified, notes):
+        self.person_id = person_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.title = title
+        self.pronouns = pronouns
+        self.email = email
+        self.web_address = web_address
+        self.phone = phone
+        self.scheduler_address = scheduler_address
+        self.preferred_contact = preferred_contact
+        self.support_type = support_type
+        self.bio = bio
+        self.added_by = added_by
+        self.date_added = date_added
+        self.last_modified = last_modified
+        self.notes = notes
 
 
 t_resource_area = Table(
