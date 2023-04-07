@@ -2,14 +2,15 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
 from .database import db_session
-from .models import * 
+from .models import *
 
 
 """Create API Blueprint"""
-api = Blueprint('api', __name__)
+api_bp = Blueprint('api_bp', __name__)
+
 
 """Get Methods"""
-@api.route('/getPerson')
+@api_bp.route('/getPerson')
 def getPerson():
     args = request.args
     name = args.get('name')
@@ -18,7 +19,7 @@ def getPerson():
 
 
 """Add Methods"""
-@api.route('/addMethod', methods=['GET','POST'])
+@api_bp.route('/addMethod', methods=['GET','POST'])
 def addMethod():
     args = request.args
     method_name = args.get('name')
