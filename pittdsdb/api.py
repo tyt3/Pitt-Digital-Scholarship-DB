@@ -1,11 +1,14 @@
 """Module for Views"""
 from flask import Blueprint, request, jsonify
-from database import db_session
-import models
+from flask_restful import Api, Resource
+from .database import db_session
+from .models import * 
 
 
+"""Create API Blueprint"""
 api = Blueprint('api', __name__)
 
+"""Get Methods"""
 @api.route('/getPerson')
 def getPerson():
     args = request.args
@@ -13,7 +16,9 @@ def getPerson():
 
     return name
 
-@api.route('/addMethod')
+
+"""Add Methods"""
+@api.route('/addMethod', methods=['GET','POST'])
 def addMethod():
     args = request.args
     method_name = args.get('name')

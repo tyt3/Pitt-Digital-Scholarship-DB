@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, SmallInteger, String, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from database import Base
+from .database import Base
 
 """Models/Classes"""
 metadata = Base.metadata

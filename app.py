@@ -16,14 +16,11 @@ app = Flask(__name__)
 # Configure app
 app.config.from_pyfile('config.py')
 
-# Create database object
-db = SQLAlchemy(app)
-
 # Create marshmallow objects
 ma = Marshmallow(app)
 
 # Create api object
-API = Api(app)
+#API = Api(app)
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
