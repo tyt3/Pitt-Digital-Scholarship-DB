@@ -21,11 +21,11 @@
               </li>
               {% endblock %}
               {% block navbar_search %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   {% block navbar_search_active %}Search{% endblock %}
                 </a>
-                <ul class="dropdown-menu">
+                    <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/search/people">People</a></li>
                   <li><a class="dropdown-item" href="/search/units">Units</a></li>
                   <li><a class="dropdown-item" href="/search/areas">Supported Areas</a></li>
@@ -34,10 +34,11 @@
                   <li><a class="dropdown-item" href="/search/resources">Resources</a></li>
                   <li><a class="dropdown-item" href="/search/funding">Funding</a></li>
                 </ul>
-              </li>
+                </li>
               {% endblock %}
-              {% block navbar_add %}
-              <li class="nav-item dropdown">
+              {%if can_add: %}
+                {% block navbar_add %}
+                <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="/create" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   {% block navbar_add_active %}Add Info{% endblock %}
                 </a>
@@ -52,7 +53,8 @@
                   <li><a class="dropdown-item" href="/add/funding">Funding Opportunity</a></li>
                 </ul>
               </li>
-              {% endblock %}
+                {% endblock %}
+              {% endif %}
               {% block navbar_documentation %}
               <li class="nav-item">
                 <a class="nav-link" href="/documentation">Documentation</a>

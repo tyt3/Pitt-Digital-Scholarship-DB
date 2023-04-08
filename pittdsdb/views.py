@@ -1,12 +1,34 @@
 """Module for Views"""
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, request, session
+from flask_session import Session
+
 
 views_bp = Blueprint('views_bp', __name__)
 
 """Function to Show Homepage"""
 @views_bp.route('/')
 def index():
-    return render_template("index.html", title="Pitt Digital Scholarship Database")
+    can_add = False
+    can_update_all = False
+    can_delete = False
+    can_update_created = False
+    if 'email' in session:
+        email = session['email']
+        user = User.query.filter_by(email=email).first_or_404()
+        if user.permission_level == 4:
+            can_add = True
+            can_update = True
+            can_update_created = True
+            can_delete= True
+            can_search = True
+        elif user.permission_level == 3:
+            can_add = True
+            can_update_all = True
+            can_update_created = True
+        elif user.permission_level == 2:
+            can_add = True
+            can_update_created = True
+    return render_template("index.html", title="Pitt Digital Scholarship Database", can_add=can_add, can_delete = can_delete, can_update_all = can_update_all, can_update_created = can_update_created)
 
 """Function to Show About Page"""
 @views_bp.route('/about')
