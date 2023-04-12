@@ -1,5 +1,5 @@
 """Module for Views"""
-from flask import Blueprint, render_template, redirect, request, session, flash
+from flask import Blueprint, render_template, redirect, request, session, flash, url_for
 from flask_session import Session
 from .models import User
 from flask_login import login_required, current_user
@@ -96,6 +96,10 @@ def search_funding():
 def add():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add.html",
                            title="Add Info | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -105,6 +109,10 @@ def add():
 def add_person():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-person.html",
                            title="Add a Person | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -114,6 +122,10 @@ def add_person():
 def add_unit():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-unit.html",
                            title="Add a Unit | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -123,6 +135,10 @@ def add_unit():
 def add_area():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-area.html",
                            title="Add an Area | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -132,6 +148,10 @@ def add_area():
 def add_method():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-method.html",
                            title="Add a Method | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -141,6 +161,10 @@ def add_method():
 def add_tool():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-tool.html",
                            title="Add a Tool | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -150,6 +174,10 @@ def add_tool():
 def add_resource():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-resource.html",
                            title="Add a Resource | Pitt Digital Scholarship Database",
                            user=current_user)
@@ -159,6 +187,10 @@ def add_resource():
 def add_funding():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
     return render_template("add-funding.html",
                            title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
                            user=current_user)
