@@ -1,99 +1,149 @@
 """Module for Auth"""
-from flask import Blueprint, render_template, request, redirect, session, url_for
+from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from .database import db_session
-from .models import User
+from .models import User, Permission
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from datetime import datetime
 from passlib.hash import sha256_crypt
+from sqlalchemy import select
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    msg = ""
     if request.method == "POST":
+        # Get form input
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        user_name = request.form.get('user_name')
         email = request.form.get('email')
         password = request.form.get('password')
+        password_conf = request.form.get('password_conf')
+        admin_code = request.form.get('admin_code')
+
+        # Check if user email is already in the database
         user = User.query.filter_by(email=email).first()
         if user :
-            msg = "This email is already registered"
+            flash("This email is already registered.", category='error')
         else:
+            # Check that email is from the Pitt domain
             regex = '^[a-z0-9]+@pitt.edu$'
-            if re.search(regex,email):
-                first_name = request.form.get('first_name')
-                last_name = request.form.get('last_name')
-                user_name = request.form.get('user_name')
-                flag = 0
-                if (len(password)<8):
-                    msg = "Password should be min 8 characters"
-                elif not re.search("[a-z]", password):
-                    msg = "Password should contain atleast 1 lower case alphabet"
-                elif not re.search("[A-Z]", password):
-                    msg = "Password should contain atleast 1 upper case alphabet"
-                elif not re.search("[0-9]", password):
-                    msg = "Password should contain atleast 1 number"
-                elif not re.search("[_@()*&^%#<>,$]" , password):
-                    msg = "Password should contain atleast 1 special character"
-                if len(msg) == 0:
-                    p_level = request.form.get('permission_level')
-                    if p_level > 4 or p_level < 1:
-                        msg= "Invalid Permission"
-                    else:
-                        api_key = secrets.token_hex(16)
-                        user = User(first_name=first_name, last_name=last_name, user_name=user_name, email=email, user_password=sha256_crypt.encrypt(password), api_key=api_key, permission_level=p_level, account_created = datetime.now().strftime("%Y/%m/%d %H:%M:%S"), last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S") )
-                        db_session.add(user)
-                        db_session.commit()
-                        return redirect(url_for('auth_bp.login'))
+            if not re.search(regex, email):
+                flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
             else:
-                msg = "Please register using pitt.edu email address"
-    return render_template("sign-up.html", title="Pitt Digital Scholarship Database", msg=msg)
+                # Check for valid password
+                if (len(password) < 8):
+                    flash("Password must be at least 8 characters.", category='error')
+                elif (len(password) > 16):
+                    flash("Password must be less than 16 characters.", category='error')
+                elif not re.search("[a-z]", password):
+                    flash("Password must contain at least 1 lowercase alphabet.", category='error')
+                elif not re.search("[A-Z]", password):
+                    flash("Password must contain at least 1 uppercase alphabet.", category='error')
+                elif not re.search("[0-9]", password):
+                    flash("Password must contain at least 1 number.", category='error')
+                elif not re.search("[_@()*&^%#<>,$]", password):
+                    flash("Password must contain at least 1 special character.", category='error')
+                elif password != password_conf:
+                    flash("Passwords do not match.", category='error')
+                else:
+                    # Check for valid admin code
+                    p_level = 1
+                    if admin_code:
+                        # Get all permission codes
+                        permission_codes = db_session.execute(
+                            select(Permission.permission_code)).all()
+                        # Check for a matching permission code
+                        for code in permission_codes:
+                            if sha256_crypt.verify(admin_code, code):
+                                permission_id = db_session.execute(
+                                    select(Permission.permission_id).where(
+                                    Permission.permission_code == code))
+                                break
+                        # Check if given permission code, if any, was matched
+                        # and update permission level accordingly
+                        if permission_id or not admin_code:
+                            p_level = permission_id
+                            # Generate API key
+                            api_key = secrets.token_hex(16)
+                            # Create new user object
+                            new_user = User(first_name=first_name,
+                                            last_name=last_name,
+                                            user_name=user_name,
+                                            email=email,
+                                            user_password=sha256_crypt.hash(password),
+                                            api_key=api_key,
+                                            permission_level=p_level,
+                                            account_created = datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                                            last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S") )
+                            # Add new user to database
+                            db_session.add(new_user)
+                            db_session.commit()
+                            # Alert user that account was created succesfully
+                            flash("Account created!", category="success")
+
+                            # Redirect to login page
+                            return redirect(url_for('auth_bp.login'))
+                    else:
+                        flash("Please enter a valid Administrator code.", category='error')
+    
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+        
+    return render_template("sign-up.html", 
+                           title="Sign Up | Pitt Digital Scholarship Database",
+                           user = current_user)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    msg = ""
     if request.method == "POST":
         email = request.form.get('email')
-        password = sha256_crypt.encrypt(request.form.get('password'))
+        password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
-        
         remember = True if request.form.get('remember') else False
 
-        # check if the user actually exists
-        # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if user :
-            if sha256_crypt.verify(user.password, password):
-                session["email"] = email
-                if user.permission_level == 4:
-                    can_add = True
-                    can_update = True
-                    can_update_created = True
-                    can_delete= True
-                    can_search = True
-                elif user.permission_level == 3:
-                    can_add = True
-                    can_update_all = True
-                    can_update_created = True
-                elif user.permission_level == 2:
-                    can_add = True
-                    can_update_created = True
-                user.last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+        flash(str(remember), category="success")
+
+        # Check if the user actually exists
+        if user:
+            # Confirm that password matches
+            if sha256_crypt.verify(password, user.user_password):
+                user.last_login = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 db_session.commit()
-                return render_template("index.html", title="Pitt Digital Scholarship Database", can_add=can_add, can_delete = can_delete, can_update_all = can_update_all, can_update_created = can_update_created)
+                login_user(user, remember=remember)
+                user.set_permissions()
+                #flash("Login successful!", category="success")
+                return render_template("index.html",
+                                       title="Pitt Digital Scholarship Database",
+                                       user = current_user)
             else:
-                msg = "Wrong Password"
+                flash("Password is incorrect.", category="error")
         else:
-            msg = "Email not registered"
-    return render_template("login.html", title="Login | Pitt Digital Scholarship Database", msg = msg)
+            flash("Email not registered.", category="error")
+
+    return render_template("login.html",
+                           title="Login | Pitt Digital Scholarship Database",
+                           user = current_user)
 
 @auth_bp.route('/logout')
+@login_required
 def logout():
-    session["email"] = None
-    return render_template("logout.html", title="Logout | Pitt Digital Scholarship Database")
+    logout_user()
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    return redirect(url_for('views_bp.index',
+                    user=None))
 
 @auth_bp.route('/account')
+@login_required
 def account():
-    return render_template("account.html", title="Account | Pitt Digital Scholarship Database")
+    if current_user:
+        current_user.set_permissions()
+    return render_template("account.html",
+                           title="Account | Pitt Digital Scholarship Database",
+                           user = current_user)

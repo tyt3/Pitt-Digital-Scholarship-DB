@@ -23,34 +23,34 @@
               {% block navbar_search %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {% block navbar_search_active %}Search{% endblock %}
-                </a>
-                    <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/search/people">People</a></li>
-                  <li><a class="dropdown-item" href="/search/units">Units</a></li>
-                  <li><a class="dropdown-item" href="/search/areas">Supported Areas</a></li>
-                  <li><a class="dropdown-item" href="/search/methods">Suppoted Methods</a></li>
-                  <li><a class="dropdown-item" href="/search/tools">Supported Tools</a></li>
-                  <li><a class="dropdown-item" href="/search/resources">Resources</a></li>
-                  <li><a class="dropdown-item" href="/search/funding">Funding</a></li>
-                </ul>
+                      {% block navbar_search_active %}Search{% endblock %}
+                    </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/search-people">People</a></li>
+                    <li><a class="dropdown-item" href="/search-units">Units</a></li>
+                    <li><a class="dropdown-item" href="/search-areas">Supported Areas</a></li>
+                    <li><a class="dropdown-item" href="/search-methods">Suppoted Methods</a></li>
+                    <li><a class="dropdown-item" href="/search-tools">Supported Tools</a></li>
+                    <li><a class="dropdown-item" href="/search-resources">Resources</a></li>
+                    <li><a class="dropdown-item" href="/search-funding">Funding</a></li>
+                  </ul>
                 </li>
               {% endblock %}
-              {%if can_add: %}
+              {%if user.can_add %}
                 {% block navbar_add %}
                 <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="/create" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="/add" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   {% block navbar_add_active %}Add Info{% endblock %}
                 </a>
                 <ul class="dropdown-menu">
                   <span style="margin-left: 15px; color: gray">Add info about a...</span>
-                  <li><a class="dropdown-item" href="/add/person">Person</a></li>
-                  <li><a class="dropdown-item" href="/add/unit">Unit</a></li>
-                  <li><a class="dropdown-item" href="/add/area">Supported Area</a></li>
-                  <li><a class="dropdown-item" href="/add/method">Supported Method</a></li>
-                  <li><a class="dropdown-item" href="/add/tool">Supported Tool</a></li>
-                  <li><a class="dropdown-item" href="/add/resource">Resource</a></li>
-                  <li><a class="dropdown-item" href="/add/funding">Funding Opportunity</a></li>
+                  <li><a class="dropdown-item" href="/add-person">Person</a></li>
+                  <li><a class="dropdown-item" href="/add-unit">Unit</a></li>
+                  <li><a class="dropdown-item" href="/add-area">Supported Area</a></li>
+                  <li><a class="dropdown-item" href="/add-method">Supported Method</a></li>
+                  <li><a class="dropdown-item" href="/add-tool">Supported Tool</a></li>
+                  <li><a class="dropdown-item" href="/add-resource">Resource</a></li>
+                  <li><a class="dropdown-item" href="/add-funding">Funding Opportunity</a></li>
                 </ul>
               </li>
                 {% endblock %}
@@ -67,28 +67,21 @@
               {% endblock %}
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right: 20px;">
-              {% block navbar_logged_out %}
-              {% block navbar_login %}
-              <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
-              </li>
-              {% endblock %}
-              {% block navbar_sign_up %}
-              <li class="nav-item">
-                <a class="nav-link" href="/sign-up">Sign Up</a>
-              </li>
-              {% endblock %}
-              {% endblock %}
-              {% block navbar_logged_in %}
-              {% block navbar_account %}
-              <li class="nav-item">
-                <a class="nav-link"  href="account">Account</a>
-              </li>
-              {% endblock %}
-              <li class="nav-item">
-                <a class="nav-link"  href="logout">Logout</a>
-              </li>
-              {% endblock %}
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link"  href="account">Account</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link"  href="logout">Logout</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/sign-up">Sign Up</a>
+                </li>
+              {% endif %}
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -97,6 +90,27 @@
           </div>
         </div>
       </nav>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      {% if category=='error' %}
+      <div class="alert alert-danger alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-bs-dismiss="alert">
+          <span aria-hidden="true">&times</span>
+        </button>
+      </div>
+      {% else %}
+      <div class="alert alert-success alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-bs-dismiss="alert">
+          <span aria-hidden="true">&times</span>
+        </button>
+      </div>
+      {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
     <br/>
     <div class="container">
         {% block content %}

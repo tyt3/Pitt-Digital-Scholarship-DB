@@ -4,6 +4,7 @@ from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, \
     SmallInteger, String, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from flask_login import UserMixin
 from .database import Base
 
 
@@ -77,7 +78,7 @@ class Funding(Base):
     career_level = Column(String(50), nullable=False)
     duration = Column(String(50))
     frequency = Column(String(50))
-    web_address = Column(String(50))
+    web_address = Column(String(100))
     last_modified = Column(DateTime, nullable=False)
 
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
@@ -95,6 +96,11 @@ class Method(Base):
     def __init__(self, method_name):
         self.method_name = method_name
 
+class Permission(Base):
+    __tablename__ = 'permission'
+
+    permission_id = Column(Integer, primary_key=True, unique=True)
+    permission_code = Column(String(256))
 
 class Proficiency(Base):
     __tablename__ = 'proficiency'
@@ -118,7 +124,7 @@ class Tool(Base):
 
     tool_id = Column(Integer, primary_key=True)
     tool_name = Column(String(50), nullable=False)
-    web_address = Column(String(50))
+    web_address = Column(String(100))
     github = Column(String(50))
 
 
@@ -129,12 +135,14 @@ class Unit(Base):
     unit_name = Column(String(50), nullable=False)
     unit_type = Column(String(50), nullable=False)
     email = Column(String(50))
-    web_address = Column(String(50))
+    web_address = Column(String(100))
+    phone = Column(String(10))
     preferred_contact = Column(String(50))
-    descrption = Column(String(500))
+    description = Column(String(500))
+    last_modified = Column(DateTime, nullable=False)
 
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__ = 'user'
 
     user_id = Column(Integer, primary_key=True)
@@ -147,6 +155,27 @@ class User(Base):
     permission_level = Column(Integer, nullable=False)
     account_created = Column(DateTime, nullable=False)
     last_login = Column(DateTime, nullable=False)
+    can_add = False
+    can_update_created = False
+    can_update_all = False
+    can_delete= False
+
+    def set_permissions(self):
+        if self.permission_level == 4:
+            self.can_add = True
+            self.can_update_created = True
+            self.can_update_all = True
+            self.can_delete= True
+        elif self.permission_level == 3:
+            self.can_add = True
+            self.can_update_all = True
+            self.can_update_created = True
+        elif self.permission_level == 2:
+            self.can_add = True
+            self.can_update_created = True
+
+    def get_id(self):
+           return (self.user_id)
 
 
 class Department(Base):
@@ -155,9 +184,10 @@ class Department(Base):
     department_id = Column(Integer, primary_key=True)
     department_name = Column(String(50), nullable=False)
     email = Column(String(50))
-    web_address = Column(String(50))
+    web_address = Column(String(100))
+    phone = Column(String(10))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
-    descrption = Column(String(500))
+    description = Column(String(500))
     last_modified = Column(DateTime, nullable=False)
 
     fk_unit = relationship('Unit')
@@ -202,8 +232,8 @@ class Person(Base):
     title = Column(String(50))
     pronouns = Column(String(50))
     email = Column(String(50), nullable=False)
-    web_address = Column(String(50))
-    phone = Column(Integer)
+    web_address = Column(String(100))
+    phone = Column(String(10))
     scheduler_address = Column(String(50))
     preferred_contact = Column(String(50))
     support_type = Column(String(50), nullable=False)
@@ -251,8 +281,12 @@ class Subunit(Base):
     subunit_id = Column(Integer, primary_key=True)
     subunit_name = Column(String(50), nullable=False)
     subunit_type = Column(String(50), nullable=False)
+    email = Column(String(50), nullable=False)
+    web_address = Column(String(100))
+    phone = Column(String(10))
+    preferred_contact = Column(String(50))
+    description = Column(String(500))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    descrption = Column(String(500))
     last_modified = Column(DateTime, nullable=False)
 
     fk_unit = relationship('Unit')

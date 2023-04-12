@@ -23,5 +23,5 @@ class PersonSchema(ma.Schema):
                  'date_added', 'last_modified', 'notes')
 
 person_schema = PersonSchema()
-person_schema = PersonSchema(many=True)
+people_schema = PersonSchema(many=True)
 

@@ -5,8 +5,41 @@
       <a class="nav-link active" href="/login">Login</a>
     </li>
   {% endblock %}
-  {% block navbar_logged_in %}
-  {% endblock %}
   {% block content %}
-    <h1>Log In</h1>
+  <form method="POST">
+    <h3 align="center">Login</h3>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input 
+      type="email" 
+      class="form-control" 
+      id="email" 
+      name="email" 
+      placeholder="@pitt.edu">
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+      type="password" 
+      class="form-control" 
+      id="password" 
+      name="password" 
+      placeholder="">
+    </div>
+    <br/>
+    <div class="form-check">
+      <label class="form-check-label" for="remember">
+        Remember me
+      </label>
+      <input 
+      type="checkbox" 
+      class="form-check-input" 
+      id="remember"
+      name="remember"
+      value=True>
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Login</button>
+  </form>
   {% endblock %}
