@@ -15,6 +15,10 @@ auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    if current_user.is_authenticated:
+        flash("You are already signed up.", category="error")
+        return redirect(url_for('views_bp.index'))
+    
     if request.method == "POST":
         # Get form input
         first_name = request.form.get('first_name')
@@ -101,13 +105,15 @@ def sign_up():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        flash("You are already logged in.", category="error")
+        return redirect(url_for('views_bp.index'))
+    
     if request.method == "POST":
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         remember = True if request.form.get('remember') else False
-
-        flash(str(remember), category="success")
 
         # Check if the user actually exists
         if user:

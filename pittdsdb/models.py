@@ -175,7 +175,10 @@ class User(Base, UserMixin):
             self.can_update_created = True
 
     def get_id(self):
-           return (self.user_id)
+        return (self.user_id)
+    
+    def __rep__(self):
+        return (self.user_name)
 
 
 class Department(Base):
