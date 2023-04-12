@@ -1,5 +1,6 @@
 """Module for Views"""
 from flask import Blueprint, request, jsonify
+from sqlalchemy.sql import text
 from flask_restful import Api, Resource
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,11 +23,41 @@ def getPerson():
     args = request.args
     first_name = args.get('first_name')
     last_name = args.get('last_name')
+    support_type = args.get('support_type')
+    campus = args.get('campus')
 
-    #if first_name or last_name:
-     #   result = Person.query.filter_by()
+    sql = f'SELECT * FROM person WHERE '
+    empty = True
+    if first_name:
+        sql += f'first_name LIKE "{first_name}"' 
+        empty = False
+    if last_name:
+        if not empty:
+            sql += f' AND '
+        sql += f'last_name LIKE "{last_name}"'
+        empty = False
+    if support_type:
+        if not empty:
+            sql += f' AND '
+        sql += f'support_type = "{support_type}"'
+        empty = False
+    
+    if empty:
+        return "Please enter at least one parameter for your query from \
+            id, first_name, last_name, support_type, campus"
+       
+    else:
+        result = db_session.execute(text(sql + ';')).fetchall()
 
-    return first_name
+    if len(result) > 1:
+        return person_schema.jsonify(result)
+    else:
+        return people_schema.jsonify(result)
+
+     # result = Person.query.filter_by(first_name=first_name,
+        #                                 last_name=last_name)
+
+    
 
 
 """Add Methods"""
