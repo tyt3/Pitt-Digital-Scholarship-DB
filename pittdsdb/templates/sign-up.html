@@ -15,7 +15,8 @@
         type="text" 
         class="form-control" 
         id="first_name" 
-        name="first_name">
+        name="first_name"
+        value="{{ request.form['first_name'] }}">
       </div>
       <br/>
       <div class="form-group">
@@ -24,7 +25,8 @@
         type="text" 
         class="form-control" 
         id="last_name" 
-        name="last_name">
+        name="last_name"
+        value="{{ request.form['last_name'] }}">
       </div>
       <br/>
       <div class="form-group">
@@ -33,7 +35,8 @@
         type="text" 
         class="form-control" 
         id="user_name" 
-        name="user_name">
+        name="user_name"
+        value="{{ request.form['user_name'] }}">
       </div>
       <br/>
       <div class="form-group">
@@ -43,7 +46,8 @@
         class="form-control" 
         id="email" 
         name="email" 
-        placeholder="@pitt.edu">
+        placeholder="@pitt.edu"
+        value="{{ request.form['email'] }}">
       </div>
       <br/>
       <div class="form-group">
@@ -73,7 +77,8 @@
         class="form-control" 
         id="admin_code" 
         name="admin_code" 
-        placeholder="">
+        placeholder=""
+        value="{{ request.form['admin_code'] }}">
       </div>
       <br/>
       <button type="submit" class="btn btn-primary">Submit</button>
