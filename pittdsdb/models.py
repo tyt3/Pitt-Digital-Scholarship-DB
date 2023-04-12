@@ -3,6 +3,7 @@ from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, \
     String, Table
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
+from datetime import datetime
 from .database import Base
 
 
@@ -77,7 +78,7 @@ class Funding(Base):
     duration = Column(String(50))
     frequency = Column(String(50))
     web_address = Column(String(100))
-    last_modified = Column(DateTime, nullable=False)
+    last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
     fk_units = relationship('Unit', secondary='unit_funding')
@@ -137,7 +138,7 @@ class Unit(Base):
     phone = Column(String(10))
     preferred_contact = Column(String(50))
     description = Column(String(500))
-    last_modified = Column(DateTime, nullable=False)
+    last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
 
 class User(Base, UserMixin):
@@ -151,7 +152,7 @@ class User(Base, UserMixin):
     user_password = Column(String(15), nullable=False)
     api_key = Column(String(50), nullable=False)
     permission_level = Column(Integer, nullable=False)
-    account_created = Column(DateTime, nullable=False)
+    account_created = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
     last_login = Column(DateTime, nullable=False)
     can_add = False
     can_update_created = False
@@ -189,7 +190,7 @@ class Department(Base):
     phone = Column(String(10))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
     description = Column(String(500))
-    last_modified = Column(DateTime, default= datetime.utcnow() nullable=False)
+    last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
     fk_unit = relationship('Unit')
     fk_fundings = relationship('Funding', secondary='department_funding')
@@ -219,7 +220,7 @@ class Modification(Base):
     entity_id = Column(Integer, nullable=False)
     modification = Column(String(500), nullable=False)
     modified_by = Column(ForeignKey('user.user_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    modificaiton_date = Column(DateTime, nullable=False)
+    modificaiton_date = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
     user = relationship('User')
 
@@ -240,8 +241,8 @@ class Person(Base):
     support_type = Column(String(50), nullable=False)
     bio = Column(String(500), nullable=False)
     added_by = Column(ForeignKey('user.user_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    date_added = Column(DateTime, nullable=False)
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
+    last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
     notes = Column(String(8000))
 
     user = relationship('User')
@@ -291,7 +292,7 @@ class Subunit(Base):
     preferred_contact = Column(String(50))
     description = Column(String(500))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    last_modified = Column(DateTime, nullable=False)
+    last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
