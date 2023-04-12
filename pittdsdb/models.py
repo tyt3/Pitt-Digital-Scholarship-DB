@@ -1,9 +1,7 @@
 # coding: utf-8
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Integer, \
-    SmallInteger, String, Table, Text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, \
+    String, Table
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from flask_login import UserMixin
 from .database import Base
 
@@ -178,7 +176,7 @@ class User(Base, UserMixin):
         return (self.user_id)
     
     def __rep__(self):
-        return (self.user_name)
+        return f"{self.user_name}"
 
 
 class Department(Base):
@@ -191,7 +189,7 @@ class Department(Base):
     phone = Column(String(10))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
     description = Column(String(500))
-    last_modified = Column(DateTime, nullable=False)
+    last_modified = Column(DateTime, default= datetime.utcnow() nullable=False)
 
     fk_unit = relationship('Unit')
     fk_fundings = relationship('Funding', secondary='department_funding')
@@ -269,6 +267,9 @@ class Person(Base):
         self.date_added = date_added
         self.last_modified = last_modified
         self.notes = notes
+    
+    def __rep__(self):
+        return f"{self.first_name} {self.last_name}, {self.title}, {self.email}"
 
 
 t_resource_area = Table(
