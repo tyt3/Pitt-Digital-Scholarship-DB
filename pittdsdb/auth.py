@@ -81,9 +81,7 @@ def sign_up():
                                             email=email,
                                             user_password=sha256_crypt.hash(password),
                                             api_key=api_key,
-                                            permission_level=p_level,
-                                            account_created = datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
-                                            last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S") )
+                                            permission_level=p_level)
                             # Add new user to database
                             db_session.add(new_user)
                             db_session.commit()
