@@ -44,6 +44,11 @@ class Address(Base):
         self.zipcode = zipcode
         self.campus = campus
 
+    def __rep__(self):
+        return f"{self.room_number}, {self.building_name}, {self.campus}, {self.address_1}, {self.address_2}, {self.address_3}, {self.city}, {self.state} - {self.zipcode}"
+
+
+
 
 class Affiliation(Base):
     __tablename__ = 'affiliation'
@@ -52,6 +57,13 @@ class Affiliation(Base):
     affiliation_type = Column(String(50), nullable=False)
 
     fk_persons = relationship('Person', secondary='person_affiliation')
+
+    def __init__(self, affiliation_id, affiliation_type):
+        self.affiliation_id = affiliation_id
+        self.affiliation_type = affiliation_type
+
+    def __rep__(self):
+        return f"{self.affiliation_type}"
 
 
 class Area(Base):
@@ -64,6 +76,13 @@ class Area(Base):
     fk_persons = relationship('Person', secondary='person_area')
     fk_resources = relationship('Resource', secondary='resource_area')
     fk_tools = relationship('Tool', secondary='tool_area')
+
+    def __init__(self, area_id, area_name):
+        self.area_id = area_id
+        self.area_name = area_name
+
+    def __rep__(self):
+        return f"{self.area_name}"
 
 
 class Funding(Base):
@@ -83,6 +102,22 @@ class Funding(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
     fk_units = relationship('Unit', secondary='unit_funding')
 
+    def __init__(self, funding_id, funding_name, funding_type, payment_type, amount, career_level, duration, frequency, web_address, last_modified):
+        self.funding_id = funding_id
+        self.funding_name = funding_name
+        self.funding_type = funding_type
+        self.payment_type = payment_type
+        self.amount = amount
+        self.career_level = career_level
+        self.duration = duration
+        self.frequency = frequency
+        self.web_address = web_address
+        self.last_modified = last_modified
+
+    def __rep__(self):
+        return f"{self.funding_name}, {self.funding_type}, {self.amount}, {self.duration}, {self.frequency}, {self.web_address}"
+
+
 
 class Method(Base):
     __tablename__ = 'method'
@@ -92,8 +127,13 @@ class Method(Base):
 
     fk_tools = relationship('Tool', secondary='method_tool')
 
-    def __init__(self, method_name):
+    def __init__(self, method_id, method_name):
+        self.method_id = method_id
         self.method_name = method_name
+
+    def __rep__(self):
+        return f"{self.method_name}"
+    
 
 class Permission(Base):
     __tablename__ = 'permission'
@@ -101,11 +141,26 @@ class Permission(Base):
     permission_id = Column(Integer, primary_key=True, unique=True)
     permission_code = Column(String(256))
 
+    def __init__(self, permission_id, permission_code):
+        self.permission_id = permission_id
+        self.permission_code = permission_code
+
+    def __rep__(self):
+        return f"{self.permission_code}"
+    
+
 class Proficiency(Base):
     __tablename__ = 'proficiency'
 
     proficiency_id = Column(Integer, primary_key=True)
     proficiency_level = Column(String(50), nullable=False)
+
+    def __init__(self, proficiency_id, proficiency_level):
+        self.proficiency_id = proficiency_id
+        self.proficiency_level = proficiency_level
+
+    def __rep__(self):
+        return f"{self.proficiency_level}"
 
 
 class Resource(Base):
@@ -117,6 +172,13 @@ class Resource(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_resource')
     fk_units = relationship('Unit', secondary='unit_resource')
 
+    def __init__(self, resource_id, resource_name):
+        self.resource_id = resource_id
+        self.resource_name = resource_name
+
+    def __rep__(self):
+        return f"{self.resource_name}"
+
 
 class Tool(Base):
     __tablename__ = 'tool'
@@ -125,6 +187,15 @@ class Tool(Base):
     tool_name = Column(String(50), nullable=False)
     web_address = Column(String(100))
     github = Column(String(50))
+
+    def __init__(self, tool_id, tool_name, web_address, github):
+        self.tool_id = tool_id
+        self.tool_name = tool_name
+        self.web_address = web_address
+        self.github = github
+
+    def __rep__(self):
+        return f"{self.tool_name}, {self.web_address}, {self.github}"
 
 
 class Unit(Base):
@@ -139,6 +210,20 @@ class Unit(Base):
     preferred_contact = Column(String(50))
     description = Column(String(500))
     last_modified = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
+
+    def __init__(self, unit_id, unit_name, unit_type, email, web_address, phone, preferred_contact, description, last_modified):
+        self.unit_id = unit_id
+        self.unit_name = unit_name
+        self.unit_type = unit_type
+        self.email = email
+        self.web_address = web_address
+        self.phone = phone
+        self.preferred_contact = preferred_contact
+        self.description = description
+        self.last_modified = last_modified
+
+    def __rep__(self):
+        return f"{self.unit_name} ({self.unit_type}), {self.email}, {self.web_address}, {self.phone}, {self.preferred_contact}, {self.description}"
 
 
 class User(Base, UserMixin):
@@ -158,6 +243,17 @@ class User(Base, UserMixin):
     can_update_created = False
     can_update_all = False
     can_delete= False
+
+    def __init__(self, user_id, user_name, first_name, last_name, email, user_password, api_key, permission_level, account_created, last_login):
+        self.user_id = user_id
+        self.user_name = user_name
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.user_password = user_password
+        self.api_key = api_key
+        self.permission_level = permission_level
+        self.account_created = account_created
 
     def set_permissions(self):
         if self.permission_level == 4:
@@ -197,6 +293,20 @@ class Department(Base):
     fk_resources = relationship('Resource', secondary='department_resource')
     fk_persons = relationship('Person', secondary='person_department')
 
+    def __init__(self, department_id, department_name, email, web_address, phone, fk_unit_id, description, last_modified):
+        self.department_id = department_id
+        self.department_name = department_name
+        self.email = email
+        self.web_address = web_address
+        self.phone = phone
+        self.fk_unit_id = fk_unit_id
+        self.description = description
+        self.last_modified = last_modified
+
+    def __rep__(self):
+        return f"{self.department_name}, {self.email}, {self.web_address}, {self.phone}, {self.description}"
+
+
 
 t_method_area = Table(
     'method_area', metadata,
@@ -223,6 +333,15 @@ class Modification(Base):
     modificaiton_date = Column(DateTime, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"), nullable=False)
 
     user = relationship('User')
+
+    def __init__(self, modification_id, entity_type, entity_id, modification, modified_by, modificaiton_date):
+        self.entity_type = entity_type
+        self.entity_id = entity_id
+        self.modification = modification
+        self.modified_by = modified_by
+
+    def __rep__(self):
+        return f"{self.modification}"
 
 
 class Person(Base):
@@ -297,6 +416,21 @@ class Subunit(Base):
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
 
+    def __init__(self, subunit_id, subunit_name, subunit_type, email, web_address, phone, preferred_contact, description, last_modified):
+        self.subunit_id = subunit_id
+        self.subunit_name = subunit_name
+        self.subunit_type = subunit_type
+        self.email = email
+        self.web_address = web_address
+        self.phone = phone
+        self.preferred_contact = preferred_contact
+        self.description = description
+        self.fk_unit_id = fk_unit_id
+        self.last_modified = last_modified
+
+    def __rep__(self):
+        return f"{self.subunit_name} ({self.subunit_type}), {self.email}, {self.web_address}, {self.phone}, {self.preferred_contact}, {self.description}"
+
 
 t_tool_area = Table(
     'tool_area', metadata,
@@ -357,6 +491,14 @@ class DepartmentSubunit(Base):
     fk_department = relationship('Department')
     fk_subunit = relationship('Subunit')
 
+    def __init__(self, fk_department_id, fk_subunit_id, superior):
+        self.fk_department_id = fk_department_id
+        self.fk_subunit_id = fk_subunit_id
+        self.superior = superior
+
+    def __rep__(self):
+        return f"{self.superior}"
+
 
 t_person_address = Table(
     'person_address', metadata,
@@ -397,6 +539,11 @@ class PersonMethod(Base):
     fk_person = relationship('Person')
     fk_proficiency = relationship('Proficiency')
 
+    def __init__(self, fk_person_id, fk_method_id, fk_proficiency_id):
+        self.fk_person_id = fk_person_id
+        self.fk_method_id = fk_method_id
+        self.fk_proficiency_id = fk_proficiency_id
+
 
 t_person_subunit = Table(
     'person_subunit', metadata,
@@ -415,6 +562,11 @@ class PersonTool(Base):
     fk_person = relationship('Person')
     fk_proficiency = relationship('Proficiency')
     fk_tool = relationship('Tool')
+
+    def __init__(self, fk_person_id, fk_tool_id, fk_proficiency_id):
+        self.fk_person_id = fk_person_id
+        self.fk_tool_id = fk_tool_id
+        self.fk_proficiency_id = fk_proficiency_id
 
 
 t_person_unit = Table(
