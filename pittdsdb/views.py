@@ -25,6 +25,24 @@ def about():
                            title="Pitt Digital Scholarship Database",
                            user=current_user)
 
+"""Function to Show Documentation Page"""
+@views_bp.route('/documentation')
+def documentation():
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    return render_template("documentation.html",
+                           title="Documentation | Pitt Digital Scholarship Database",
+                           user=current_user)
+
+"""Function to Show Contact Page"""
+@views_bp.route('/contact')
+def contact():
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    return render_template("contact.html",
+                           title="Contact Us | Pitt Digital Scholarship Database",
+                           user=current_user)
+
 """Functions to Show Search Pages"""
 @views_bp.route('/search')
 def search():
@@ -34,10 +52,18 @@ def search():
                            title="Search | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/search-people')
+@views_bp.route('/search-people', methods=['GET', 'POST'])
 def search_people():
     if current_user.is_authenticated:
         current_user.set_permissions()
+
+    if request.method == "POST":
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        title = request.form.get('title')
+        support_type = request.form.getlist('support_type')
+        campus = request.form.getlist('campus')
+    
     return render_template("search-people.html",
                            title="Search People| Pitt Digital Scholarship Database",
                            user=current_user)
@@ -193,22 +219,4 @@ def add_funding():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-funding.html",
                            title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
-                           user=current_user)
-
-"""Function to Show Documentation Page"""
-@views_bp.route('/documentation')
-def documentation():
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    return render_template("documentation.html",
-                           title="Documentation | Pitt Digital Scholarship Database",
-                           user=current_user)
-
-"""Function to Show Contact Page"""
-@views_bp.route('/contact')
-def contact():
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    return render_template("contact.html",
-                           title="Contact Us | Pitt Digital Scholarship Database",
                            user=current_user)

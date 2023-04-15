@@ -57,39 +57,44 @@ def sign_up():
                 else:
                     # Check for valid admin code
                     p_level = 1
+                    permission_id = None
                     if admin_code:
                         # Get all permission codes
                         permission_codes = db_session.execute(
                             select(Permission.permission_code)).all()
                         # Check for a matching permission code
                         for code in permission_codes:
-                            if sha256_crypt.verify(admin_code, code):
-                                permission_id = db_session.execute(
+                            if sha256_crypt.verify(admin_code, code[0]):
+                                permission_id_result = db_session.execute(
                                     select(Permission.permission_id).where(
-                                    Permission.permission_code == code))
+                                    Permission.permission_code == code[0])).first()
+                                permission_id = permission_id_result[0]
                                 break
                         # Check if given permission code, if any, was matched
                         # and update permission level accordingly
-                        if permission_id or not admin_code:
-                            p_level = permission_id
-                            # Generate API key
-                            api_key = secrets.token_hex(16)
-                            # Create new user object
-                            new_user = User(first_name=first_name,
-                                            last_name=last_name,
-                                            user_name=user_name,
-                                            email=email,
-                                            user_password=sha256_crypt.hash(password),
-                                            api_key=api_key,
-                                            permission_level=p_level)
-                            # Add new user to database
-                            db_session.add(new_user)
-                            db_session.commit()
-                            # Alert user that account was created succesfully
-                            flash("Account created!", category="success")
+                    if permission_id or not admin_code:
+                        p_level = permission_id
+                        # Generate API key
+                        api_key = secrets.token_hex(16)
+                        # Create new user object
+                        new_user = User(first_name=first_name,
+                                        last_name=last_name,
+                                        user_name=user_name,
+                                        email=email,
+                                        user_password=sha256_crypt.hash(password),
+                                        api_key=api_key,
+                                        permission_level=p_level,
+                                        account_created=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                                        last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+                        # Add new user to database
+                        db_session.add(new_user)
+                        db_session.commit()
+                        # Alert user that account was created succesfully
+                        login_user(new_user)
+                        flash("Account created!", category="success")
 
-                            # Redirect to login page
-                            return redirect(url_for('auth_bp.login'))
+                        # Redirect to login page
+                        return redirect(url_for('views_bp.index'))
                     else:
                         flash("Please enter a valid Administrator code.", category='error')
     
