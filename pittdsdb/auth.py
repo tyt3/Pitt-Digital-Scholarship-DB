@@ -238,5 +238,5 @@ def update_account():
                             return redirect(url_for('auth_bp.account'))
                         else:
                             flash("Please enter a valid Administrator code.", category='error')
-    flash("Kindly login to view the login details", category="error")
+    flash("Login to view the account details.", category="error")
     return redirect(url_for('views_bp.login'))
