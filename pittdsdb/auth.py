@@ -153,6 +153,89 @@ def logout():
 def account():
     if current_user:
         current_user.set_permissions()
-    return render_template("account.html",
+        email = current_user.email
+        user = User.query.filter_by(email=email).first()
+        if user:
+            result={"first_name":user.first_name, "last_name":user.last_name, "user_name":user.user_name, "emai":user.email, "permission_level":user.permission_level, "account_created": user.account_created, "last_login": user.last_login}
+            return render_template("account.html",
                            title="Account | Pitt Digital Scholarship Database",
-                           user = current_user)
+                           user = result)
+    flash("Kindly login to view the login details", category="error")
+    return redirect(url_for('views_bp.index'))
+
+
+@auth_bp.route('/account')
+@login_required
+def update_account():
+    if current_user:
+        current_user.set_permissions()
+        email = current_user.current_user.email
+        user = User.query.filter_by(email=email).first()
+        if user and request.method == "POST":
+            # Get form input
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            user_name = request.form.get('user_name')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            password_conf = request.form.get('password_conf')
+            admin_code = request.form.get('admin_code')
+            # Check that email is from the Pitt domain
+            regex = '^[a-z0-9]+@pitt.edu$'
+            if not re.search(regex, email):
+                flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
+            else:
+                # Check for valid password
+                if (len(password) < 8):
+                    flash("Password must be at least 8 characters.", category='error')
+                elif (len(password) > 16):
+                    flash("Password must be less than 16 characters.", category='error')
+                elif not re.search("[a-z]", password):
+                    flash("Password must contain at least 1 lowercase alphabet.", category='error')
+                elif not re.search("[A-Z]", password):
+                    flash("Password must contain at least 1 uppercase alphabet.", category='error')
+                elif not re.search("[0-9]", password):
+                    flash("Password must contain at least 1 number.", category='error')
+                elif not re.search("[_@()*&^%#<>,$]", password):
+                    flash("Password must contain at least 1 special character.", category='error')
+                elif password != password_conf:
+                    flash("Passwords do not match.", category='error')
+                else:
+                    # Check for valid admin code
+                    p_level = 1
+                    if admin_code:
+                        # Get all permission codes
+                        permission_codes = db_session.execute(
+                            select(Permission.permission_code)).all()
+                        # Check for a matching permission code
+                        for code in permission_codes:
+                            if sha256_crypt.verify(admin_code, code):
+                                permission_id = db_session.execute(
+                                    select(Permission.permission_id).where(
+                                    Permission.permission_code == code))
+                                break
+                        # Check if given permission code, if any, was matched
+                        # and update permission level accordingly
+                        if permission_id or not admin_code:
+                            p_level = permission_id
+                            # Generate API key
+                            api_key = secrets.token_hex(16)
+                            # Create new user object
+                            User.first_name=first_name
+                            User.last_name=last_name,
+                            User.user_name=user_name,
+                            User.email=email,
+                            User.user_password=sha256_crypt.hash(password),
+                            User.api_key=api_key,
+                            User.permission_level=p_level
+                            # Update user to database
+                            db_session.commit()
+                            # Alert user that account was created succesfully
+                            flash("Account Details Updated!", category="success")
+
+                            # Redirect to login page
+                            return redirect(url_for('auth_bp.account'))
+                        else:
+                            flash("Please enter a valid Administrator code.", category='error')
+    flash("Kindly login to view the login details", category="error")
+    return redirect(url_for('views_bp.login'))
