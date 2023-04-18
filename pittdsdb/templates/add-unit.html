@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Add a Unit | Pitt Digital Scholarship Databse{% endblock %}
+{% block title %}Add a Unit | Pitt Digital Scholarship Database{% endblock %}
 {% block navbar_add_active %}
 <li class="nav-item">
   <a class="nav-link active" href="/add_unit">Add Unit</a>
@@ -12,33 +12,29 @@
 
   <!-- Unit Information -->
   <fieldset>
-    <legend>Unit Information</legend>
+    <!--<legend>Unit Information</legend>-->
+    <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_name">Name</label>
       <input type="text" class="form-control" id="unit_name" name="unit_name">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_type">Type</label>
       <input type="text" class="form-control" id="unit_type" name="unit_type">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_email">Email</label>
       <input type="email" class="form-control" id="unit_email" name="unit_email" placeholder="@pitt.edu">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_website">Website</label>
       <input type="url" class="form-control" id="unit_website" name="unit_website">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_contact_method">Preferred contact method</label>
       <select class="form-control" id="unit_contact_method" name="unit_contact_method">
         <option value="Email">Email</option>
@@ -48,14 +44,11 @@
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="unit_parent">Parent unit</label>
       <input type="text" class="form-control" id="unit_parent" name="unit_parent">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
-      <br/>
       <label for="unit_department">Department</label>
       <input type="text" class="form-control" id="unit_department" name="unit_department">
     </div>
@@ -66,58 +59,51 @@
     </div>
   </fieldset>
   <br/>
+  <button type="button" class="btn btn-primary btn-sm" id="location_btn">Add Location</button>
   <br/>
-  <button type="button" class="btn btn-primary" id="location_btn">Add Location</button>
-
 <!-- Location Form (Pop-up) -->
 <div id="location_form" style="display: none;">
   <br/>
-  <h3>Add Location</h3>
+  <h4 align="center">Add Location</h4>
   <form id="location_form_inner">
+    <br/>
     <div class="form-group">
-      <br/>
       <label for="location_campus">Campus</label>
       <input type="text" class="form-control" id="location_campus" name="location_campus">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_building">Building</label>
       <input type="text" class="form-control" id="location_building" name="location_building">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_room">Room number</label>
       <input type="text" class="form-control" id="location_room" name="location_room">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_street">Street address</label>
       <input type="text" class="form-control" id="location_street" name="location_street">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_city">City</label>
       <input type="text" class="form-control" id="location_city" name="location_city">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_state">State</label>
       <input type="text" class="form-control" id="location_state" name="location_state">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="location_zip">Zip code</label>
       <input type="text" class="form-control" id="location_zip" name="location_zip">
     </div>
     <br/>
-    <button type="button" class="btn btn-primary" id="save_location_btn">Save Location</button>
-    <button type="button" class="btn btn-secondary" id="cancel_location_btn">Cancel</button>
+    <button type="button" class="btn btn-primary btn-sm" id="save_location_btn">Save Location</button>
+    <button type="button" class="btn btn-secondary btn-sm" id="cancel_location_btn">Cancel</button>
   </form>
 </div>
 <br/>
@@ -153,29 +139,27 @@
   });
 </script>
 
-<button type="button" id="resources_btn" class="btn btn-primary" >Add Resources</button>
-
+<button type="button" id="resources_btn" class="btn btn-primary btn-sm" >Add Resources</button>
+<br/>
 
 <!-- Resources Form -->
 <div id="resources_form" style="display: none;">
   <br/>
-  <h2>Add Resources</h2>
+  <h4 align="center">Add Resources</h4>
+  <br/>
   <form id="resources_form_inner">
     <div class="form-group">
-      <br/>
       <label for="name">Name:</label>
       <input type="text" class="form-control" id="name" name="name" required>
     </div>
     <br/>
-
     <div class="form-group">
-      <br/>
       <label for="area">Area:</label>
       <input type="text" class="form-control" id="area" name="area" required>
     </div>
     <br/>
-    <button type="button" class="btn btn-primary" id="save_resource_btn">Save Resource</button>
-    <button type="button" class="btn btn-secondary" id="cancel_resource_btn">Cancel</button>
+    <button type="button" class="btn btn-primary btn-sm" id="save_resource_btn">Save Resource</button>
+    <button type="button" class="btn btn-secondary btn-sm" id="cancel_resource_btn">Cancel</button>
   </form>
 </div>
 <br/>
@@ -205,19 +189,17 @@
     document.getElementById('resources_form').style.display = 'none';
   });
 </script>
-<br/>
-<br/>
 
-<button type="button" class="btn btn-primary" id="funding_btn">Add Funding</button>
-
+<button type="button" class="btn btn-primary btn-sm" id="funding_btn">Add Funding</button>
+<br/>
 <!-- Funding Form (Pop-up) -->
 
 <div id="funding_form" style="display: none;">
   <br/>
-  <h3>Add Funding</h3>
+  <h4 align="center">Add Funding</h4>
+  <br/>
   <form id="funding_form_inner">
     <div class="form-group">
-      <br/>
       <label for="funding_name">Name</label>
       <input type="text" class="form-control" id="funding_name" name="funding_name">
     </div>
@@ -228,43 +210,37 @@
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_payment_type">Payment type</label>
       <input type="text" class="form-control" id="funding_payment_type" name="funding_payment_type">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_amount">Amount</label>
       <input type="text" class="form-control" id="funding_amount" name="funding_amount">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_career_level">Career level</label>
       <input type="text" class="form-control" id="funding_career_level" name="funding_career_level">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_duration">Duration</label>
       <input type="text" class="form-control" id="funding_duration" name="funding_duration">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_frequency">Frequency</label>
       <input type="text" class="form-control" id="funding_frequency" name="funding_frequency">
     </div>
     <br/>
     <div class="form-group">
-      <br/>
       <label for="funding_website">Website</label>
       <input type="text" class="form-control" id="funding_website" name="funding_website">
     </div>
     <br/>
-    <button type="button" class="btn btn-primary" id="save_funding_btn">Save Funding</button>
-    <button type="button" class="btn btn-secondary" id="cancel_funding_btn">Cancel</button>
+    <button type="button" class="btn btn-primary btn-sm" id="save_funding_btn">Save Funding</button>
+    <button type="button" class="btn btn-secondary btn-sm" id="cancel_funding_btn">Cancel</button>
   </form>
 </div>
 <br/>
@@ -302,7 +278,8 @@
     document.getElementById('funding_form').style.display = 'none';
   });
 </script>
-
- 
+<br/>
+<button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
+<br/>
+{% endblock %}

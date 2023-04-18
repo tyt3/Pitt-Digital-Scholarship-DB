@@ -182,7 +182,7 @@ class Unit(Base):
 
     unit_id = Column(Integer, primary_key=True)
     public_id = Column(String(36), nullable=False, unique=True)
-    unit_name = Column(String(50), nullable=False)
+    unit_name = Column(String(100), nullable=False)
     unit_type = Column(String(50), nullable=False)
     email = Column(String(100))
     web_address = Column(String(50))
@@ -223,7 +223,7 @@ class User(Base, UserMixin):
     can_add = False
     can_update_created = False
     can_update_all = False
-    can_delete= False
+    can_delete = False
 
     def __init__(self, user_name, first_name, last_name, email, user_password, \
                  api_key, permission_level, account_created, last_login):
@@ -285,6 +285,7 @@ t_vw_funding = Table(
     Column('duration', String(50)),
     Column('frequency', String(50)),
     Column('web_address', String(50)),
+    Column('campus', String(50)),
     Column('last_modified', DateTime, server_default=text("'0000-00-00 00:00:00'"))
 )
 
@@ -292,6 +293,9 @@ t_vw_funding = Table(
 t_vw_person_support = Table(
     'vw_person_support', metadata,
     Column('person_id', Integer, server_default=text("'0'")),
+    Column('first_name', String(50)),
+    Column('last_name', String(50)),
+    Column('support_type', String(50)),
     Column('area_id', Integer, server_default=text("'0'")),
     Column('area_name', String(50)),
     Column('method_id', Integer, server_default=text("'0'")),
@@ -301,17 +305,20 @@ t_vw_person_support = Table(
     Column('tool_id', Integer, server_default=text("'0'")),
     Column('tool_name', String(50)),
     Column('tool_proficiency_id', Integer, server_default=text("'0'")),
-    Column('tool_proficiency', String(50))
+    Column('tool_proficiency', String(50)),
+    Column('campus', String(50))
 )
 
 
 t_vw_unit_support = Table(
     'vw_unit_support', metadata,
     Column('public_id', String(36)),
+    Column('entity_name', String(100)),
     Column('area_id', Integer),
     Column('area_name', String(50)),
     Column('resource_id', Integer, server_default=text("'0'")),
-    Column('resource_name', String(50))
+    Column('resource_name', String(50)),
+    Column('campus', String(50))
 )
 
 
@@ -320,7 +327,8 @@ class Department(Base):
 
     department_id = Column(Integer, primary_key=True)
     public_id = Column(String(36), nullable=False, unique=True)
-    department_name = Column(String(50), nullable=False)
+    department_name = Column(String(100), nullable=False)
+    department_type = Column(String(50), nullable=False)
     email = Column(String(100))
     web_address = Column(String(50))
     phone = Column(CHAR(10))
@@ -446,7 +454,7 @@ class Subunit(Base):
 
     subunit_id = Column(Integer, primary_key=True)
     public_id = Column(String(36), nullable=False, unique=True)
-    subunit_name = Column(String(50), nullable=False)
+    subunit_name = Column(String(100), nullable=False)
     subunit_type = Column(String(50), nullable=False)
     email = Column(String(100))
     web_address = Column(String(100))
