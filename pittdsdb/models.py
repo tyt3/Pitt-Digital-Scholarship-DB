@@ -86,10 +86,11 @@ class Funding(Base):
     __tablename__ = 'funding'
 
     funding_id = Column(Integer, primary_key=True)
-    funding_name = Column(String(50), nullable=False)
+    funding_name = Column(String(100), nullable=False)
     funding_type = Column(String(50), nullable=False)
     payment_type = Column(String(50), nullable=False)
-    amount = Column(Float(asdecimal=True))
+    payment_amount = Column(Float(asdecimal=True))
+    payment_frequency = Column(String(50), nullable=False)
     career_level = Column(String(50), nullable=False)
     duration = Column(String(50))
     frequency = Column(String(50))
@@ -99,11 +100,14 @@ class Funding(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
     fk_units = relationship('Unit', secondary='unit_funding')
 
-    def __init__(self, funding_name, funding_type, payment_type, amount, career_level, duration, frequency, web_address, last_modified):
+    def __init__(self, funding_name, funding_type, payment_type, payment_amount, \
+                 payment_frequency, career_level, duration, frequency, \
+                    web_address, last_modified):
         self.funding_name = funding_name
         self.funding_type = funding_type
         self.payment_type = payment_type
-        self.amount = amount
+        self.payment_amount = payment_amount
+        self.payment_frequency = payment_frequency
         self.career_level = career_level
         self.duration = duration
         self.frequency = frequency
@@ -149,12 +153,14 @@ class Resource(Base):
 
     resource_id = Column(Integer, primary_key=True)
     resource_name = Column(String(50), nullable=False, unique=True)
+    resource_type = Column(String(50), nullable=False)
 
     fk_subunits = relationship('Subunit', secondary='subunit_resource')
     fk_units = relationship('Unit', secondary='unit_resource')
 
-    def __init__(self, resource_name):
+    def __init__(self, resource_name, resource_type):
         self.resource_name = resource_name
+        self.resource_type = resource_type
 
     def __rep__(self):
         return f"{self.resource_name}"

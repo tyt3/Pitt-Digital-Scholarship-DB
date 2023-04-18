@@ -23,7 +23,7 @@ career_level = ['Undergraduate',
                 'Professional'
                 ]
 
-category_name = ['2D Scanning and Digitization',
+area_name = ['2D Scanning and Digitization',
                  '3D Scanning and Modeling',
                  'Coding and Computation',
                  'Data',
@@ -44,9 +44,9 @@ entity_type = ['person',
                'subunit'
                ]
 
-frequency = ['Annually',
-             'Biannually',
-             'Semesterly',
+frequency = ['Annual',
+             'Biannual',
+             'Semester',
              'Fall',
              'Spring',
              'Summer',

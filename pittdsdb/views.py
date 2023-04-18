@@ -1,11 +1,15 @@
 """Module for Views"""
 from flask import Blueprint, render_template, redirect, request, session, flash, url_for
 from flask_session import Session
-from .models import User
 from flask_login import login_required, current_user
+from .models import *
+from .database import db_session
+#from .controlled_vocab import *
 
 
+# Initialize views Blueprint
 views_bp = Blueprint('views_bp', __name__)
+
 
 """Function to Show Homepage"""
 @views_bp.route('/')
@@ -44,6 +48,18 @@ def contact():
                            user=current_user)
 
 """Functions to Show Search Pages"""
+
+# Initialize search variables for database values
+areas = list(zip(*db_session.query(Area.area_name).distinct()))[0]
+campuses = list(zip(*db_session.query(Address.campus).distinct()))[0]
+career_levels = list(zip(*db_session.query(Funding.career_level).distinct()))[0]
+funding_types = list(zip(*db_session.query(Funding.funding_type).distinct()))[0]
+payment_types = list(zip(*db_session.query(Funding.payment_type).distinct()))[0]
+methods = list(zip(*db_session.query(Method.method_name).distinct()))[0]
+resources = list(zip(*db_session.query(Resource.resource_type).distinct()))[0]
+support_types = list(zip(*db_session.query(Person.support_type).distinct()))[0]
+tools = list(zip(*db_session.query(Tool.tool_name).distinct()))[0]
+
 @views_bp.route('/search')
 def search():
     if current_user.is_authenticated:
@@ -66,7 +82,12 @@ def search_people():
     
     return render_template("search-people.html",
                            title="Search People| Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           campuses=campuses,
+                           areas=areas,
+                           methods=methods,
+                           tools=tools,
+                           support_types=support_types)
 
 @views_bp.route('/search-units')
 def search_units():
@@ -74,7 +95,10 @@ def search_units():
         current_user.set_permissions()
     return render_template("search-units.html",
                            title="Search Units| Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           campuses=campuses,
+                           areas=areas,
+                           resources=resources)
 
 @views_bp.route('/search-areas')
 def search_areas():
@@ -114,7 +138,11 @@ def search_funding():
         current_user.set_permissions()
     return render_template("search-funding.html",
                            title="Search Funding| Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           campuses=campuses,
+                           funding_types=funding_types,
+                           payment_types=payment_types,
+                           career_levels=career_levels)
 
 """Functions to Show Add Pages"""
 @views_bp.route('/add')

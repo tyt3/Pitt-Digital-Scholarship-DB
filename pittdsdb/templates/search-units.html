@@ -13,48 +13,40 @@
   </div>
   <br/>
   <div class="form-group">
-    <label for="filters">Filters</label>
-    <input type="text" class="form-control" id="filters" name="filters">
-  </div>
-  <br/>
-  <div class="form-group">
     <br/>
     <label for="campus">Campus</label>
     <select class="form-control" id="campus" name="campus" multiple>
-      <option value="">Select Campus</option>
-      <option value="Campus 1">Pittsburgh</option>
-      <option value="Campus 2">Bradford</option>
-      <option value="Campus 3">Greensburg</option>
-      <option value="Campus 4">Johnstown</option>
-      <option value="Campus 5">Titusville</option>
+      <option value="" disabled>Select Campus</option>
+      {% for campus in campuses %}
+      <option value="{{ campus }}">{{ campus }}</option>
+      {% endfor %}
       <!-- Add more options as needed -->
     </select>
   </div>
   <br/>
   <div class="form-group">
-    <br/>
     <label for="supported_area">Supported Area</label>
     <select class="form-control" id="supported_area" name="supported_area" multiple>
-      <option value="">Select Supported Area</option>
-      <option value="area1">Area 1</option>
-      <option value="area2">Area 2</option>
+      <option value="" disabled>Select Supported Area</option>
+      {% for area in areas %}
+      <option value="{{ area }}">{{ area }}</option>
+      {% endfor %}
       <!-- Add more options as needed -->
     </select>
   </div>
   <br/>
   <div class="form-group">
-    <br/>
     <label for="supported_resource">Supported Resource</label>
     <select class="form-control" id="supported_resource" name="supported_resource" multiple>
-      <option value="">Select Supported Resource</option>
-      <option value="resource1">Resource 1</option>
-      <option value="resource2">Resource 2</option>
+      <option value="" disabled>Select Supported Resource</option>
+      {% for resource in resources %}
+      <option value="{{ resource }}">{{ resource }}</option>
+      {% endfor %}
       <!-- Add more options as needed -->
     </select>
   </div>
   <br/>
   <div class="form-group form-check">
-    <br/>
     <input type="checkbox" class="form-check-input" id="is_lab" name="is_lab">
     <label class="form-check-label" for="is_lab">Is a Lab</label>
   </div>
