@@ -31,9 +31,8 @@ class Address(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_address')
     fk_units = relationship('Unit', secondary='unit_address')
 
-    def __init__(self, address_id, building_name, room_number, address_1, 
+    def __init__(self, building_name, room_number, address_1, 
                  address_2, address_3, city, state, zipcode, campus):
-        self.address = address_id
         self.building_name = building_name
         self.room_number = room_number
         self.address_1 = address_1
@@ -58,8 +57,7 @@ class Affiliation(Base):
 
     fk_persons = relationship('Person', secondary='person_affiliation')
 
-    def __init__(self, affiliation_id, affiliation_type):
-        self.affiliation_id = affiliation_id
+    def __init__(self, affiliation_type):
         self.affiliation_type = affiliation_type
 
     def __rep__(self):
@@ -77,8 +75,7 @@ class Area(Base):
     fk_resources = relationship('Resource', secondary='resource_area')
     fk_tools = relationship('Tool', secondary='tool_area')
 
-    def __init__(self, area_id, area_name):
-        self.area_id = area_id
+    def __init__(self, area_name):
         self.area_name = area_name
 
     def __rep__(self):
@@ -102,8 +99,7 @@ class Funding(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
     fk_units = relationship('Unit', secondary='unit_funding')
 
-    def __init__(self, funding_id, funding_name, funding_type, payment_type, amount, career_level, duration, frequency, web_address, last_modified):
-        self.funding_id = funding_id
+    def __init__(self, funding_name, funding_type, payment_type, amount, career_level, duration, frequency, web_address, last_modified):
         self.funding_name = funding_name
         self.funding_type = funding_type
         self.payment_type = payment_type
@@ -127,8 +123,7 @@ class Method(Base):
 
     fk_tools = relationship('Tool', secondary='method_tool')
 
-    def __init__(self, method_id, method_name):
-        self.method_id = method_id
+    def __init__(self, method_name):
         self.method_name = method_name
 
     def __rep__(self):
@@ -141,26 +136,12 @@ class Permission(Base):
     permission_id = Column(Integer, primary_key=True, unique=True)
     permission_code = Column(String(256))
 
-    def __init__(self, permission_id, permission_code):
-        self.permission_id = permission_id
-        self.permission_code = permission_code
-
-    def __rep__(self):
-        return f"{self.permission_code}"
-
 
 class Proficiency(Base):
     __tablename__ = 'proficiency'
 
     proficiency_id = Column(Integer, primary_key=True)
     proficiency_level = Column(String(50), nullable=False)
-
-    def __init__(self, proficiency_id, proficiency_level):
-        self.proficiency_id = proficiency_id
-        self.proficiency_level = proficiency_level
-
-    def __rep__(self):
-        return f"{self.proficiency_level}"
 
 
 class Resource(Base):
@@ -172,8 +153,7 @@ class Resource(Base):
     fk_subunits = relationship('Subunit', secondary='subunit_resource')
     fk_units = relationship('Unit', secondary='unit_resource')
 
-    def __init__(self, resource_id, resource_name):
-        self.resource_id = resource_id
+    def __init__(self, resource_name):
         self.resource_name = resource_name
 
     def __rep__(self):
@@ -188,8 +168,7 @@ class Tool(Base):
     web_address = Column(String(100))
     github = Column(String(100))
 
-    def __init__(self, tool_id, tool_name, web_address, github):
-        self.tool_id = tool_id
+    def __init__(self, tool_name, web_address, github):
         self.tool_name = tool_name
         self.web_address = web_address
         self.github = github
@@ -212,8 +191,7 @@ class Unit(Base):
     description = Column(String(500))
     last_modified = Column(DateTime, nullable=False)
 
-    def __init__(self, unit_id, unit_name, unit_type, email, web_address, phone, preferred_contact, description, last_modified):
-        self.unit_id = unit_id
+    def __init__(self, unit_name, unit_type, email, web_address, phone, preferred_contact, description, last_modified):
         self.unit_name = unit_name
         self.unit_type = unit_type
         self.email = email
@@ -247,7 +225,8 @@ class User(Base, UserMixin):
     can_update_all = False
     can_delete= False
 
-    def __init__(self, user_name, first_name, last_name, email, user_password, api_key, permission_level, account_created, last_login):
+    def __init__(self, user_name, first_name, last_name, email, user_password, \
+                 api_key, permission_level, account_created, last_login):
         self.user_name = user_name
         self.first_name = first_name
         self.last_name = last_name
@@ -355,9 +334,8 @@ class Department(Base):
     fk_resources = relationship('Resource', secondary='department_resource')
     fk_persons = relationship('Person', secondary='person_department')
 
-    def __init__(self, department_id, department_name, email, web_address, \
+    def __init__(self, department_name, email, web_address, \
                  phone, fk_unit_id, description, last_modified):
-        self.department_id = department_id
         self.department_name = department_name
         self.email = email
         self.web_address = web_address
@@ -402,6 +380,7 @@ class Modification(Base):
         self.entity_id = entity_id
         self.modification = modification
         self.modified_by = modified_by
+        self.modificaiton_date = modificaiton_date
 
     def __rep__(self):
         return f"{self.modification}"
@@ -432,10 +411,9 @@ class Person(Base):
     fk_subunits = relationship('Subunit', secondary='person_subunit')
     fk_units = relationship('Unit', secondary='person_unit')
 
-    def __init__(self, person_id, first_name, last_name, title, pronouns, email,
+    def __init__(self, first_name, last_name, title, pronouns, email,
                  web_address, phone, scheduler_address, preferred_contact, 
                  support_type, bio, added_by, date_added, last_modified, notes):
-        self.person_id = person_id
         self.first_name = first_name
         self.last_name = last_name
         self.title = title
@@ -481,8 +459,8 @@ class Subunit(Base):
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
 
-    def __init__(self, subunit_id, subunit_name, subunit_type, email, web_address, phone, preferred_contact, description, last_modified):
-        self.subunit_id = subunit_id
+    def __init__(self, subunit_name, subunit_type, email, web_address, phone, \
+                 preferred_contact, description, fk_unit_id, last_modified):
         self.subunit_name = subunit_name
         self.subunit_type = subunit_type
         self.email = email
