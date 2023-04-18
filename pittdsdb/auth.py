@@ -159,7 +159,8 @@ def account():
             result={"first_name":user.first_name, "last_name":user.last_name, "user_name":user.user_name, "emai":user.email, "permission_level":user.permission_level, "account_created": user.account_created, "last_login": user.last_login}
             return render_template("account.html",
                            title="Account | Pitt Digital Scholarship Database",
-                           user = result)
+                           user=current_user,
+                           result=result)
     flash("Kindly login to view the login details", category="error")
     return redirect(url_for('views_bp.index'))
 
