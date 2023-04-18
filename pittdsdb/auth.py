@@ -140,6 +140,7 @@ def login():
                            title="Login | Pitt Digital Scholarship Database",
                            user = current_user)
 
+
 @auth_bp.route('/logout')
 @login_required
 def logout():
@@ -149,11 +150,16 @@ def logout():
     return redirect(url_for('views_bp.index',
                     user=None))
 
-@auth_bp.route('/account')
+
+@auth_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
     if current_user:
         current_user.set_permissions()
+        if request.method == "GET":
+            return render_template("account.html",
+                        title="Account | Pitt Digital Scholarship Database",
+                        user=current_user)
         if request.method == "POST":
             first_name = request.form.get('first_name')
             last_name = request.form.get('last_name')
@@ -176,7 +182,7 @@ def account():
                     flash("Password must contain at least 1 uppercase alphabet.", category='error')
                 elif not re.search("[0-9]", password):
                     flash("Password must contain at least 1 number.", category='error')
-                elif not re.search("[_@()*&^%#<>,$]", password):
+                elif not re.search("[_@()*&^%#<>,!$]", password):
                     flash("Password must contain at least 1 special character.", category='error')
                 elif password != password_conf:
                     flash("Passwords do not match.", category='error')
@@ -192,4 +198,4 @@ def account():
     else:
         flash("Login to view or update login details", category="error")
         return redirect(url_for('auth_bp.login'))
-    return redirect(url_for('views_bp.index'))
+    return redirect(url_for('auth_bp.account'))
