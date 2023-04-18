@@ -153,56 +153,42 @@ def logout():
 @login_required
 def account():
     if current_user:
-        print(request.method)
         current_user.set_permissions()
-        email = current_user.email
-        print(email)
-        user = User.query.filter_by(email=email).first()
-        print(user)
-        if user:
-            if request.method == "GET":
-                result={"first_name":user.first_name, "last_name":user.last_name, "user_name":user.user_name, "email":user.email}
-                print(result)
-                return render_template("account.html",
-                           title="Account | Pitt Digital Scholarship Database",
-                           user=current_user,
-                           result=result)
-            if request.method == "POST":
-                first_name = request.form.get('first_name')
-                last_name = request.form.get('last_name')
-                user_name = request.form.get('user_name')
-                print(user_name)
-                email = request.form.get('email')
-                password = request.form.get('password')
-                password_conf = request.form.get('password_conf')
-                # Check that email is from the Pitt domain
-                regex = '^[a-z0-9]+@pitt.edu$'
-                if not re.search(regex, email):
-                    flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
+        if request.method == "POST":
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            user_name = request.form.get('user_name')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            password_conf = request.form.get('password_conf')
+            # Check that email is from the Pitt domain
+            regex = '^[a-z0-9]+@pitt.edu$'
+            if not re.search(regex, email):
+                flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
+            else:
+                if (len(password) < 8):
+                    flash("Password must be at least 8 characters.", category='error')
+                elif (len(password) > 16):
+                    flash("Password must be less than 16 characters.", category='error')
+                elif not re.search("[a-z]", password):
+                    flash("Password must contain at least 1 lowercase alphabet.", category='error')
+                elif not re.search("[A-Z]", password):
+                    flash("Password must contain at least 1 uppercase alphabet.", category='error')
+                elif not re.search("[0-9]", password):
+                    flash("Password must contain at least 1 number.", category='error')
+                elif not re.search("[_@()*&^%#<>,$]", password):
+                    flash("Password must contain at least 1 special character.", category='error')
+                elif password != password_conf:
+                    flash("Passwords do not match.", category='error')
                 else:
-                    if (len(password) < 8):
-                        flash("Password must be at least 8 characters.", category='error')
-                    elif (len(password) > 16):
-                        flash("Password must be less than 16 characters.", category='error')
-                    elif not re.search("[a-z]", password):
-                        flash("Password must contain at least 1 lowercase alphabet.", category='error')
-                    elif not re.search("[A-Z]", password):
-                        flash("Password must contain at least 1 uppercase alphabet.", category='error')
-                    elif not re.search("[0-9]", password):
-                        flash("Password must contain at least 1 number.", category='error')
-                    elif not re.search("[_@()*&^%#<>,$]", password):
-                        flash("Password must contain at least 1 special character.", category='error')
-                    elif password != password_conf:
-                        flash("Passwords do not match.", category='error')
-                    else:
-                        user.first_name=first_name
-                        user.last_name=last_name,
-                        user.user_name=user_name,
-                        user.email=email,
-                        user.user_password=sha256_crypt.hash(password),
-                        db_session.commit()
-                        # Alert user that account was created succesfully
-                        flash("Account Details Updated!", category="success")
+                    current_user.first_name=first_name
+                    current_user.last_name=last_name,
+                    current_user.user_name=user_name,
+                    current_user.email=email,
+                    current_user.user_password=sha256_crypt.hash(password),
+                    db_session.commit()
+                    # Alert user that account was created succesfully
+                    flash("Account Details Updated!", category="success")
     else:
         flash("Login to view or update login details", category="error")
         return redirect(url_for('auth_bp.login'))
