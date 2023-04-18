@@ -170,6 +170,7 @@ def account():
                 first_name = request.form.get('first_name')
                 last_name = request.form.get('last_name')
                 user_name = request.form.get('user_name')
+                print(user_name)
                 email = request.form.get('email')
                 password = request.form.get('password')
                 password_conf = request.form.get('password_conf')
@@ -193,11 +194,11 @@ def account():
                     elif password != password_conf:
                         flash("Passwords do not match.", category='error')
                     else:
-                        User.first_name=first_name
-                        User.last_name=last_name,
-                        User.user_name=user_name,
-                        User.email=email,
-                        User.user_password=sha256_crypt.hash(password),
+                        user.first_name=first_name
+                        user.last_name=last_name,
+                        user.user_name=user_name,
+                        user.email=email,
+                        user.user_password=sha256_crypt.hash(password),
                         db_session.commit()
                         # Alert user that account was created succesfully
                         flash("Account Details Updated!", category="success")
