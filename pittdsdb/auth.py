@@ -165,6 +165,7 @@ def account():
             last_name = request.form.get('last_name')
             user_name = request.form.get('user_name')
             email = request.form.get('email')
+            cur_password = request.form.get('cur_password')
             password = request.form.get('password')
             password_conf = request.form.get('password_conf')
             # Check that email is from the Pitt domain
@@ -172,7 +173,9 @@ def account():
             if not re.search(regex, email):
                 flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
             else:
-                if (len(password) < 8):
+                if not sha256_crypt.verify(cur_password, current_user.user_password):
+                    flash("Password is incorrect.", category="error")
+                elif (len(password) < 8):
                     flash("Password must be at least 8 characters.", category='error')
                 elif (len(password) > 16):
                     flash("Password must be less than 16 characters.", category='error')
