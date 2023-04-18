@@ -1,8 +1,47 @@
 {% extends 'base.html' %}
-  {% block title %}Search Resources | Pitt Digital Scholarship Databse{% endblock %}
-  {% block navbar_search_active %}
-    <span style="color: black;">Search</span>
-  {% endblock %}
-  {% block content %}
-    <h1>Search Resources</h1>
-  {% endblock %}
+{% block title %}Search Resources | Pitt Digital Scholarship Database{% endblock %}
+{% block navbar_search_active %}
+<span style="color: black;">Search</span>
+{% endblock %}
+{% block content %}
+<h1>Search Resources</h1>
+<form action="/search" method="get">
+  <div class="form-group">
+    <br/>
+    <label for="resource">Resource</label>
+    <input type="text" class="form-control" id="resource" name="resource">
+  </div>
+  <br/>
+  <div class="form-group">
+    <br/>
+    <label for="parameter">Parameter</label>
+    <input type="text" class="form-control" id="parameter" name="parameter">
+  </div><br/>
+
+  <div class="form-group">
+    <br/>
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name">
+  </div>
+  <br/>
+  <div class="form-group">
+    <br/>
+    <label for="filters">Filters</label>
+    <input type="text" class="form-control" id="filters" name="filters">
+  </div><br/>
+
+  <div class="form-group">
+    <br/>
+    <label for="campus">Campus</label>
+    <input type="text" class="form-control" id="campus" name="campus">
+  </div>
+  <br/>
+  <div class="form-group">
+    <br/>
+    <label for="area">Area</label>
+    <input type="text" class="form-control" id="area" name="area">
+  </div>
+  <br/>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+{% endblock %}
