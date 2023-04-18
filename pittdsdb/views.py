@@ -4,7 +4,7 @@ from flask_session import Session
 from flask_login import login_required, current_user
 from .models import *
 from .database import db_session
-#from .controlled_vocab import *
+from .controlled_vocab import *
 
 
 # Initialize views Blueprint
@@ -145,6 +145,9 @@ def search_funding():
                            career_levels=career_levels)
 
 """Functions to Show Add Pages"""
+# Initialize add variables for database values
+# see controlled_vocab.py
+
 @views_bp.route('/add')
 @login_required
 def add():

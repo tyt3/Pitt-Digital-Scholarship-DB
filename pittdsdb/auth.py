@@ -170,9 +170,7 @@ def account():
 def update_account():
     if current_user:
         current_user.set_permissions()
-        email = current_user.current_user.email
-        user = User.query.filter_by(email=email).first()
-        if user and request.method == "POST":
+        if request.method == "POST":
             # Get form input
             first_name = request.form.get('first_name')
             last_name = request.form.get('last_name')
