@@ -25,6 +25,7 @@ class Address(Base):
     state = Column(String(50), nullable=False)
     zipcode = Column(Integer, nullable=False)
     campus = Column(String(50), nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_departments = relationship('Department', secondary='department_address')
     fk_persons = relationship('Person', secondary='person_address')
@@ -48,6 +49,9 @@ class Address(Base):
     {self.address_1}, {self.city}, \
     {self.state}, {self.zipcode}"
 
+    def get_id(self):
+        return (self.address_id)
+
 
 class Affiliation(Base):
     __tablename__ = 'affiliation'
@@ -69,6 +73,7 @@ class Area(Base):
 
     area_id = Column(Integer, primary_key=True)
     area_name = Column(String(50), nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_methods = relationship('Method', secondary='method_area')
     fk_persons = relationship('Person', secondary='person_area')
@@ -80,6 +85,9 @@ class Area(Base):
 
     def __rep__(self):
         return f"{self.area_name}"
+    
+    def get_id(self):
+        return (self.area_id)
 
 
 class Funding(Base):
@@ -95,14 +103,15 @@ class Funding(Base):
     duration = Column(String(50))
     frequency = Column(String(50))
     web_address = Column(String(50))
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_subunits = relationship('Subunit', secondary='subunit_funding')
     fk_units = relationship('Unit', secondary='unit_funding')
 
     def __init__(self, funding_name, funding_type, payment_type, payment_amount, \
                  payment_frequency, career_level, duration, frequency, \
-                    web_address, last_modified):
+                    web_address):
         self.funding_name = funding_name
         self.funding_type = funding_type
         self.payment_type = payment_type
@@ -112,11 +121,13 @@ class Funding(Base):
         self.duration = duration
         self.frequency = frequency
         self.web_address = web_address
-        self.last_modified = last_modified
 
     def __rep__(self):
         return f"{self.funding_name}, {self.funding_type}, {self.amount}, \
             {self.duration}, {self.frequency}, {self.web_address}"
+    
+    def get_id(self):
+        return (self.funding_id)
 
 
 class Method(Base):
@@ -124,6 +135,7 @@ class Method(Base):
 
     method_id = Column(Integer, primary_key=True)
     method_name = Column(String(50), nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_tools = relationship('Tool', secondary='method_tool')
 
@@ -132,6 +144,9 @@ class Method(Base):
 
     def __rep__(self):
         return f"{self.method_name}"
+    
+    def get_id(self):
+        return (self.method_id)
 
 
 class Permission(Base):
@@ -154,6 +169,7 @@ class Resource(Base):
     resource_id = Column(Integer, primary_key=True)
     resource_name = Column(String(50), nullable=False, unique=True)
     resource_type = Column(String(50), nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_subunits = relationship('Subunit', secondary='subunit_resource')
     fk_units = relationship('Unit', secondary='unit_resource')
@@ -164,6 +180,9 @@ class Resource(Base):
 
     def __rep__(self):
         return f"{self.resource_name}"
+    
+    def get_id(self):
+        return (self.resource_id)
 
 
 class Tool(Base):
@@ -173,6 +192,7 @@ class Tool(Base):
     tool_name = Column(String(50), nullable=False)
     web_address = Column(String(100))
     github = Column(String(100))
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     def __init__(self, tool_name, web_address, github):
         self.tool_name = tool_name
@@ -181,6 +201,9 @@ class Tool(Base):
 
     def __rep__(self):
         return f"{self.tool_name}, {self.web_address}, {self.github}"
+    
+    def get_id(self):
+        return (self.tool_id)
 
 
 class Unit(Base):
@@ -190,14 +213,15 @@ class Unit(Base):
     public_id = Column(String(36), nullable=False, unique=True)
     unit_name = Column(String(100), nullable=False)
     unit_type = Column(String(50), nullable=False)
-    email = Column(String(100))
+    email = Column(String(100), unique=True)
     web_address = Column(String(50))
     phone = Column(CHAR(10))
     preferred_contact = Column(String(50))
     description = Column(String(500))
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
-    def __init__(self, unit_name, unit_type, email, web_address, phone, preferred_contact, description, last_modified):
+    def __init__(self, unit_name, unit_type, email, web_address, phone, preferred_contact, description):
         self.unit_name = unit_name
         self.unit_type = unit_type
         self.email = email
@@ -205,13 +229,14 @@ class Unit(Base):
         self.phone = phone
         self.preferred_contact = preferred_contact
         self.description = description
-        self.last_modified = last_modified
 
     def __rep__(self):
         return f"{self.unit_name} ({self.unit_type}), {self.email}, \
             {self.web_address}, {self.phone}, {self.preferred_contact}, \
                 {self.description}"
-
+    
+    def get_id(self):
+        return (self.unit_id)
 
 class User(Base, UserMixin):
     __tablename__ = 'user'
@@ -224,7 +249,7 @@ class User(Base, UserMixin):
     user_password = Column(String(256), nullable=False)
     api_key = Column(String(50), nullable=False)
     permission_level = Column(Integer, nullable=False)
-    account_created = Column(DateTime, nullable=False)
+    account_created = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
     last_login = Column(DateTime, nullable=False)
     can_add = False
     can_update_created = False
@@ -232,7 +257,7 @@ class User(Base, UserMixin):
     can_delete = False
 
     def __init__(self, user_name, first_name, last_name, email, user_password, \
-                 api_key, permission_level, account_created, last_login):
+                 api_key, permission_level, last_login):
         self.user_name = user_name
         self.first_name = first_name
         self.last_name = last_name
@@ -240,7 +265,6 @@ class User(Base, UserMixin):
         self.user_password = user_password
         self.api_key = api_key
         self.permission_level = permission_level
-        self.account_created = account_created
         self.last_login = last_login
 
     def set_permissions(self):
@@ -259,6 +283,7 @@ class User(Base, UserMixin):
 
     def get_id(self):
         return (self.user_id)
+    
     
     def __rep__(self):
         return f"{self.user_name}"
@@ -335,13 +360,14 @@ class Department(Base):
     public_id = Column(String(36), nullable=False, unique=True)
     department_name = Column(String(100), nullable=False)
     department_type = Column(String(50), nullable=False)
-    email = Column(String(100))
+    email = Column(String(100), unique=True)
     web_address = Column(String(50))
     phone = Column(CHAR(10))
     preferred_contact = Column(String(50))
     description = Column(String(500))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_unit = relationship('Unit')
     fk_fundings = relationship('Funding', secondary='department_funding')
@@ -349,18 +375,20 @@ class Department(Base):
     fk_persons = relationship('Person', secondary='person_department')
 
     def __init__(self, department_name, email, web_address, \
-                 phone, fk_unit_id, description, last_modified):
+                 phone, fk_unit_id, description):
         self.department_name = department_name
         self.email = email
         self.web_address = web_address
         self.phone = phone
         self.fk_unit_id = fk_unit_id
         self.description = description
-        self.last_modified = last_modified
 
     def __rep__(self):
         return f"{self.department_name}, {self.email}, {self.web_address}, \
             {self.phone}, {self.description}"
+    
+    def get_id(self):
+        return (self.department_id)
 
 
 t_method_area = Table(
@@ -398,6 +426,9 @@ class Modification(Base):
 
     def __rep__(self):
         return f"{self.modification}"
+    
+    def get_id(self):
+        return (self.modification_id)
 
 
 class Person(Base):
@@ -409,7 +440,7 @@ class Person(Base):
     last_name = Column(String(50), nullable=False)
     title = Column(String(50))
     pronouns = Column(String(50))
-    email = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False, unique=True)
     web_address = Column(String(50))
     phone = Column(CHAR(10))
     scheduler_address = Column(String(50))
@@ -417,8 +448,8 @@ class Person(Base):
     support_type = Column(String(50), nullable=False)
     bio = Column(String(500), nullable=False)
     added_by = Column(ForeignKey('user.user_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    date_added = Column(DateTime, nullable=False)
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
     notes = Column(String(8000))
 
     user = relationship('User')
@@ -427,7 +458,7 @@ class Person(Base):
 
     def __init__(self, first_name, last_name, title, pronouns, email,
                  web_address, phone, scheduler_address, preferred_contact, 
-                 support_type, bio, added_by, date_added, last_modified, notes):
+                 support_type, bio, added_by, notes):
         self.first_name = first_name
         self.last_name = last_name
         self.title = title
@@ -440,13 +471,14 @@ class Person(Base):
         self.support_type = support_type
         self.bio = bio
         self.added_by = added_by
-        self.date_added = date_added
-        self.last_modified = last_modified
         self.notes = notes
     
     def __rep__(self):
         return f"{self.first_name} {self.last_name}, {self.title}, {self.email}"
-
+    
+    def get_id(self):
+        return (self.person_id)
+    
 
 t_resource_area = Table(
     'resource_area', metadata,
@@ -462,19 +494,20 @@ class Subunit(Base):
     public_id = Column(String(36), nullable=False, unique=True)
     subunit_name = Column(String(100), nullable=False)
     subunit_type = Column(String(50), nullable=False)
-    email = Column(String(100))
+    email = Column(String(100), unique=True)
     web_address = Column(String(100))
     phone = Column(CHAR(10))
     preferred_contact = Column(String(50))
     description = Column(String(500))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
-    last_modified = Column(DateTime, nullable=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
 
     def __init__(self, subunit_name, subunit_type, email, web_address, phone, \
-                 preferred_contact, description, fk_unit_id, last_modified):
+                 preferred_contact, description, fk_unit_id):
         self.subunit_name = subunit_name
         self.subunit_type = subunit_type
         self.email = email
@@ -483,12 +516,14 @@ class Subunit(Base):
         self.preferred_contact = preferred_contact
         self.description = description
         self.fk_unit_id = fk_unit_id
-        self.last_modified = last_modified
 
     def __rep__(self):
         return f"{self.subunit_name} ({self.subunit_type}), {self.email}, \
             {self.web_address}, {self.phone}, {self.preferred_contact}, \
                 {self.description}"
+    
+    def get_id(self):
+        return (self.subunit_id)
 
 
 t_tool_area = Table(

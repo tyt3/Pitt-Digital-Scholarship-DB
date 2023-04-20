@@ -4,5 +4,130 @@
     <span style="color: black;">Add Info</span>
   {% endblock %}
   {% block content %}
-    <h1>Add a Person</h1>
+  <form method="POST">
+    <h3 align="center">Add Person</h3>
+    <div class="form-group">
+      <label for="first_name">First Name</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="first_name" 
+      name="first_name"
+      value="{{ request.form['first_name'] }}"
+      required>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="last_name">Last Name</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="last_name" 
+      name="last_name"
+      value="{{ request.form['last_name'] }}"
+      required>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="title" 
+      name="title"
+      value="{{ request.form['title'] }}">
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="pronouns">Pronouns</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="last_name" 
+      name="last_name"
+      value="{{ request.form['last_name'] }}">
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input 
+      type="email" 
+      class="form-control" 
+      id="email" 
+      name="email" 
+      placeholder="@pitt.edu"
+      required>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="webpage">Webpage</label>
+      <input 
+      type="url" 
+      class="form-control" 
+      id="webpage" 
+      name="webpage"
+      value="{{ request.form['webpage'] }}">
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input 
+      type="tel" 
+      class="form-control" 
+      id="phone" 
+      name="phone"
+      value="{{ request.form['phone'] }}"
+      pattern="^\d{3}-\d{3}-\d{4}$">
+      <small class="text-muted">e.g., 999-999-9999</small>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="scheduler">Appointment Scheduler</label>
+      <input 
+      type="url" 
+      class="form-control" 
+      id="scheduler" 
+      name="scheduler"
+      value="{{ request.form['scheduler'] }}">
+      <small class="text-muted">e.g., LibCal, Outlook calendar</small>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="preferred_contact">Preferred Contact</label>
+      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+        <option selected disabled>Select a preferred contact method</option>
+        <option value="1">Email</option>
+        <option value="2">Phone</option>
+        <option value="3">Appointment Scheduler</option>
+      </select>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="support_type">Support Type</label>
+      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+        <option selected disabled>Select a support type</option>
+        {% for type in support_types %}
+        <option value="{{ type }}">{{ type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="bio">Bio</label>
+      <textarea class="form-control"
+       id="bio"
+       name="bio"
+       rows="3"></textarea>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="notes">Notes</label>
+      <textarea class="form-control"
+       id="notes"
+       name="notes"
+       rows="3"></textarea>
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
   {% endblock %}

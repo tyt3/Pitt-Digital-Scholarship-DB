@@ -1,7 +1,8 @@
 """Module for Views"""
 from flask import Blueprint, render_template, redirect, request, session, flash, url_for
-from flask_session import Session
 from flask_login import login_required, current_user
+from flask_session import Session
+from flask_mail import Mail, Message
 from .models import *
 from .database import db_session
 from .controlled_vocab import *
@@ -10,6 +11,8 @@ from .controlled_vocab import *
 # Initialize views Blueprint
 views_bp = Blueprint('views_bp', __name__)
 
+# Initialize Mail object
+mail = Mail()
 
 """Function to Show Homepage"""
 @views_bp.route('/')
@@ -39,13 +42,29 @@ def documentation():
                            user=current_user)
 
 """Function to Show Contact Page"""
-@views_bp.route('/contact')
+@views_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     if current_user.is_authenticated:
         current_user.set_permissions()
-    return render_template("contact.html",
+
+    if request.method == "GET":
+        return render_template("contact.html",
                            title="Contact Us | Pitt Digital Scholarship Database",
                            user=current_user)
+    
+    if request.method == "POST":
+        full_name = request.form.get('full_name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+
+        msg = Message(subject, sender='pittdsdb@gmail.com', recipients=['tyt3@pitt.edu'])
+        msg.body = f"From: {full_name} <{email}> {message}" 
+        mail.send(msg)
+
+        return redirect(url_for('views_bp.index'))
+    
+    
 
 """Functions to Show Search Pages"""
 
@@ -89,7 +108,7 @@ def search_people():
                            tools=tools,
                            support_types=support_types)
 
-@views_bp.route('/search-units')
+@views_bp.route('/search-units', methods=['GET', 'POST'])
 def search_units():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -100,7 +119,7 @@ def search_units():
                            areas=areas,
                            resources=resources)
 
-@views_bp.route('/search-areas')
+@views_bp.route('/search-areas', methods=['GET', 'POST'])
 def search_areas():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -108,7 +127,7 @@ def search_areas():
                            title="Search Areas| Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/search-methods')
+@views_bp.route('/search-methods', methods=['GET', 'POST'])
 def search_methods():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -116,7 +135,7 @@ def search_methods():
                            title="Search Methods| Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/search-tools')
+@views_bp.route('/search-tools', methods=['GET', 'POST'])
 def search_tools():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -124,7 +143,7 @@ def search_tools():
                            title="Search Tools| Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/search-resources')
+@views_bp.route('/search-resources', methods=['GET', 'POST'])
 def search_resources():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -132,7 +151,7 @@ def search_resources():
                            title="Search Resources| Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/search-funding')
+@views_bp.route('/search-funding', methods=['GET', 'POST'])
 def search_funding():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -148,7 +167,7 @@ def search_funding():
 # Initialize add variables for database values
 # see controlled_vocab.py
 
-@views_bp.route('/add')
+@views_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add():
     if current_user.is_authenticated:
@@ -161,7 +180,7 @@ def add():
                            title="Add Info | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-person')
+@views_bp.route('/add-person', methods=['GET', 'POST'])
 @login_required
 def add_person():
     if current_user.is_authenticated:
@@ -172,9 +191,10 @@ def add_person():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-person.html",
                            title="Add a Person | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           support_types=support_type)
 
-@views_bp.route('/add-unit')
+@views_bp.route('/add-unit', methods=['GET', 'POST'])
 @login_required
 def add_unit():
     if current_user.is_authenticated:
@@ -187,7 +207,7 @@ def add_unit():
                            title="Add a Unit | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-area')
+@views_bp.route('/add-area', methods=['GET', 'POST'])
 @login_required
 def add_area():
     if current_user.is_authenticated:
@@ -200,7 +220,7 @@ def add_area():
                            title="Add an Area | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-method')
+@views_bp.route('/add-method', methods=['GET', 'POST'])
 @login_required
 def add_method():
     if current_user.is_authenticated:
@@ -213,7 +233,7 @@ def add_method():
                            title="Add a Method | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-tool')
+@views_bp.route('/add-tool', methods=['GET', 'POST'])
 @login_required
 def add_tool():
     if current_user.is_authenticated:
@@ -226,7 +246,7 @@ def add_tool():
                            title="Add a Tool | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-resource')
+@views_bp.route('/add-resource', methods=['GET', 'POST'])
 @login_required
 def add_resource():
     if current_user.is_authenticated:
@@ -239,7 +259,7 @@ def add_resource():
                            title="Add a Resource | Pitt Digital Scholarship Database",
                            user=current_user)
 
-@views_bp.route('/add-funding')
+@views_bp.route('/add-funding', methods=['GET', 'POST'])
 @login_required
 def add_funding():
     if current_user.is_authenticated:

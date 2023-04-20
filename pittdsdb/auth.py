@@ -1,14 +1,13 @@
 """Module for Auth"""
-from flask import Blueprint, render_template, request, redirect, session, url_for, flash
-from .database import db_session
-from .models import User, Permission
-import secrets
-from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from datetime import datetime
-from passlib.hash import sha256_crypt
-from sqlalchemy import select
+from flask import Blueprint, render_template, request, redirect,  url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
+from sqlalchemy import select
+from passlib.hash import sha256_crypt
+import secrets
+from .database import db_session
+from .models import User, Permission
 
 
 auth_bp = Blueprint('auth_bp', __name__)
@@ -56,8 +55,7 @@ def sign_up():
                     flash("Passwords do not match.", category='error')
                 else:
                     # Check for valid admin code
-                    p_level = 1
-                    permission_id = None
+                    p_level = permission_id = 1
                     if admin_code:
                         # Get all permission codes
                         permission_codes = db_session.execute(
@@ -84,7 +82,6 @@ def sign_up():
                                         user_password=sha256_crypt.hash(password),
                                         api_key=api_key,
                                         permission_level=p_level,
-                                        account_created=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
                                         last_login=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
                         # Add new user to database
                         db_session.add(new_user)
