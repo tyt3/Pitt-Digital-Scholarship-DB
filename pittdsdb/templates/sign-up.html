@@ -7,80 +7,91 @@
   {% endblock %}
   {% block content %}
     <br/>
-    <form method="POST">
-      <h3 align="center">Sign Up</h3>
-      <div class="form-group">
-        <label for="first_name">First Name</label>
-        <input 
-        type="text" 
-        class="form-control" 
-        id="first_name" 
-        name="first_name"
-        value="{{ request.form['first_name'] }}">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="last_name">Last Name</label>
-        <input 
-        type="text" 
-        class="form-control" 
-        id="last_name" 
-        name="last_name"
-        value="{{ request.form['last_name'] }}">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="user_name">User Name</label>
-        <input 
-        type="text" 
-        class="form-control" 
-        id="user_name" 
-        name="user_name"
-        value="{{ request.form['user_name'] }}">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input 
-        type="email" 
-        class="form-control" 
-        id="email" 
-        name="email" 
-        placeholder="@pitt.edu"
-        value="{{ request.form['email'] }}">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-        type="password" 
-        class="form-control" 
-        id="password" 
-        name="password" 
-        placeholder="">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="password">Confirm Password</label>
-        <input 
-        type="password" 
-        class="form-control" 
-        id="password_conf" 
-        name="password_conf" 
-        placeholder="">
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="password">Administrative Code</label>
-        <input 
-        type="password" 
-        class="form-control" 
-        id="admin_code" 
-        name="admin_code" 
-        placeholder=""
-        value="{{ request.form['admin_code'] }}">
-      </div>
-      <br/>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div class="row">
+      <div class="mx-auto col-6 col-md-6 col-lg-4">
+        <form method="POST">
+          <h3 align="center">Sign Up</h3>
+          <br/>
+          <div class="row">
+            <div class="col">
+              <label for="first_name">First Name</label>
+              <input 
+              type="text" 
+              class="form-control" 
+              id="first_name" 
+              name="first_name"
+              value="{{ request.form['first_name'] }}"
+              required>
+            </div>
+            <div class="col">
+            <label for="last_name">Last Name</label>
+              <input 
+              type="text" 
+              class="form-control" 
+              id="last_name" 
+              name="last_name"
+              value="{{ request.form['last_name'] }}"
+              required>
+            </div>
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="user_name">User Name</label>
+            <input 
+            type="text" 
+            class="form-control" 
+            id="user_name" 
+            name="user_name"
+            value="{{ request.form['user_name'] }}">
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="@pitt.edu"
+            value="{{ request.form['email'] }}">
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+            type="password" 
+            class="form-control" 
+            id="password" 
+            name="password" 
+            placeholder="">
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="password">Confirm Password</label>
+            <input 
+            type="password" 
+            class="form-control" 
+            id="password_conf" 
+            name="password_conf" 
+            placeholder="">
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="password">Administrative Code</label>
+            <input 
+            type="password" 
+            class="form-control" 
+            id="admin_code" 
+            name="admin_code" 
+            placeholder=""
+            value="{{ request.form['admin_code'] }}">
+          </div>
+          <br/>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>          
+        </form>
+        <br/>
+    </div>
+  </div>
   {% endblock %}
