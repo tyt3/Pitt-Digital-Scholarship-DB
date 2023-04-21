@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+  {% block title %}{{ title }}{% endblock %}
+  {% block navbar_search_active %}
+    <span style="color: black;">Search</span>
+  {% endblock %}
+  {% block content %}
+    <br/>
+    <h3>{{ person.first_name }} {{ person.last_name }}</h3>
+    <br/>
+    <p><strong>Pronouns:</strong> {{ person.pronouns }}</p>
+    <p><strong>Title:</strong> {{ person.title }}</p>
+    <p><strong>Email:</strong> {{ person.email }}</p>
+    <p><strong>Email:</strong> {{ person.email }}</p>
+
+  {% endblock %}

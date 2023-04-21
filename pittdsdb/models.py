@@ -446,7 +446,7 @@ class Person(Base):
     scheduler_address = Column(String(50))
     preferred_contact = Column(String(50))
     support_type = Column(String(50), nullable=False)
-    bio = Column(String(500), nullable=False)
+    bio = Column(String(500))
     added_by = Column(ForeignKey('user.user_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
     last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))

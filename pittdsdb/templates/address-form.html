@@ -65,12 +65,12 @@
   <div class="form-group">
     <label for="campus">Campus</label>
     <select 
-    class="form-select form-select-md" aria-label=".form-select-md example" 
+    class="form-select form-select-md" aria-label=".form-select-md" 
     id="campus" 
     name="campus"
     required>
-      <option value="" disabled>Select Campus</option>
-      {% for campus in existing['campuses'] %}
+      <option value="">Select a campus</option>
+      {% for campus in vocab['campus'] %}
       <option value="{{ campus }}">{{ campus }}</option>
       {% endfor %}
       <!-- Add more options as needed -->

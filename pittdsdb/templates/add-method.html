@@ -21,19 +21,7 @@
       </div>
     </div>
     <br/>
-    <div class="form-group">
-      <label for="area">Area</label>
-      <select 
-      class="form-select form-select-md" aria-label=".form-select-md example"
-      id="area"
-      name="area"
-      required>
-        <option selected disabled>Select an area</option>
-        {% for area in existing['areas'] %}
-        <option value="{{ area }}">{{ area }}</option>
-        {% endfor %}
-      </select>
-    </div>
+    {% include 'area-form.html' %}
     <br/>
       <div class="d-grid gap-2 d-md-flex justify-content-md-center">
         <button type="submit" class="btn btn-primary">Submit</button>

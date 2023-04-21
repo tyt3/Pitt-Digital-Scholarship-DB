@@ -32,20 +32,6 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="area">Area</label>
-        <select class="form-control"
-         id="area"
-         name="area" 
-         multiple
-         required>
-          <option value="" disabled>Select an area</option>
-          {% for area in existing['areas'] %}
-          <option value="{{ area }}">{{ area }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <br/>
-      <div class="form-group">
         <label for="method">Method</label>
         <select class="form-control"
          id="method"
@@ -53,11 +39,13 @@
          multiple
          required>
           <option value="" disabled>Select a method</option>
-          {% for method in existing['methods'] %}
+          {% for method in existing['methods'] %} <!--update this to look in person's methods-->
           <option value="{{ method }}">{{ method }}</option>
           {% endfor %}
         </select>
       </div>
+      <br/>
+      {% include 'area-form.html' %}
       <br/>
       <div class="d-grid gap-2 d-md-flex justify-content-md-center">
         <button type="submit" class="btn btn-primary">Submit</button>
