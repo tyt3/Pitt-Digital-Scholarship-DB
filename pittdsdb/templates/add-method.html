@@ -1,8 +1,41 @@
-{% extends 'base.html' %}
-  {% block title %}Add a Method | Pitt Digital Scholarship Database{% endblock %}
-  {% block navbar_add_active %}
-    <span style="color: black;">Add Info</span>
-  {% endblock %}
-  {% block content %}
-    <h1>Add a Supported Method</h1>
-  {% endblock %}
+<form method="POST" action="{{ url_for('views_bp.add_method') }}">
+  <div class="row">
+      <div class="col">
+        <label for="method_name">Method Name</label>
+        <input 
+        type="text" 
+        class="form-control" 
+        id="method_name" 
+        name="method_name"
+        value="{{ request.form['method_name'] }}"
+        required>
+      </div>
+      <div class="col">
+      <label for="proficiency">Proficiency Level</label>
+      <select class="form-select form-select-md" aria-label=".form-select-md example">
+        <option selected disabled>Select a proficiency level</option>
+        {% for level in vocab['proficiency_level'] %}
+        <option value="{{ level }}">{{ level }}</option>
+        {% endfor %}
+      </select>
+      </div>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="area">Area</label>
+      <select 
+      class="form-select form-select-md" aria-label=".form-select-md example"
+      id="area"
+      name="area"
+      required>
+        <option selected disabled>Select an area</option>
+        {% for area in existing['areas'] %}
+        <option value="{{ area }}">{{ area }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br/>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+</form>

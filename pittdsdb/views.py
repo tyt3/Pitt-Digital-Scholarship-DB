@@ -5,7 +5,8 @@ from flask_session import Session
 from flask_mail import Mail, Message
 from .models import *
 from .database import db_session
-from .controlled_vocab import *
+from .controlled_vocab import vocab, existing
+from .add import *
 
 
 # Initialize views Blueprint
@@ -68,17 +69,6 @@ def contact():
 
 """Functions to Show Search Pages"""
 
-# Initialize search variables for database values
-areas = list(zip(*db_session.query(Area.area_name).distinct()))[0]
-campuses = list(zip(*db_session.query(Address.campus).distinct()))[0]
-career_levels = list(zip(*db_session.query(Funding.career_level).distinct()))[0]
-funding_types = list(zip(*db_session.query(Funding.funding_type).distinct()))[0]
-payment_types = list(zip(*db_session.query(Funding.payment_type).distinct()))[0]
-methods = list(zip(*db_session.query(Method.method_name).distinct()))[0]
-resources = list(zip(*db_session.query(Resource.resource_type).distinct()))[0]
-support_types = list(zip(*db_session.query(Person.support_type).distinct()))[0]
-tools = list(zip(*db_session.query(Tool.tool_name).distinct()))[0]
-
 @views_bp.route('/search')
 def search():
     if current_user.is_authenticated:
@@ -102,11 +92,7 @@ def search_people():
     return render_template("search-people.html",
                            title="Search People| Pitt Digital Scholarship Database",
                            user=current_user,
-                           campuses=campuses,
-                           areas=areas,
-                           methods=methods,
-                           tools=tools,
-                           support_types=support_types)
+                           existing=existing)
 
 @views_bp.route('/search-units', methods=['GET', 'POST'])
 def search_units():
@@ -115,9 +101,7 @@ def search_units():
     return render_template("search-units.html",
                            title="Search Units| Pitt Digital Scholarship Database",
                            user=current_user,
-                           campuses=campuses,
-                           areas=areas,
-                           resources=resources)
+                           existing=existing)
 
 @views_bp.route('/search-areas', methods=['GET', 'POST'])
 def search_areas():
@@ -158,10 +142,7 @@ def search_funding():
     return render_template("search-funding.html",
                            title="Search Funding| Pitt Digital Scholarship Database",
                            user=current_user,
-                           campuses=campuses,
-                           funding_types=funding_types,
-                           payment_types=payment_types,
-                           career_levels=career_levels)
+                           existing=existing)
 
 """Functions to Show Add Pages"""
 # Initialize add variables for database values
@@ -189,21 +170,98 @@ def add_person():
         flash("Your account does not have permission to add to the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
+    
+    if request.method == "POST":
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        pronouns = request.form.get('pronouns')
+        title = request.form.get('title')
+        affiliation = request.form.get('affiliation')
+        unit = request.form.get('unit')
+        department = request.form.get('department')
+        subunit = request.form.get('subunit')
+        email = request.form.get('email')
+        web_address = request.form.get('web_address')
+        phone = request.form.get('phone')
+        scheduler_address = request.form.get('scheduler')
+        building = request.form.get('building')
+        office = request.form.get('office')
+        street_address = request.form.get('street_address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        zipcode = request.form.get('zipcode')
+        campus = request.form.get('campus')
+        preferred_contact = request.form.get('preferred_contact') 
+        support_type = request.form.get('support_type')
+        bio = request.form.get('bio')
+        notes = request.form.get('notes')
+
+        person_added = add_person_to_db(first_name, last_name, title, pronouns, 
+                                        email, web_address, phone, 
+                                        scheduler_address, preferred_contact,
+                                        support_type, bio, 
+                                        current_user.get_id(), notes)
+        
+        # Check if the person was added succesfully
+        if person_added[0]:
+            # Get person object
+            p = person_added[1]
+            person_id = p.person_id
+            public_id = p.public_id
+
+            # Add address
+            cursor = db_session.cursor()
+            cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
+                                              building, office, street_address,
+                                              "", "", city, state, zipcode, 
+                                              campus, 0, 0])
+            address_added = list(cursor.fetchall())
+
+            address_id = -1
+            if address_added[0]:
+                address_id = address_added[1]
+            cursor.close()
+            db_session.commit()
+
+            # Add relationships
+
+
+            
+        else:
+            flash('The person record was not added. Please try again.',
+                  category='error')
+            
+            return redirect(url_for('views_bp.add_person'))
+            
     return render_template("add-person.html",
                            title="Add a Person | Pitt Digital Scholarship Database",
                            user=current_user,
-                           support_types=support_type)
+                           vocab=vocab,
+                           existing=existing)
 
 @views_bp.route('/add-unit', methods=['GET', 'POST'])
 @login_required
 def add_unit():
+    # Check if the user is logged in and, if so, set permissions
     if current_user.is_authenticated:
         current_user.set_permissions()
+
+    # Check if user can add to the database and, if not, redirect
     if not current_user.can_add:
         flash("Your account does not have permission to add to the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
-    return render_template("add-unit.html",
+    
+    # Get data from form and submit to database
+    if request.method == "POST":
+        email = request.form.get('email')
+
+        return render_template("/add-unit.html",
+                               user=current_user,
+                               vocab=vocab,
+                               existing=existing)
+        
+    return render_template("/add-unit.html",
                            title="Add a Unit | Pitt Digital Scholarship Database",
                            user=current_user)
 
@@ -216,9 +274,18 @@ def add_area():
         flash("Your account does not have permission to add to the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
-    return render_template("add-area.html",
+    if request.method == "POST":
+        area = request.form.get('area')
+        new_area = request.form.get('new_area')
+
+        if not area and not new_area:
+            flash("Please select an existing area or add a new one.")
+
+    return render_template("test.html",
                            title="Add an Area | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           existing=existing,
+                           vocab=vocab)
 
 @views_bp.route('/add-method', methods=['GET', 'POST'])
 @login_required
@@ -231,7 +298,9 @@ def add_method():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-method.html",
                            title="Add a Method | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing)
 
 @views_bp.route('/add-tool', methods=['GET', 'POST'])
 @login_required
@@ -242,9 +311,16 @@ def add_tool():
         flash("Your account does not have permission to add to the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
+    
+    if request.method == "POST":
+        pass
+
     return render_template("add-tool.html",
                            title="Add a Tool | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing,
+                           tool=None)
 
 @views_bp.route('/add-resource', methods=['GET', 'POST'])
 @login_required
@@ -270,4 +346,22 @@ def add_funding():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-funding.html",
                            title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
+                           user=current_user)
+
+@views_bp.route('/test', methods=['GET', 'POST'])
+def test():
+   
+    return render_template("test.html",
+                           title="Test| Pitt Digital Scholarship Database",
+                           user=None,
+                           vocab=vocab,
+                           existing=existing)
+
+@views_bp.route('/view-unit', methods=['GET', 'POST'])
+def view_unit():
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+        
+    return render_template("view-unit.html",
+                           title="View a Unit | Pitt Digital Scholarship Database",
                            user=current_user)

@@ -1,0 +1,78 @@
+<div class="row">
+    <div class="col">
+      <label for="building">Building</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="building" 
+      name="building"
+      value="{{ request.form['building'] }}"
+      required>
+    </div>
+    <div class="col">
+    <label for="office">Office Room #</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="office" 
+      name="office"
+      value="{{ request.form['office'] }}">
+    </div>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="street_address">Street Address</label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="street_address" 
+    name="street_address"
+    placeholder="1234 Main St"
+    required>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="col">
+      <label for="city">City</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="city"
+      required>
+    </div>
+    <div class="col">
+      <label for="state">State</label>
+      <select
+      class="form-control" 
+      id="state"
+      name="state"
+      required>
+        <option selected>Choose...</option>
+        <option>PA</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="zipcode">Zipcode</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="zipcode"
+      name="zipcode"
+      required>
+    </div>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="campus">Campus</label>
+    <select 
+    class="form-select form-select-md" aria-label=".form-select-md example" 
+    id="campus" 
+    name="campus"
+    required>
+      <option value="" disabled>Select Campus</option>
+      {% for campus in existing['campuses'] %}
+      <option value="{{ campus }}">{{ campus }}</option>
+      {% endfor %}
+      <!-- Add more options as needed -->
+    </select>
+  </div>
