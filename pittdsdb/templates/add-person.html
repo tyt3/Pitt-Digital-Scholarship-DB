@@ -4,130 +4,246 @@
     <span style="color: black;">Add Info</span>
   {% endblock %}
   {% block content %}
-  <form method="POST">
-    <h3 align="center">Add Person</h3>
-    <div class="form-group">
-      <label for="first_name">First Name</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="first_name" 
-      name="first_name"
-      value="{{ request.form['first_name'] }}"
-      required>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="last_name">Last Name</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="last_name" 
-      name="last_name"
-      value="{{ request.form['last_name'] }}"
-      required>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="title">Title</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="title" 
-      name="title"
-      value="{{ request.form['title'] }}">
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="pronouns">Pronouns</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="last_name" 
-      name="last_name"
-      value="{{ request.form['last_name'] }}">
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="email">Email Address</label>
-      <input 
-      type="email" 
-      class="form-control" 
-      id="email" 
-      name="email" 
-      placeholder="@pitt.edu"
-      required>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="webpage">Webpage</label>
-      <input 
-      type="url" 
-      class="form-control" 
-      id="webpage" 
-      name="webpage"
-      value="{{ request.form['webpage'] }}">
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="phone">Phone</label>
-      <input 
-      type="tel" 
-      class="form-control" 
-      id="phone" 
-      name="phone"
-      value="{{ request.form['phone'] }}"
-      pattern="^\d{3}-\d{3}-\d{4}$">
-      <small class="text-muted">e.g., 999-999-9999</small>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="scheduler">Appointment Scheduler</label>
-      <input 
-      type="url" 
-      class="form-control" 
-      id="scheduler" 
-      name="scheduler"
-      value="{{ request.form['scheduler'] }}">
-      <small class="text-muted">e.g., LibCal, Outlook calendar</small>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="preferred_contact">Preferred Contact</label>
-      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
-        <option selected disabled>Select a preferred contact method</option>
-        <option value="1">Email</option>
-        <option value="2">Phone</option>
-        <option value="3">Appointment Scheduler</option>
+  <br/>
+  <div class="mx-auto col-6 col-md-6 col-lg-4">
+    <form method="POST" action="{{ url_for('views_bp.add_person') }}">
+      <h3 align="center">Add Person</h3>
+      <br/>
+      <div class="row">
+        <div class="col">
+          <label for="first_name">First Name</label>
+          <input 
+          type="text" 
+          class="form-control" 
+          id="first_name" 
+          name="first_name"
+          value="{{ request.form['first_name'] }}"
+          required>
+        </div>
+        <div class="col">
+        <label for="last_name">Last Name</label>
+          <input 
+          type="text" 
+          class="form-control" 
+          id="last_name" 
+          name="last_name"
+          value="{{ request.form['last_name'] }}"
+          required>
+        </div>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="pronouns">Pronouns</label>
+        <input 
+        type="text" 
+        class="form-control" 
+        id="last_name" 
+        name="last_name"
+        value="{{ request.form['last_name'] }}">
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input 
+        type="text" 
+        class="form-control" 
+        id="title" 
+        name="title"
+        value="{{ request.form['title'] }}">
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="affiliation">Affiliation</label>
+        <select class="form-control"
+         id="affiliation"
+         name="affiliation" 
+         multiple
+         required>
+          <option value="" disabled>Select an Affiliation</option>
+          {% for affiliation in vocab['affiliation_type'] %}
+          <option value="{{ affiliation }}">{{ affiliation }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="unit">Unit</label>
+        <select
+        type="text" 
+        class="form-control" 
+        id="unit" 
+        name="unit"
+        value="{{ request.form['unit'] }}"
+        multiple
+        required>
+          <option value="" disabled>Select a Unit</option>
+          {% for unit in existing['units'] %}
+          <option value="{{ unit }}">{{ unit }}</option>
+          {% endfor %}
+          <option value="" class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" data-bs-target="#addUnitModal"
+          style="margin-top: 5px;">Add a Unit</option>
       </select>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="support_type">Support Type</label>
-      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
-        <option selected disabled>Select a support type</option>
-        {% for type in support_types %}
-        <option value="{{ type }}">{{ type }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="bio">Bio</label>
-      <textarea class="form-control"
-       id="bio"
-       name="bio"
-       rows="3"></textarea>
-    </div>
-    <br/>
-    <div class="form-group">
-      <label for="notes">Notes</label>
-      <textarea class="form-control"
-       id="notes"
-       name="notes"
-       rows="3"></textarea>
-    </div>
-    <br/>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+      </div>
+      <!-- Add Unit Form Modal -->
+      <div class="modal fade" id="addUnitModal" name="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">modal
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addUnitModalLabel">Add a Unit, Department, or Subunit</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Add Unit Form -->
+              <div id="add_unit_form">
+                <form method="POST" action="{{ url_for('views_bp.add_unit') }}" target="addUnitModal">
+                  {% include "unit-form.html" %}
+                </form>
+              </div>
+              <br/>
+            </div>
+           <!--<div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>-->
+          </div>
+        </div>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="department">Department</label>
+        <select class="form-control" id="department" name="department" multiple>
+          <option value="" disabled>Select a Department</option>
+          {% if departments %}
+            {% for department in existing['departments'] %}
+            <option value="{{ department }}">{{ department }}</option>
+            {% endfor %}
+          {% endif %}
+          <option value="" class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" data-bs-target="#addUnitModal"
+          style="margin-top: 5px;">Add a Department</option>
+          <!-- Add more options as needed -->
+        </select>
+      <br/>
+      <div class="form-group">
+        <label for="subunit">Subnit, Team, or Group</label>
+        <select class="form-control" id="subunit" name="subunit" multiple>
+          <option value="" disabled>Select a Subunit, Team, or Group</option>
+          {% for subunit in existing['subunits'] %}
+          <option value="{{ subunit }}">{{ subunit }}</option>
+          {% endfor %}
+          <option value="" class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" data-bs-target="#addUnitModal"
+          style="margin-top: 5px;">Add a Subnit</option>
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+        type="email" 
+        class="form-control" 
+        id="email" 
+        name="email" 
+        placeholder="@pitt.edu"
+        required>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="web_address">Webpage</label>
+        <input 
+        type="url" 
+        class="form-control" 
+        id="web_address" 
+        name="web_address"
+        value="{{ request.form['web_address'] }}">
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input 
+        type="tel" 
+        class="form-control" 
+        id="phone" 
+        name="phone"
+        value="{{ request.form['phone'] }}"
+        pattern="^\d{3}-\d{3}-\d{4}$">
+        <small class="text-muted">e.g., 999-999-9999</small>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="scheduler">Appointment Scheduler</label>
+        <input 
+        type="url" 
+        class="form-control" 
+        id="scheduler" 
+        name="scheduler"
+        value="{{ request.form['scheduler'] }}">
+        <small class="text-muted">e.g., LibCal, Outlook calendar</small>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="other_contact">Other Contact Method</label>
+        <input 
+        type="text" 
+        class="form-control" 
+        id="other_contact" 
+        name="other_contact"
+        value="{{ request.form['scheduler'] }}">
+      </div>
+      <br/>
+      {% include "address-form.html" %}
+      <br/>
+      <div class="form-group">
+        <label for="preferred_contact">Preferred Contact</label>
+        <select 
+        class="form-select form-select-md" aria-label=".form-select-md"
+        id="preferred_contact"
+        name="preferred_contact"
+        reqired>
+          <option value="">Select a preferred contact method</option>
+          <option value="1">Email</option>
+          <option value="2">Phone</option>
+          <option value="3">Appointment Scheduler</option>
+          <option value="4">Other Contact Method</option>
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="support_type">Support Type</label>
+        <select 
+        class="form-select form-select-md" aria-label=".form-select-md"
+        id="support_type"
+        name="support_type"
+        required>
+          <option value="">Select a support type</option>
+          {% for type in vocab['support_type'] %}
+          <option value="{{ type }}">{{ type }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea class="form-control"
+         id="bio"
+         name="bio"
+         rows="3"></textarea>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea class="form-control"
+         id="notes"
+         name="notes"
+         rows="3"></textarea>
+      </div>
+      <br/>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+  <br/>
   {% endblock %}

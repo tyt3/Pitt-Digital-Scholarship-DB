@@ -33,6 +33,7 @@ def sign_up():
         if user :
             flash("This email is already registered.", category='error')
         else:
+            # Check that username is unique
             # Check that email is from the Pitt domain
             regex = '^[a-z0-9]+@pitt.edu$'
             if not re.search(regex, email):
@@ -111,7 +112,6 @@ def login():
     
     if request.method == "POST":
         email = request.form.get('email')
-        print(email)
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         remember = True if request.form.get('remember') else False
