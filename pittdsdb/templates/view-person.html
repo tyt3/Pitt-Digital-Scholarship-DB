@@ -5,11 +5,58 @@
   {% endblock %}
   {% block content %}
     <br/>
-    <h3>{{ person.first_name }} {{ person.last_name }}</h3>
-    <br/>
-    <p><strong>Pronouns:</strong> {{ person.pronouns }}</p>
-    <p><strong>Title:</strong> {{ person.title }}</p>
-    <p><strong>Email:</strong> {{ person.email }}</p>
-    <p><strong>Email:</strong> {{ person.email }}</p>
-
+    <div class="mx-auto col-12 col-md-12 col-lg-11">
+        <h4>{{ person.first_name }} {{ person.last_name }}</h4>
+        <img style="margin: 10px 0 10px 0" 
+        src="https://www.library.pitt.edu/sites/default/files/staff_photos/Tyrica_Terry.jpg"><br/>
+        <strong>Pronouns:</strong> {{ person.pronouns }}<br/>
+        <strong>Title:</strong> {{ person.title }}<br/>
+        <strong>Unit:</strong>
+        {% if person_unit|length > 1 %}
+            <ul>
+                {% for u in person_unit %}
+                <li>{{ u }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {{ person_unit[0] }}<br/>
+        {% endif %}
+        <strong>Email:</strong> <a href="mailto:{{ person.email }}">{{ person.email }}</a><br/>
+        {% if person.web_address %}
+        <strong>Webpage:</strong> {{ person.web_address }}<br/>
+        {% endif %}
+        {% if person.phone %}
+        <strong>Phone:</strong> 
+        <a href="tel:{{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}">
+            {{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}
+        </a><br/>
+        {% endif %}
+        {% if person.scheduler_address %}
+        <strong>Scheduler Address:</strong>
+        <a href='{{ person.scheduler_address }}' target="_blank">
+            {{ person.scheduler_address }}
+        </a><br/>
+        <strong>Preferred Contact Method:</strong> {{ person.preferred_contact }}<br/>
+        <strong>Support Type:</strong> {{ person.support_type }}<br/>
+        {% endif %}
+        <strong>Affiliation:</strong>
+        {% if person_affiliation|length > 1 %}
+            <ul>
+                {% for a in person_affiliation %}
+                <li>{{ a }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {{ person_affiliation[0] }}
+        {% endif %}
+        {% if person.bio %}
+        <strong>Bio:</strong> {{ person.bio }}<br/>
+        {% endif %}
+        {% if person.notes %}
+        <strong>Notes:</strong> {{ person.notes }}<br/>
+        {% endif %}
+        <br/>
+        <hr/>
+        </div>
+        <br/>
   {% endblock %}

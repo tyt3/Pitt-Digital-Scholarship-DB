@@ -366,12 +366,20 @@ def view_person(public_id):
         return render_template("index.html",
                            title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
                            user=current_user)
+    
+    # Get affiliation(s)
+    person_affiliation = add_person_relations("affiliation_type", "affiliation")
+
+    # Get Unit information
+    person_unit = add_person_relations("unit_name", "unit")
 
     
     return render_template("view-person.html",
                            title="View a Person | Pitt Digital Scholarship Database",
                            user=current_user,
-                           person=person)
+                           person=person,
+                           person_affiliation=person_affiliation,
+                           person_unit=person_unit)
 
 
 @views_bp.route('/view-unit/<unit>', methods=['GET', 'POST'])

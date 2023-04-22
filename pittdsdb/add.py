@@ -283,3 +283,15 @@ def add_unit_to_db(name, unit_type, email, web_address, phone, preferred_contact
                          f"add {repr(new_unit)}")
 
     return True
+
+
+def add_person_relations(column, entity):
+    results = db_session.execute(f'SELECT { column } FROM \
+                                            person_{ entity } pe \
+                                            JOIN { entity } AS e \
+                                            ON pe.fk_{ entity }_id = e.{ entity }_id').fetchall()
+    results_list = []
+    for result in results:
+        results_list.append(result[0].replace("'", ''))
+
+    return results_list
