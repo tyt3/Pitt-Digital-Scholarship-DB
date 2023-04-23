@@ -44,38 +44,6 @@ def add_area_to_db(name):
 
     return True, new_area
 
-
-def add_department_to_db(name, email, web_address, phone, parent_unit_name, 
-                   description, last_modified):
-    department_name = name.title()
-    department = Department.query.filter_by(department_name=department_name).first()
-    
-    if department:
-        return False
-    else:
-        # Get parent unit name
-        parent_unit = Unit.query.filter_by(unit_name=parent_unit_name).first()
-        parent_unit_id = parent_unit.get_id()
-        
-        # Create new department object
-        new_department = Department(department_name = department_name,
-                                    email = email,
-                                    web_address = web_address,
-                                    phone = phone,
-                                    fk_unit_id = parent_unit_id,
-                                    description = description,
-                                    last_modified = last_modified)  
-
-        # Add new department to database
-        db_session.add(new_department)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_department, "department", 
-                         f"add {repr(new_department)}")
-
-    return True
-
     
 def add_method_to_db(name):
     method_name = name.title()
@@ -144,7 +112,7 @@ def add_person_affiliation(person_id=int, affiliation=str):
         return False
     
 def add_person_unit(person_id=int, unit=str):
-    unit_id = Unit.query.filter_by(unit=unit).first()
+    unit_id = Unit.query.filter_by(unit_name=unit).first()
 
     try:
         db_session.execute(f'INSERT INTO person_unit \
@@ -155,24 +123,10 @@ def add_person_unit(person_id=int, unit=str):
         return True
     except:
         return False
-    
-
-def add_person_department(person_id=int, department=str):
-    department_id = Department.query.filter_by(department=department).first()
-
-    try:
-        db_session.execute(f'INSERT INTO person_department \
-                        (fk_person_id, fk_department_id) \
-                        VALUES \
-                        ("{ person_id }", "{ department_id }")')
-        db_session.commit()
-        return True
-    except:
-        return False
 
 
 def add_person_subunit(person_id=int, subunit=str):
-    subunit_id = Subunit.query.filter_by(subunit=subunit).first()
+    subunit_id = Subunit.query.filter_by(subunit_name=subunit).first()
 
     try:
         db_session.execute(f'INSERT INTO person_subunit \
