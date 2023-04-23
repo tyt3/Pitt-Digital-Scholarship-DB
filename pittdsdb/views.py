@@ -301,16 +301,17 @@ def add_area(person_id):
         return redirect(url_for('auth_bp.login'))
     
     if request.method == "POST":
-        area = request.form.get('area')
-        new_area = request.form.get('new_area')
+        pass
+        # area = request.form.get('area')
+        # new_area = request.form.get('new_area')
 
-        if not area and not new_area:
-            flash("Please select an existing area or add a new one.")
-        else:
-            if area:
-                pass
-            if new_area:
-                pass
+        # if not area and not new_area:
+        #     flash("Please select an existing area or add a new one.")
+        # else:
+        #     if area:
+        #         pass
+        #     if new_area:
+        #         pass
         
 
     return render_template("test.html",
@@ -331,13 +332,77 @@ def add_method():
         return redirect(url_for('auth_bp.login'))
     
     if request.method == "POST":
-        pass
+        method_name = request.form.get('method_name')
+        proficiency = request.form.get('proficiency')
+
+        method = Method.query.filter_by(method_name=method_name).first()
+
+        # if method:
+            
+
+        #     # Commit changes
+        #     db_session.commit()
+
+        #     return redirect(url_for('views_bp.view_person',
+        #                         public_id=person.public_id))
+        # else:
+        #     new_person = add_person_to_db(first_name, last_name, title, 
+        #                                     pronouns,  email, web_address, phone,
+        #                                     scheduler_address, preferred_contact,
+        #                                     support_type, bio, 
+        #                                     current_user.get_id(), notes)
+                                            
+        
+        #     # Check if the person was added succesfully
+        #     if new_person:
+        #         if new_person[0]:
+        #             # Get person object
+        #             p = new_person[1]
+        #             person_id = p.person_id
+        #             public_id = p.public_id
+
+        #             # Add affiliation
+        #             for a in affiliation:
+        #                 add_person_affiliation(person_id, a)
+
+        #             # Add address
+        #             cursor = db_session.cursor()
+        #             cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
+        #                                             building, office, street_address,
+        #                                             "", "", city, state, zipcode, 
+        #                                             campus, 0, 0])
+        #             address_added = list(cursor.fetchall()) # Get output params
+        #             if address_added[0]:
+        #                 address_id = address_added[1]
+        #             cursor.close()
+
+        #             # Add units
+        #             for u in unit:
+        #                 add_person_unit(person_id, u)
+        #             for s in subunit:
+        #                 add_person_subunit(person_id, s)
+
+        #             # Add new person to database
+        #             db_session.add(new_person)
+
+            #         # Commit changes
+            #         db_session.commit()
+
+            #         return redirect(url_for('views_bp.view_person',
+            #                     public_id=new_person.public_id))
+            # else:
+            #     flash('The person record was not added. Please try again.',
+            #       category='error')
+                
+            #     return redirect(url_for('views_bp.add_method', 
+            #                             public_id=public_id))
 
     return render_template("add-method.html",
                            title="Add a Method | Pitt Digital Scholarship Database",
                            user=current_user,
                            vocab=vocab,
-                           existing=existing)
+                           existing=existing,
+                           public_id=public_id)
 
 
 @views_bp.route('/add-tool/<person_id>', methods=['GET', 'POST'])
@@ -359,7 +424,7 @@ def add_tool(person_id):
                            vocab=vocab,
                            existing=existing,
                            tool=None,
-                           person_id=person_id)
+                           person_id=per)
 
 
 @views_bp.route('/add-resource', methods=['GET', 'POST'])

@@ -1,29 +1,9 @@
 <div class="form-group">
   <label for="area">Area</label>
-  <select 
-  class="form-control"
-  id="area"
-  name="area"
-  multiple>
+  <select class="form-select form-select-md" aria-label=".form-select-md example">
     <option value="">Select an area</option>
     {% for area in existing['areas'] %}
     <option value="{{ area }}">{{ area }}</option>
     {% endfor %}
   </select>
-</div>
-<br/>
-<a class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#new_area_collapse" role="button" aria-expanded="false" aria-controls="new_area_collapse">
-  Add a New Area
-</a>
-<div class="collapse" id="new_area_collapse">
-  <div class="form-group">
-<br/>
-    <label for="new_area">Add Area Name</label>
-    <input 
-    type="text" 
-    class="form-control" 
-    id="new_area" 
-    name="new_area"
-    value="{{ request.form['new_area'] }}">
-  </div>
 </div>

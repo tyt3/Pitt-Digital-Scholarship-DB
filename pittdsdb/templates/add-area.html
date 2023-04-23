@@ -1,3 +1,34 @@
-<form method="POST" action="{{ url_for('views_bp.add_area') }}">
+<form method="POST" action="{{ url_for('views_bp.add_area', person_id=1) }}">
     {% include 'area-form.html' %}
+    <br/>
+    <button class="btn btn-outline-primary btn-sm" type="button" 
+    data-bs-toggle="collapse" data-bs-target="#newAreaCollapse" 
+    aria-expanded="false" aria-controls="newAreaButton">Add a New Area
+    </button>
+    <br/>
+    <div class="collapse" id="newAreaCollapse">
+    <br/>
+    <div class="form-group">
+            <label for="new_area">New Area</label>
+            <input 
+            type="text" 
+            class="form-control" 
+            id="new_area" 
+            name="new_area"
+            value="{{ request.form['new_area'] }}">
+        </div>
+    </div>
+    <br/>
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea class="form-control"
+        id="notes"
+        name="notes"
+        rows="3"
+        ></textarea>
+    </div>
+    <br/>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
 </form>
