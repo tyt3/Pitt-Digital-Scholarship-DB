@@ -9,7 +9,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/">Pitt DSDB</a>
+          <a class="navbar-brand" href="{{ url_for('views_bp.index') }}">Pitt DSDB</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -17,69 +17,61 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               {% block navbar_about %}
               <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
+                <a class="nav-link" href="{{ url_for('views_bp.about') }}">About</a>
               </li>
               {% endblock %}
               {% block navbar_search %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/search" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       {% block navbar_search_active %}Search{% endblock %}
                     </a>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/search-people">People</a></li>
-                    <li><a class="dropdown-item" href="/search-units">Units</a></li>
-                    <!--<li><a class="dropdown-item" href="/search-areas">Supported Areas</a></li>
-                    <li><a class="dropdown-item" href="/search-methods">Suppoted Methods</a></li>
-                    <li><a class="dropdown-item" href="/search-tools">Supported Tools</a></li>
-                    <li><a class="dropdown-item" href="/search-resources">Resources</a></li>-->
-                    <li><a class="dropdown-item" href="/search-funding">Funding</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('views_bp.search_people') }}">People</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('views_bp.search_units') }}">Units</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('views_bp.search_funding') }}">Funding</a></li>
                   </ul>
                 </li>
               {% endblock %}
               {%if user.can_add %}
                 {% block navbar_add %}
                 <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="/add" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   {% block navbar_add_active %}Add Info{% endblock %}
                 </a>
                 <ul class="dropdown-menu">
                   <!--<span style="margin-left: 15px; color: gray">Add info about a...</span>-->
-                  <li><a class="dropdown-item" href="/add-person">Person</a></li>
-                  <li><a class="dropdown-item" href="/add-unit">Unit</a></li>
-                  <!--<li><a class="dropdown-item" href="/add-area">Supported Area</a></li>
-                  <li><a class="dropdown-item" href="/add-method">Supported Method</a></li>
-                  <li><a class="dropdown-item" href="/add-tool">Supported Tool</a></li>
-                  <li><a class="dropdown-item" href="/add-resource">Resource</a></li>-->
-                  <li><a class="dropdown-item" href="/add-funding">Funding</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('views_bp.add_person', public_id='new') }}">Person</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('views_bp.add_unit') }}">Unit</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('views_bp.add_funding') }}">Funding</a></li>
                 </ul>
               </li>
                 {% endblock %}
               {% endif %}
               {% block navbar_documentation %}
               <li class="nav-item">
-                <a class="nav-link" href="/documentation">Documentation</a>
+                <a class="nav-link" href="{{ url_for('views_bp.documentation') }}">Documentation</a>
               </li>
               {% endblock %}
               {% block navbar_contact %}
               <li class="nav-item">
-                <a class="nav-link" href="/contact">Contact Us</a>
+                <a class="nav-link" href="{{ url_for('views_bp.contact') }}">Contact Us</a>
               </li>
               {% endblock %}
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right: 20px;">
               {% if user.is_authenticated %}
                 <li class="nav-item">
-                  <a class="nav-link"  href="account">Account</a>
+                  <a class="nav-link"  href="{{ url_for('auth_bp.account') }}">Account</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link"  href="logout">Logout</a>
+                  <a class="nav-link"  href="{{ url_for('auth_bp.logout') }}">Logout</a>
                 </li>
               {% else %}
                 <li class="nav-item">
-                  <a class="nav-link" href="/login">Login</a>
+                  <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Login</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/sign-up">Sign Up</a>
+                  <a class="nav-link" href="{{ url_for('auth_bp.sign_up') }}">Sign Up</a>
                 </li>
               {% endif %}
             </ul>

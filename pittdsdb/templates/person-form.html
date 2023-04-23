@@ -1,0 +1,272 @@
+<div class="row">
+    <div class="col">
+    <label for="first_name">First Name</label>
+    <input 
+        type="text" 
+        class="form-control" 
+        id="first_name" 
+        name="first_name"
+        value="{{ person.first_name }}"
+        required>
+    </div>
+    <div class="col">
+    <label for="last_name">Last Name</label>
+    <input 
+        type="text" 
+        class="form-control" 
+        id="last_name" 
+        name="last_name"
+        value="{{ person.last_name }}"
+        required>
+    </div>
+</div>
+<br/>
+<div class="form-group">
+    <label for="pronouns">Pronouns</label>
+    <input 
+        type="text" 
+        class="form-control" 
+        id="pronouns" 
+        name="pronouns"
+        {% if person.pronouns %}
+        value="{{ person.pronouns }}"
+        {% endif %}
+        >
+</div>
+<br/>
+<div class="form-group">
+    <label for="title">Title</label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="title" 
+    name="title"
+    {% if person.title %}
+    value="{{ person.title }}"
+    {% endif %}
+    >
+</div>
+<br/>
+<div class="form-group">
+    <label for="affiliation">Affiliation</label>
+    <select class="form-control"
+        id="affiliation"
+        name="affiliation" 
+        multiple
+        required>
+    <option value="" disabled>Select an Affiliation</option>
+    {% for affiliation in vocab['affiliation_type'] %}
+    <option value="{{ affiliation }}"
+    {% if affiliation in person_affiliation %}
+        selected
+    {% endif %}>{{ affiliation }}</option>
+    {% endfor %}
+    </select>
+</div>
+<br/>
+<div class="form-group">
+    <label for="email">Email</label>
+    <input 
+    type="email" 
+    class="form-control" 
+    id="email" 
+    name="email" 
+    value="{{ person.email }}"
+    placeholder="@pitt.edu"
+    required>
+</div>
+<br/>
+<div class="form-group">
+    <label for="web_address">Website</label>
+    <input 
+    type="url" 
+    class="form-control" 
+    id="web_address" 
+    name="web_address"
+    {% if person.web_address %}
+    value="{{ person.web_address }}"
+    {% endif %}
+    >
+</div>
+<br/>
+<div class="form-group">
+    <label for="phone">Phone</label>
+    <input 
+    type="tel" 
+    class="form-control" 
+    id="phone" 
+    name="phone"
+    {% if person.phone %}
+    value="{{ person.phone }}"
+    {% endif %}
+    pattern="^\d{10}$">
+    <small class="text-muted">e.g., 123456789</small>
+</div>
+<br/>
+<div class="form-group">
+    <label for="scheduler">Appointment Scheduler</label>
+    <input 
+    type="url" 
+    class="form-control" 
+    id="scheduler" 
+    name="scheduler"
+    {% if person.scheduler_address %}
+    value="{{ person.scheduler_address }}"
+    {% endif %}
+    >
+    <small class="text-muted">e.g., LibCal, Outlook calendar</small>
+</div>
+<br/>
+<div class="form-group">
+    <label for="other_contact">Other Contact Method</label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="other_contact" 
+    name="other_contact"
+    {% if person.other_contact %}
+    value="{{ person.other_contact }}"
+    {% endif %}
+    >
+</div>
+<br/>
+<div class="row">
+    <div class="col">
+      <label for="building">Building</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="building" 
+      name="building"
+      value="{{ person_address['building_name'] }}"
+      required>
+    </div>
+    <div class="col">
+    <label for="office">Office Room #</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="office" 
+      name="office"
+      value="{{ person_address['room_number'] }}">
+    </div>
+</div>
+<br/>
+<div class="form-group">
+    <label for="street_address">Street Address</label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="street_address" 
+    name="street_address"
+    placeholder="1234 Main St"
+    value="{{ person_address['street_address'] }}"
+    required>
+</div>
+<br/>
+<div class="row">
+    <div class="col">
+      <label for="city">City</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="city"
+      value="{{ person_address['city'] }}"
+      required>
+    </div>
+    <div class="col">
+      <label for="state">State</label>
+      <select
+      class="form-control" 
+      id="state"
+      name="state"
+      required>
+        <option value="">Choose...</option>
+        <option value="PA" selected>PA</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="zipcode">Zipcode</label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="zipcode"
+      name="zipcode"
+      value="{{ person_address['zipcode'] }}"
+      required>
+    </div>
+</div>
+<br/>
+<div class="form-group">
+    <label for="campus">Campus</label>
+    <select 
+    class="form-select form-select-md" aria-label=".form-select-md" 
+    id="campus" 
+    name="campus"
+    required>
+      <option value="">Select a campus</option>
+      {% for campus in vocab['campus'] %}
+      <option value="{{ campus }}"
+      {% if person_address['campus'] == campus %}
+          selected
+      {% endif %}>{{ campus }}</option>
+      {% endfor %}
+    </select>
+</div>
+<br/>
+<div class="form-group">
+    <label for="preferred_contact">Preferred Contact</label>
+    <select 
+        class="form-select form-select-md" aria-label=".form-select-md"
+        id="preferred_contact"
+        name="preferred_contact"
+        reqired>
+        <option value="">Select a preferred contact method</option>
+        {% for method in vocab['preferred_contact'] %}
+        <option value="{{ method }}" 
+            {% if person.preferred_contact == method %}
+                selected
+            {% endif %}>{{ method }}</option>
+        {% endfor %}
+    </select>
+</div>
+<br/>
+<div class="form-group">
+    <label for="support_type">Support Type</label>
+    <select 
+        class="form-select form-select-md" aria-label=".form-select-md"
+        id="support_type"
+        name="support_type"
+        value="{{ person.support_type }}"
+        required>
+        <option value="">Select a support type</option>
+        {% for type in vocab['support_type'] %}
+        <option value="{{ type }}" 
+            {% if person.support_type == type %}
+                selected
+            {% endif %}>{{ type }}</option>
+        {% endfor %}
+    </select>
+</div>
+<br/>
+<div class="form-group">
+    <label for="bio">Bio</label>
+    <textarea class="form-control"
+    id="bio"
+    name="bio"
+    rows="3"
+    >{% if person.bio %}{{ person.bio }}{% endif %}</textarea>
+</div>
+<br/>
+<div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea class="form-control"
+    id="notes"
+    name="notes"
+    rows="3"
+    >{% if person.notes %}{{ person.notes }}{% endif %}</textarea>
+</div>
+<br/>
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <button type="submit" class="btn btn-primary">Submit</button>
+</div>

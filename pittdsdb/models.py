@@ -444,6 +444,7 @@ class Person(Base):
     web_address = Column(String(50))
     phone = Column(CHAR(10))
     scheduler_address = Column(String(50))
+    #other_contact = Column(String(50))
     preferred_contact = Column(String(50))
     support_type = Column(String(50), nullable=False)
     bio = Column(String(500))

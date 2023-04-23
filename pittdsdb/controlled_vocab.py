@@ -56,6 +56,12 @@ vocab = {
         'Stipend',
         'Other'
         ],
+    'preferred_contact': [
+        'Email',
+        'Phone',
+        'Appointment Scheduler',
+        'Other Contact Method'
+        ],
     'proficiency_level': [
         'Fundamental Awareness (basic knowledge)',
         'Novice (limited experience)',
@@ -63,7 +69,7 @@ vocab = {
         'Advanced (applied theory)',
         'Expert (recognized authority)'
         ],
-    'subunit_type': [
+    'unit_type': [
         'Group',
         'Lab',
         'Library',
@@ -71,10 +77,6 @@ vocab = {
         'Team',
         'Unit',
         'Other'
-        ],
-    'superior': [
-        'department',
-        'subunit'
         ],
     'support_type': [
         'Collaboratory only',

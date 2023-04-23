@@ -6,7 +6,7 @@
   {% block content %}
   <br/>
   <div class="mx-auto col-6 col-md-6 col-lg-4">
-    <form method="POST" action="{{ url_for('views_bp.add_person') }}">
+    <form method="POST" action="{{ url_for('views_bp.add_person', public_id='new') }}">
       <h3 align="center">Add Person</h3>
       <br/>
       <div class="row">
@@ -37,9 +37,9 @@
         <input 
         type="text" 
         class="form-control" 
-        id="last_name" 
-        name="last_name"
-        value="{{ request.form['last_name'] }}">
+        id="pronouns" 
+        name="pronouns"
+        value="{{ request.form['pronouns'] }}">
       </div>
       <br/>
       <div class="form-group">
@@ -67,79 +67,6 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="unit">Unit</label>
-        <select
-        type="text" 
-        class="form-control" 
-        id="unit" 
-        name="unit"
-        value="{{ request.form['unit'] }}"
-        multiple
-        required>
-          <option value="" disabled>Select a Unit</option>
-          {% for unit in existing['units'] %}
-          <option value="{{ unit }}">{{ unit }}</option>
-          {% endfor %}
-          <option value="" class="btn btn-outline-secondary btn-sm" 
-          data-bs-toggle="modal" data-bs-target="#addUnitModal"
-          style="margin-top: 5px;">Add a Unit</option>
-      </select>
-      </div>
-      <!-- Add Unit Form Modal -->
-      <div class="modal fade" id="addUnitModal" name="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
-        <div class="modal-dialog">modal
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="addUnitModalLabel">Add a Unit, Department, or Subunit</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <!-- Add Unit Form -->
-              <div id="add_unit_form">
-                <form method="POST" action="{{ url_for('views_bp.add_unit') }}" target="addUnitModal">
-                  {% include "unit-form.html" %}
-                </form>
-              </div>
-              <br/>
-            </div>
-           <!--<div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>-->
-          </div>
-        </div>
-      </div>
-      <br/>
-      <div class="form-group">
-        <label for="department">Department</label>
-        <select class="form-control" id="department" name="department" multiple>
-          <option value="" disabled>Select a Department</option>
-          {% if departments %}
-            {% for department in existing['departments'] %}
-            <option value="{{ department }}">{{ department }}</option>
-            {% endfor %}
-          {% endif %}
-          <option value="" class="btn btn-outline-secondary btn-sm" 
-          data-bs-toggle="modal" data-bs-target="#addUnitModal"
-          style="margin-top: 5px;">Add a Department</option>
-          <!-- Add more options as needed -->
-        </select>
-      <br/>
-      <div class="form-group">
-        <label for="subunit">Subnit, Team, or Group</label>
-        <select class="form-control" id="subunit" name="subunit" multiple>
-          <option value="" disabled>Select a Subunit, Team, or Group</option>
-          {% for subunit in existing['subunits'] %}
-          <option value="{{ subunit }}">{{ subunit }}</option>
-          {% endfor %}
-          <option value="" class="btn btn-outline-secondary btn-sm" 
-          data-bs-toggle="modal" data-bs-target="#addUnitModal"
-          style="margin-top: 5px;">Add a Subnit</option>
-          <!-- Add more options as needed -->
-        </select>
-      </div>
-      <br/>
-      <div class="form-group">
         <label for="email">Email</label>
         <input 
         type="email" 
@@ -151,7 +78,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="web_address">Webpage</label>
+        <label for="web_address">Website</label>
         <input 
         type="url" 
         class="form-control" 
@@ -168,8 +95,8 @@
         id="phone" 
         name="phone"
         value="{{ request.form['phone'] }}"
-        pattern="^\d{3}-\d{3}-\d{4}$">
-        <small class="text-muted">e.g., 999-999-9999</small>
+        pattern="^\d{10}$">
+        <small class="text-muted">e.g., 123456789</small>
       </div>
       <br/>
       <div class="form-group">

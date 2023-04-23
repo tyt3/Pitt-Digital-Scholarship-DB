@@ -4,11 +4,11 @@ from flask_login import login_required, current_user
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from .models import *
 from .database import db_session
-from .controlled_vocab import vocab, existing
+from .models import *
 from .add import *
-
+from .get import *
+from .controlled_vocab import vocab, existing
 
 # Initialize views Blueprint
 views_bp = Blueprint('views_bp', __name__)
@@ -134,9 +134,9 @@ def add():
                            user=current_user)
 
 
-@views_bp.route('/add-person', methods=['GET', 'POST'])
+@views_bp.route('/add-person/<public_id>', methods=['GET', 'POST'])
 @login_required
-def add_person():
+def add_person(public_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -169,60 +169,96 @@ def add_person():
         bio = request.form.get('bio')
         notes = request.form.get('notes')
 
-        person_added = add_person_to_db(first_name, last_name, title, pronouns, 
-                                        email, web_address, phone, 
-                                        scheduler_address, preferred_contact,
-                                        support_type, bio, 
-                                        current_user.get_id(), notes)
-        
-        # Check if the person was added succesfully
-        if person_added[0]:
-            # Get person object
-            p = person_added[1]
-            person_id = p.person_id
-            public_id = p.public_id
+        person = Person.query.filter_by(public_id=public_id).first()
 
-            # Add affiliation
-            for a in affiliation:
-                add_person_affiliation(person_id, a)
-
-            # Add address
-            cursor = db_session.cursor()
-            cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
-                                              building, office, street_address,
-                                              "", "", city, state, zipcode, 
-                                              campus, 0, 0])
-            address_added = list(cursor.fetchall()) # Get output params
-
-            address_id = -1
-            if address_added[0]:
-                address_id = address_added[1]
-            cursor.close()
-
-            # Add units
-            for u in unit:
-                add_person_unit(person_id, u)
-            for d in department:
-                add_person_department(person_id, d)
-            for s in subunit:
-                add_person_subunit(person_id, s)
+        if person:
+            person.first_name = first_name
+            person.last_name = request.form.get('last_name')
+            person.pronouns = request.form.get('pronouns')
+            person.title = request.form.get('title')
+            person.affiliation = request.form.getlist('affiliation')
+            person.unit = request.form.getlist('unit')
+            person.department = request.form.getlist('department')
+            person.subunit = request.form.getlist('subunit')
+            person.email = request.form.get('email')
+            person.web_address = request.form.get('web_address')
+            person.phone = request.form.get('phone')
+            person.scheduler_address = request.form.get('scheduler')
+            person.building = request.form.get('building')
+            person.office = request.form.get('office')
+            person.street_address = request.form.get('street_address')
+            person.city = request.form.get('city')
+            person.state = request.form.get('state')
+            person.zipcode = request.form.get('zipcode')
+            person.campus = request.form.get('campus')
+            person.preferred_contact = request.form.get('preferred_contact') 
+            person.support_type = request.form.get('support_type')
+            person.bio = request.form.get('bio')
+            person.notes = request.form.get('notes')
 
             # Commit changes
             db_session.commit()
 
             return redirect(url_for('views_bp.view_person',
-                                    person=person_added))
+                                public_id=person.public_id))
         else:
-            flash('The person record was not added. Please try again.',
+            new_person = add_person_to_db(first_name, last_name, title, 
+                                            pronouns,  email, web_address, phone,
+                                            scheduler_address, preferred_contact,
+                                            support_type, bio, 
+                                            current_user.get_id(), notes)
+                                            
+        
+            # Check if the person was added succesfully
+            if new_person:
+                if new_person[0]:
+                    # Get person object
+                    p = new_person[1]
+                    person_id = p.person_id
+                    public_id = p.public_id
+
+                    # Add affiliation
+                    for a in affiliation:
+                        add_person_affiliation(person_id, a)
+
+                    # Add address
+                    cursor = db_session.cursor()
+                    cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
+                                                    building, office, street_address,
+                                                    "", "", city, state, zipcode, 
+                                                    campus, 0, 0])
+                    address_added = list(cursor.fetchall()) # Get output params
+                    if address_added[0]:
+                        address_id = address_added[1]
+                    cursor.close()
+
+                    # Add units
+                    for u in unit:
+                        add_person_unit(person_id, u)
+                    for s in subunit:
+                        add_person_subunit(person_id, s)
+
+                    # Add new person to database
+                    db_session.add(new_person)
+
+                    # Commit changes
+                    db_session.commit()
+
+                    return redirect(url_for('views_bp.view_person',
+                                public_id=new_person.public_id))
+            else:
+                flash('The person record was not added. Please try again.',
                   category='error')
-            
-            return redirect(url_for('views_bp.add_person'))
+                
+                return redirect(url_for('views_bp.add_person', 
+                                        public_id=public_id))
             
     return render_template("add-person.html",
                            title="Add a Person | Pitt Digital Scholarship Database",
                            user=current_user,
                            vocab=vocab,
-                           existing=existing)
+                           existing=existing,
+                           public_id=public_id)
 
 
 @views_bp.route('/add-unit', methods=['GET', 'POST'])
@@ -249,7 +285,9 @@ def add_unit():
         
     return render_template("/add-unit.html",
                            title="Add a Unit | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing)
 
 
 @views_bp.route('/add-area/<person_id>', methods=['GET', 'POST'])
@@ -302,9 +340,9 @@ def add_method():
                            existing=existing)
 
 
-@views_bp.route('/add-tool', methods=['GET', 'POST'])
+@views_bp.route('/add-tool/<person_id>', methods=['GET', 'POST'])
 @login_required
-def add_tool():
+def add_tool(person_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -320,7 +358,8 @@ def add_tool():
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
-                           tool=None)
+                           tool=None,
+                           person_id=person_id)
 
 
 @views_bp.route('/add-resource', methods=['GET', 'POST'])
@@ -354,35 +393,63 @@ def add_funding():
 """Functions to Show View Pages"""
 @views_bp.route('/view-person/<public_id>', methods=['GET', 'POST'])
 def view_person(public_id):
-    if current_user.is_authenticated:
+    # Check if current user can update and/or delete person record
+    user_can_update = user_can_delete = False
+
+    if not current_user.is_anonymous and current_user.is_authenticated:
         current_user.set_permissions()
     
+        if current_user.permission_level == 4:
+            user_can_update = user_can_delete = True
+        elif person.added_by == current_user.user_id:
+            user_can_update = True
+    else:
+        print("logged out", user_can_delete, user_can_update)
+    
+    # Get person record
     person = db_session.query(Person).filter_by(public_id=public_id).first()
 
     if not person:
         flash("404: Not Found. That person does not exist in the database.",
               category="error")
-
         return render_template("index.html",
-                           title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
+                           title="Pitt Digital Scholarship Database",
                            user=current_user)
     
+    # get person support information
+    person_support = get_person_support(person.person_id)
+    
     # Get affiliation(s)
-    person_affiliation = add_person_relations("affiliation_type", "affiliation")
+    person_affiliation = get_person_relations("affiliation_type", "affiliation")
 
     # Get Unit information
-    person_unit = add_person_relations("unit_name", "unit")
+    person_unit = get_person_relations("unit_name", "unit")
 
+    # Get address
+    person_address_result = get_person_relations("*", "address")
+    address_items = ['building_name', 'room_number', 'street_address', 
+                 'address_2', 'address_3', 'city', 'state', 'zipcode', 'campus']
+    person_address = {}
+    i = 3
+    for item in address_items:
+        person_address[item] = person_address_result[i]
+        i += 1
     
     return render_template("view-person.html",
                            title="View a Person | Pitt Digital Scholarship Database",
                            user=current_user,
+                           vocab=vocab,
+                           existing=existing,
                            person=person,
                            person_affiliation=person_affiliation,
-                           person_unit=person_unit)
+                           person_unit=person_unit,
+                           person_support=person_support,
+                           person_address=person_address,
+                           user_can_update=user_can_update,
+                           user_can_delete=user_can_delete)
 
 
-@views_bp.route('/view-unit/<unit>', methods=['GET', 'POST'])
+@views_bp.route('/view-unit/<public_id>', methods=['GET', 'POST'])
 def view_unit():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -392,7 +459,7 @@ def view_unit():
                            user=current_user)
 
 
-@views_bp.route('/view-funding/<funding>', methods=['GET', 'POST'])
+@views_bp.route('/view-funding/<public_id>', methods=['GET', 'POST'])
 def view_funding():
     if current_user.is_authenticated:
         current_user.set_permissions()
@@ -411,10 +478,11 @@ def test(username):
     user_name = str(user.first_name) + " " + str(user.last_name)
 
        # user_name = current_user.user_name
+    person_support = get_person_support(1)
 
     return render_template("test.html",
                            title="Test| Pitt Digital Scholarship Database",
                            user=current_user,
                            user_name=user_name,
                            vocab=vocab,
-                           existing=existing)
+                           existing=existing,)
