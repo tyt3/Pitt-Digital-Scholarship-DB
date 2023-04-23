@@ -9,7 +9,66 @@
   <div class="mx-auto col-6 col-md-6 col-lg-4">
     <form method="POST" >
       <h3 align="center">Add a Unit</h3>
-      {% include "unit-form.html" %}
+      <div class="form-group">
+        <label for="unit_name">Unit Name</label>
+        <input type="text" 
+            class="form-control" 
+            id="unit_name" 
+            name="unit_name" required>
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="unit_parent">Parent Unit <small>(if any)</small></label>
+          <select class="form-select form-select-md" aria-label=".form-select-md example">
+              <option value="">Select a parent unit</option>
+              {% for unit in existing['units'] %}
+              <option value="{{ unit }}">{{ unit }}</option>
+              {% endfor %}
+          </select>
+          <small>Parent unit must be added before subunit can be added. 
+              <a href="{{ url_for('views_bp.add_unit') }}">Add the parent unit in a separate window.</a></small>
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="unit_type">Type</label>
+          <select class="form-select form-select-md" aria-label=".form-select-md example">
+              <option value="">Select a unit type</option>
+              {% for type in vocab['unit_type'] %}
+              <option value="{{ type }}">{{ type }}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" placeholder="@pitt.edu">
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="unit_website">Website</label>
+          <input type="url" class="form-control" id="unit_website" name="unit_website">
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="unit_contact_method">Preferred Contact Method</label>
+          <select class="form-control" id="unit_contact_method" name="unit_contact_method" required>
+              <option value="">Select a preferred contact method</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+              <option value="In-person">In-person</option>
+          </select>
+      </div>
+      <br/>
+      <div class="form-group">
+          <label for="unit_description">Description</label>
+          <textarea class="form-control" id="unit_description" name="unit_description" rows="3"></textarea>
+      </div>
+      <br/>
+      {% include "address-form.html" %}
+      <br/>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+          <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
     </form>
   </div>
 </div>
