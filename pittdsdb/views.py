@@ -103,6 +103,7 @@ def search_units():
     return render_template("search-units.html",
                            title="Search Units| Pitt Digital Scholarship Database",
                            user=current_user,
+                           vocab=vocab,
                            existing=existing)
 
 

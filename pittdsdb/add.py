@@ -111,6 +111,7 @@ def add_person_affiliation(person_id=int, affiliation=str):
     except:
         return False
     
+    
 def add_person_unit(person_id=int, unit=str):
     unit_id = Unit.query.filter_by(unit_name=unit).first()
 
