@@ -69,36 +69,124 @@ vocab = {
         'Advanced (applied theory)',
         'Expert (recognized authority)'
         ],
-    'unit_type': [
-        'Group',
-        'Lab',
-        'Library',
-        'Office',
-        'Team',
-        'Unit',
-        'Other'
-        ],
     'support_type': [
         'Collaboratory only',
         'Formal',
         'Informal'
-        ]
+        ],
+    'unit_type': [
+        'Center',
+        'Collaborative',
+        'Department',
+        'Group',
+        'Lab',
+        'Library',
+        'Museum',
+        'Office',
+        'School',
+        'Team',
+        'Unit',
+        'Other'
+        ],
+    'tool_type': [
+        'Command-line Application',
+        'Desktop Application',
+        'Programming Language',
+        'Mobile Application',
+        'Web Application',
+        'Web Browser Plugin',
+        'Other'
+    ],
 }
 
+# Get entity values
+area = None
+try:
+    areas = list(zip(*db_session.query(Area.area_name).distinct()))[0]
+except:
+    pass
+
+campuses = None
+try:
+    campuses = list(zip(*db_session.query(Address.campus).distinct()))[0]
+except:
+    pass
+
+career_levels = None
+try:
+    career_levels = list(zip(*db_session.query(Funding.career_level).distinct()))[0]
+except:
+    pass
+
+funding_types = None
+try:
+    funding_types = list(zip(*db_session.query(Funding.funding_type).distinct()))[0]
+except:
+    pass
+
+payment_types = None
+try:
+    payment_types = list(zip(*db_session.query(Funding.payment_type).distinct()))[0]
+except:
+    pass
+
+methods = None
+try:
+    methods = list(zip(*db_session.query(Method.method_name).distinct()))[0]
+except:
+    pass
+
+resources = None
+try:
+    resources = list(zip(*db_session.query(Resource.resource_type).distinct()))[0]
+except:
+    pass
+
+support_types = None
+try:
+    support_types = list(zip(*db_session.query(Person.support_type).distinct()))[0]
+except:
+    pass
+
+tools = None
+try:
+    tools = list(zip(*db_session.query(Tool.tool_name).distinct()))[0]
+except:
+    pass
+
+units = None
+try:
+    units = list(zip(*db_session.query(Unit.unit_name).distinct()))[0]
+except:
+    pass
+
+subunits = None
+try:
+    subunits = list(zip(*db_session.query(Subunit.subunit_name).distinct()))[0]
+except:
+    pass
+
+entities = [areas, campuses, career_levels, funding_types, payment_types, 
+            methods, resources, support_types, tools, units, subunits]
+
 existing = {
-    'areas': list(zip(*db_session.query(Area.area_name).distinct()))[0],
-    'campuses': list(zip(*db_session.query(Address.campus).distinct()))[0],
-    'career_levels': list(zip(*db_session.query(Funding.career_level).distinct()))[0],
-    'funding_types': list(zip(*db_session.query(Funding.funding_type).distinct()))[0],
-    'payment_types': list(zip(*db_session.query(Funding.payment_type).distinct()))[0],
-    'methods': list(zip(*db_session.query(Method.method_name).distinct()))[0],
-    'resources': list(zip(*db_session.query(Resource.resource_type).distinct()))[0],
-    'support_types': list(zip(*db_session.query(Person.support_type).distinct()))[0],
-    'tools': list(zip(*db_session.query(Tool.tool_name).distinct()))[0],
-    'units': list(zip(*db_session.query(Unit.unit_name).distinct()))[0],
-    'departments': None,
-    'subunits': list(zip(*db_session.query(Subunit.subunit_name).distinct()))[0]
+    'areas': None,
+    'campuses': None,
+    'career_levels': None,
+    'funding_types': None,
+    'payment_types': None,
+    'methods': None,
+    'resources': None,
+    'support_types': None,
+    'tools': None,
+    'units': None,
+    'subunits': None
 }
+
+i = 0
+for entity in existing:
+    existing[entity] = entities[i]
+    i += 1
 
 area_name = ['2D Scanning and Digitization',
                  '3D Scanning and Modeling',

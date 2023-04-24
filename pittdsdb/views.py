@@ -100,6 +100,7 @@ def search_people():
 def search_units():
     if current_user.is_authenticated:
         current_user.set_permissions()
+        
     return render_template("search-units.html",
                            title="Search Units| Pitt Digital Scholarship Database",
                            user=current_user,
