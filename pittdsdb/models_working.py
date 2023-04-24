@@ -12,6 +12,7 @@ metadata = Base.metadata
 
 """Model Classes"""
 
+
 class Address(Base):
     __tablename__ = 'address'
 
@@ -90,8 +91,8 @@ class User(Base, UserMixin):
     user_password = Column(String(64), nullable=False)
     api_key = Column(String(50), nullable=False, unique=True)
     permission_level = Column(Integer, nullable=False)
-    account_created = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
-    last_login = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    account_created = Column(DateTime, nullable=False)
+    last_login = Column(DateTime, nullable=False)
 
     def __init__(self, user_name, first_name, last_name, email, user_password, \
                  api_key, permission_level, last_login):
@@ -160,7 +161,7 @@ class Funding(Base):
     duration = Column(String(50))
     frequency = Column(String(50))
     web_address = Column(String(500))
-    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False)
     notes = Column(String(5000))
     added_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
 
@@ -239,7 +240,7 @@ class Person(Base):
     __tablename__ = 'person'
 
     person_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True)
+    public_id = Column(String(36), nullable=False)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     title = Column(String(100))
@@ -253,8 +254,8 @@ class Person(Base):
     support_type = Column(String(50), nullable=False)
     bio = Column(String(5000))
     added_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
-    date_added = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
-    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    date_added = Column(DateTime, nullable=False)
+    last_modified = Column(DateTime, nullable=False)
     notes = Column(String(5000))
 
     user = relationship('User')
@@ -330,7 +331,7 @@ class Unit(Base):
     __tablename__ = 'unit'
 
     unit_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True)
+    public_id = Column(String(36), nullable=False)
     unit_name = Column(String(100), nullable=False)
     unit_type = Column(String(50), nullable=False)
     email = Column(String(256), unique=True)
@@ -338,7 +339,7 @@ class Unit(Base):
     preferred_contact = Column(String(50))
     description = Column(String(5000))
     added_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
-    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False)
 
     user = relationship('User')
 
@@ -364,7 +365,7 @@ class Subunit(Base):
     __tablename__ = 'subunit'
 
     subunit_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True)
+    public_id = Column(String(36), nullable=False)
     subunit_name = Column(String(100), nullable=False)
     subunit_type = Column(String(50), nullable=False)
     description = Column(String(5000))
@@ -372,7 +373,7 @@ class Subunit(Base):
     preferred_contact = Column(String(50))
     fk_unit_id = Column(ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     added_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
-    last_modified = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+    last_modified = Column(DateTime, nullable=False)
 
     user = relationship('User')
     fk_unit = relationship('Unit')

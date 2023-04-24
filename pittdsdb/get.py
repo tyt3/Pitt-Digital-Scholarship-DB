@@ -10,12 +10,21 @@ from .models import *
 from .schemas import *
 
 
-def get_person_relations(column, entity):
-    results = db_session.execute(f'SELECT { column } FROM \
-                                            person_{ entity } pe \
-                                            JOIN { entity } AS e \
-                                            ON pe.fk_{ entity }_id = e.{ entity }_id').fetchall()
+def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
+    query = f'SELECT { column } FROM \
+        person_{ entity } pe \
+        JOIN { entity } AS e \
+        ON pe.fk_{ entity }_id = e.{ entity }_id \
+        WHERE fk_person_id = { person_id };'
+    
+    if entity_id != 0:
+        query = query[:-1] + f' AND fk_{ entity }_id = { entity_id };'
+        
+    print(query)
+
+    results = db_session.execute(query).fetchall()
     results_list = []
+
     for result in results:
         for i in range(len(result)):
             if isinstance(result[i], str):

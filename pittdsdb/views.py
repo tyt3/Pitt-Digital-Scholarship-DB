@@ -486,13 +486,19 @@ def view_person(public_id):
     person_support = get_person_support(person.person_id)
     
     # Get affiliation(s)
-    person_affiliation = get_person_relations("affiliation_type", "affiliation")
+    person_affiliation = get_person_relations(person.person_id,
+                                               "affiliation_type",
+                                               "affiliation")
 
     # Get Unit information
-    person_unit = get_person_relations("unit_name", "unit")
+    person_unit = get_person_relations(person.person_id,
+                                       "unit_name", 
+                                       "unit")
 
     # Get address
-    person_address_result = get_person_relations("*", "address")
+    person_address_result = get_person_relations(person.person_id,
+                                                 "*",
+                                                 "address")
     address_items = ['building_name', 'room_number', 'street_address', 
                  'address_2', 'address_3', 'city', 'state', 'zipcode', 'campus']
     person_address = {}
@@ -552,3 +558,75 @@ def test(username):
                            user_name=user_name,
                            vocab=vocab,
                            existing=existing,)
+
+
+"""Functions to Show Update Pages"""
+
+@views_bp.route('/update-area/<area_name>/<public_id>', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def update_area(area_name, public_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(public_id=public_id).first()
+    area = Area.query.filter_by(area_name=area_name).first()
+    notes = get_person_relations(person.person_id, 
+                                 "fk_area_id", "area",
+                                 area.area_id)[0]
+    
+    if request.method == "POST":
+        updated_notes = request.form.get('notes')
+
+        db_session.execute(f'UPDATE person_area \
+                           SET notes = { updated_notes } \
+                           WHERE user_id = { person.person_id }\
+                           AND area_id = { area.area_id };')
+        db_session.commit()
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+    
+    if request.method == "DELETE":
+        db_session.execute(f'DELETE FROM person_area \
+                           WHERE user_id = { person.person_id }\
+                           AND area_id = { area.area_id };')
+        db_session.commit()
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+    return render_template("update-area.html",
+                           title="Update an Area | Pitt Digital Scholarship Database",
+                           user=current_user,
+                           existing=existing,
+                           vocab=vocab,
+                           person=person,
+                           area=area,
+                           notes=notes)
+
+
+"""Functions to Delete Records"""
+@views_bp.route('/delete-area/<area_id>/<person_id>', methods=['GET', 'POST'])
+@login_required
+def delete_area(area_id, person_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    area = Area.query.filter_by(area_id=area_id).first()
+    
+    db_session.execute(f'DELETE FROM person_area \
+                        WHERE fk_person_id = { person.person_id }\
+                        AND fk_area_id = { area.area_id };')
+    db_session.commit()
+
+    return redirect(url_for('views_bp.view_person',
+                            public_id=person.public_id))

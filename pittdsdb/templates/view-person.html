@@ -16,9 +16,8 @@
                     {% if user_can_update %}
                     &nbsp;
                     <font size="-1"><a href="#updateUnitModal" 
-                    data-bs-toggle="modal" data-bs-target="#updateUnitModal">Update</a> | 
-                    <a style="color: red" href="#deleteUnitModal" 
-                    data-bs-toggle="modal" data-bs-target="#deleteUnitModal"> Delete </a></font>
+                    data-bs-toggle="modal" data-bs-target="#updateUnitModal">Update</a>
+                    </font>
                     {% endif %}</li>
                 {% endfor %}
             </ul>
@@ -26,14 +25,13 @@
             {{ person_unit[0] }}
             {% if user_can_update %}
             &nbsp;
-            <font size="-1"><a href="#updateUnitModal" 
-            data-bs-toggle="modal" data-bs-target="#updateUnitModal">Update</a> | 
-            <a style="color: red" href="#deleteUnitModal" 
-            data-bs-toggle="modal" data-bs-target="#deleteUnitModal"> Delete </a></font>
+            <a role="button" class="btn btn-outline-primary btn-sm"
+            style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 2.5px;"
+            href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Unit</a>
             {% endif %}<br/>
         {% endif %}
         {% if user_can_update %}
-            <button type="button" class="btn btn-outline-primary btn-sm"
+            <button type="button" class="btn btn-primary btn-sm"
                 data-bs-toggle="modal" data-bs-target="#updateUnitModal"
                 style="margin: 5px 0 10px 0">
                 Add a Unit
@@ -76,7 +74,7 @@
         {% endif %}
         {% if user_can_update %}
         <br/>
-        <button type="button" class="btn btn-outline-primary btn-sm"
+        <button type="button" class="btn btn-primary btn-sm"
         data-bs-toggle="modal" data-bs-target="#updatePersonModal">
         Update Person Information
         </button>
@@ -87,17 +85,22 @@
         <h4>Areas of Support/Practice</h4>
         {% if person_support %}
         {% for area in person_support %}
-        <h5>{{ area }}</h5>
+        <span style="font-size: 20px; font-weight: 500;">{{ area }}</span>
+        {% if user_can_update %}
+        &nbsp;
+        <a role="button" class="btn btn-outline-primary btn-sm"
+        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
+        href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Area</a>
+        {% endif %}
             <ul>
             {% for method in person_support[area] %}
                 <li><span style="font-size: 18px"><strong>{{ method }}:</strong>
                     {{ person_support[area][method]['proficiency'] }}</span>
                     {% if user_can_update %}
                     &nbsp;
-                    <font size="-1"><a href="#updateMethodModal" 
-                    data-bs-toggle="modal" data-bs-target="#updateMethodModal">Update</a> | 
-                    <a style="color: red" href="#deleteMethodModal" 
-                    data-bs-toggle="modal" data-bs-target="#deleteMethodModal"> Delete </a></font>
+                    <a role="button" class="btn btn-outline-primary btn-sm"
+                    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
+                    href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Method</a>
                     {% endif %}
                 </li>
                     <ul>
@@ -106,10 +109,9 @@
                             {{ person_support[area][method]['tools'][tool] }}
                             {% if user_can_update %}
                             &nbsp;
-                            <font size="-1"><a href="#updateToolModal" 
-                                data-bs-toggle="modal" data-bs-target="#updateToolModal">Update</a> | 
-                            <a style="color: red;" href="#deleteToolModal" 
-                            data-bs-toggle="modal" data-bs-target="#deleteToolModal"> Delete </a></font>
+                            <a role="button" class="btn btn-outline-primary btn-sm"
+                            style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
+                            href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Tool</a>
                             {% endif %}
                         {% endfor %}
                     </ul>
@@ -119,10 +121,11 @@
         {% endif %}
         </div>
         <br/>
+        {% if user_can_update %}
         <div class="row">
             <div class="col">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="button" class="btn btn-outline-primary btn-sm"
+                    <button type="button" class="btn btn-primary btn-sm"
                     data-bs-toggle="modal" data-bs-target="#updateAreaModal">
                     Add an Area
                     </button>
@@ -130,7 +133,7 @@
             </div>
             <div class="col">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button type="button" class="btn btn-outline-primary btn-sm"
+                    <button type="button" class="btn btn-primary btn-sm"
                     data-bs-toggle="modal" data-bs-target="#updateMethodModal">
                     Add a Method
                     </button>
@@ -138,13 +141,15 @@
             </div>
             <div class="col">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button type="button" class="btn btn-outline-primary btn-sm"
+                    <button type="button" class="btn btn-primary btn-sm"
                     data-bs-toggle="modal" data-bs-target="#updateToolModal">
                     Add a Tool
                     </button>
                 </div>
             </div>
         </div>
+        <br/>
+        {% endif %}
 
 <!-- Update Person Form Modal -->
 <div class="modal fade" id="updatePersonModal" name="updatePersonModal" 
@@ -361,5 +366,4 @@ tabindex="-1" aria-labelledby="deleteToolModalLabel" aria-hidden="true">
       </div>
     </div>
   </div>
-  <br/>
   {% endblock %}
