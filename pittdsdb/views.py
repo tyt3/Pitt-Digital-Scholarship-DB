@@ -614,10 +614,13 @@ def delete_area(area_id, person_id):
     person = Person.query.filter_by(person_id=person_id).first()
     area = Area.query.filter_by(area_id=area_id).first()
     
+    detach_person_area(person.public_id, area.area_name)
+    
     db_session.execute(f'DELETE FROM person_area \
                         WHERE fk_person_id = { person.person_id }\
                         AND fk_area_id = { area.area_id };')
     db_session.commit()
+    
 
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))

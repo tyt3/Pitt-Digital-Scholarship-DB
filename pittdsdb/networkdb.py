@@ -14,13 +14,13 @@ def get_relations(from_entity, from_unique_attribute, from_unique_attribute_valu
 
 def add_relations(from_entity, from_unique_attribute, from_unique_attribute_value, to_entity, to_unique_attribute, to_unique_attribute_value, relation_name, reverse_relation_name):
     rel_cqry = "MATCH (f:"+from_entity+"{"+from_unique_attribute+": '"+from_unique_attribute_value+"'}), (t:"+to_entity+"{"+to_unique_attribute+": '"+to_unique_attribute_value+"'}) " \
-               "CREATE (f)-[:"+relation_name+"]->(t)<-[:"+reverse_relation_name+"]-(f)"
+               "CREATE (f)-[:"+relation_name+"]->(t)-[:"+reverse_relation_name+"]->(f)"
     print(rel_cqry)
     neo4j_dbconn.query(rel_cqry)
 
 def detch_relations(from_entity, from_unique_attribute, from_unique_attribute_value, to_entity, to_unique_attribute, to_unique_attribute_value, relations):
     for relation in relations:
-        rel_cqry = "MATCH (:"+from_entity+" {"+from_unique_attribute+": '"+from_unique_attribute_value+"'}) - [r:"+relation+"]-(:"+to_entity+":{"+to_unique_attribute+": '"+to_unique_attribute_value+"'}) DELETE r"
+        rel_cqry = "MATCH (:"+from_entity+" {"+from_unique_attribute+": '"+from_unique_attribute_value+"'}) - [r:"+relation+"]-(:"+to_entity+" {"+to_unique_attribute+": '"+to_unique_attribute_value+"'}) DELETE r"
         neo4j_dbconn.query(rel_cqry)
 
 def get(entity, attribute, attribute_value):
