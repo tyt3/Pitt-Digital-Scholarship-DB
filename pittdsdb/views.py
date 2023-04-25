@@ -207,6 +207,9 @@ def add_person(public_id):
             # Commit changes
             db_session.commit()
 
+            #Update graph node
+            update_person_node(first_name + ' ' +last_name, public_id)
+
             return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
         else:
