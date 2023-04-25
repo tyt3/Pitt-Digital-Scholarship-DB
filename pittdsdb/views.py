@@ -8,6 +8,7 @@ from .database import db_session
 from .models import *
 from .add import *
 from .get import *
+from .networkdb import *
 from .controlled_vocab import vocab, existing
 
 # Initialize views Blueprint
@@ -246,6 +247,9 @@ def add_person(public_id):
                     # Commit changes
                     db_session.commit()
 
+                    #Add Person Node
+                    add_person_node(new_person.public_id, first_name + ' ' + last_name)
+
                     return redirect(url_for('views_bp.view_person',
                                 public_id=new_person.public_id))
             else:
@@ -355,13 +359,22 @@ def add_area(public_id):
 
     if new_area_name:
         new_area = Area(new_area_name, current_user.user_id)
-        person_area = PersonArea(person.person_id, new_area.area_id, notes)
 
         # Add new_area to db
         db_session.add(new_area)
-    else:
-        area = Area.query.filter_by(area_name=area_name).first()
-        person_area = PersonArea(person.person_id, area.area_id, notes)
+        db_session.commit()
+
+        #Add Area node
+        add_area_node(new_area_name)
+
+        #update area name to the new area
+        area_name = new_area_name
+
+    area = Area.query.filter_by(area_name=area_name).first()
+    person_area = PersonArea(person.person_id, area.area_id, notes)
+
+    #Attach person to area
+    attach_person_area(public_id, area_name)
 
     # Add person-area relationship to db session and commit changes to db
     db_session.add(person_area)
@@ -467,7 +480,10 @@ def add_tool(person_id):
     
     if request.method == "POST":
         pass
-
+        #Add  node
+        add_area_node(new_area_name)
+        #Attach person to area
+        attach_person_area(public_id, new_area_name)
     return render_template("add-tool.html",
                            title="Add a Tool | Pitt Digital Scholarship Database",
                            user=current_user,
