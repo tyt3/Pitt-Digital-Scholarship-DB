@@ -25,7 +25,7 @@ def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
     if entity_id != 0:
         query = query[:-1] + f' AND fk_{ entity }_id = { entity_id };'
 
-    results = db_session.execute(query).fetchall()
+    results = db_session.execute(text(query)).fetchall()
     results_list = []
 
     for result in results:
@@ -50,8 +50,8 @@ def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
 def get_person_support(person_id):
     person_support = {}
 
-    results = pd.DataFrame(db_session.execute(f'SELECT * FROM vw_person_support \
-                                 WHERE person_id = { person_id };').fetchall())
+    results = pd.DataFrame(db_session.execute(text(f'SELECT * FROM vw_person_support \
+                                 WHERE person_id = { person_id };')).fetchall())
     
     if not results.empty:
         results.columns = ['person_id', 'first_name', 'last_name', 'support_type', 
