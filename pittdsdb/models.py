@@ -417,12 +417,12 @@ class Modification(Base):
 
     user = relationship('User')
 
-    def __init__(self, entity_type, entity_id, modification, modified_by, modificaiton_date):
+    def __init__(self, entity_type, entity_id, modification, modified_by, modification_date):
         self.entity_type = entity_type
         self.entity_id = entity_id
         self.modification = modification
         self.modified_by = modified_by
-        self.modificaiton_date = modificaiton_date
+        self.modification_date = modification_date
 
     def __rep__(self):
         return f"{self.entity_id}, {self.modification}"
