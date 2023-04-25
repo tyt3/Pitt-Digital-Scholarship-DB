@@ -22,7 +22,7 @@
                 </li>
                 {% endfor %}
             </ul>
-        {% else %}
+        {% elif person_unit|length == 1 %}
             {{ person_unit[0] }}
             {% if user_can_update %}
             &nbsp;
@@ -32,9 +32,9 @@
             {% endif %}<br/>
         {% endif %}
         {% if user_can_update %}
-            <button type="button" class="btn btn-primary btn-sm"
+            <button type="button" class="btn btn-outline-primary btn-sm"
                 data-bs-toggle="modal" data-bs-target="#addUnitModal"
-                style="margin: 5px 0 10px 0">
+                style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 5px 0 10px 0">
                 Add a Unit
             </button>
         </form>
