@@ -656,6 +656,17 @@ def delete_person_unit(person_id, unit_name):
 
 @views_bp.route('/view-person/<public_id>', methods=['GET', 'POST'])
 def view_person(public_id):
+    # Get person record
+    person = db_session.query(Person).filter_by(public_id=public_id).first()
+    
+    # Notify if person was not found in the DB and redirect to homepage
+    if not person:
+        flash("404: Not Found. That person does not exist in the database.",
+              category="error")
+        return render_template("index.html",
+                           title="Pitt Digital Scholarship Database",
+                           user=current_user)
+    
     # Check if current user can update and/or delete person record
     user_can_update = user_can_delete = False
 
@@ -666,17 +677,6 @@ def view_person(public_id):
             user_can_update = user_can_delete = True
         elif person.added_by == current_user.user_id:
             user_can_update = True
-    
-    # Get person record
-    person = db_session.query(Person).filter_by(public_id=public_id).first()
-
-    # Notify if person was not found in the DB and redirect to homepage
-    if not person:
-        flash("404: Not Found. That person does not exist in the database.",
-              category="error")
-        return render_template("index.html",
-                           title="Pitt Digital Scholarship Database",
-                           user=current_user)
     
     # get person support information
     person_support = get_person_support(person.person_id)
