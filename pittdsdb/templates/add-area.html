@@ -1,4 +1,4 @@
-<form method="POST" action="{{ url_for('views_bp.add_area', person_id=1) }}">
+<form method="POST" action="{{ url_for('views_bp.add_area', public_id=person.public_id) }}">
     {% include 'area-form.html' %}
     <br/>
     <button class="btn btn-outline-primary btn-sm" type="button" 
@@ -7,8 +7,8 @@
     </button>
     <br/>
     <div class="collapse" id="newAreaCollapse">
-    <br/>
-    <div class="form-group">
+        <br/>
+        <div class="form-group">
             <label for="new_area">New Area</label>
             <input 
             type="text" 

@@ -231,10 +231,10 @@ def add_person(public_id):
 
                     # Add address
                     cursor = db_session.cursor()
-                    cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
-                                                    building, office, street_address,
-                                                    "", "", city, state, zipcode, 
-                                                    campus, 0, 0])
+                    # cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
+                    #                                 building, office, street_address,
+                    #                                 "", "", city, state, zipcode, 
+                    #                                 campus, 0, 0])
                     address_added = list(cursor.fetchall()) # Get output params
                     if address_added[0]:
                         address_id = address_added[1]
@@ -332,9 +332,9 @@ def add_unit():
                            existing=existing)
 
 
-@views_bp.route('/add-area/<person_id>', methods=['GET', 'POST'])
+@views_bp.route('/add-area/<public_id>', methods=['POST'])
 @login_required
-def add_area(person_id):
+def add_area(public_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -342,30 +342,38 @@ def add_area(person_id):
                category="error")
         return redirect(url_for('auth_bp.login'))
     
-    if request.method == "POST":
-        pass
-        # area = request.form.get('area')
-        # new_area = request.form.get('new_area')
+    # Get form values
+    area_name = request.form.get('area')
+    new_area_name = request.form.get('new_area')
+    notes = request.form.get('notes')
 
-        # if not area and not new_area:
-        #     flash("Please select an existing area or add a new one.")
-        # else:
-        #     if area:
-        #         pass
-        #     if new_area:
-        #         pass
-        
+    print("area", area_name)
+    print("new area", new_area_name)
+    print("notes", notes)
 
-    return render_template("test.html",
-                           title="Add an Area | Pitt Digital Scholarship Database",
-                           user=current_user,
-                           existing=existing,
-                           vocab=vocab)
+    person = Person.query.filter_by(public_id=public_id).first()
+
+    if new_area_name:
+        new_area = Area(new_area_name, current_user.user_id)
+        person_area = PersonArea(person.person_id, new_area.area_id, notes)
+
+        # Add new_area to db
+        db_session.add(new_area)
+    else:
+        area = Area.query.filter_by(area_name=area_name).first()
+        person_area = PersonArea(person.person_id, area.area_id, notes)
+
+    # Add person-area relationship to db session and commit changes to db
+    db_session.add(person_area)
+    db_session.commit()
+
+    return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
 
 
 @views_bp.route('/add-method', methods=['GET', 'POST'])
 @login_required
-def add_method():
+def add_method(public_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -497,7 +505,155 @@ def add_funding():
                            user=current_user)
 
 
+"""Functions to Show Update Pages"""
+
+@views_bp.route('/update-area/<area_name>/<public_id>', methods=['GET', 'POST'])
+@login_required
+def update_area(area_name, public_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(public_id=public_id).first()
+    area = Area.query.filter_by(area_name=area_name).first()
+    notes = get_person_relations(person.person_id, 
+                                 "fk_area_id", "area",
+                                 area.area_id)[0]
+    
+    if request.method == "POST":
+        updated_notes = request.form.get('notes')
+
+        db_session.execute(f'UPDATE person_area \
+                           SET notes = { updated_notes } \
+                           WHERE user_id = { person.person_id }\
+                           AND area_id = { area.area_id };')
+        db_session.commit()
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+    return render_template("update-area.html",
+                           title="Update an Area | Pitt Digital Scholarship Database",
+                           user=current_user,
+                           existing=existing,
+                           vocab=vocab,
+                           person=person,
+                           area=area,
+                           notes=notes)
+
+
+@views_bp.route('/update-area/<method_name>/<public_id>', methods=['GET', 'POST'])
+@login_required
+def update_method(method_name, public_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(public_id=public_id).first()
+    method = Area.query.filter_by(method_name=method_name).first()
+    notes = get_person_relations(person.person_id, 
+                                 "fk_method_id", "method",
+                                 method.method_id)[0]
+    
+    if request.method == "POST":
+        updated_notes = request.form.get('notes')
+
+        db_session.execute(f'UPDATE person_area \
+                           SET notes = { updated_notes } \
+                           WHERE user_id = { person.person_id }\
+                           AND area_id = { method.method_id };')
+        db_session.commit()
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+    return render_template("update-method.html",
+                           title="Update a Method | Pitt Digital Scholarship Database",
+                           user=current_user,
+                           existing=existing,
+                           vocab=vocab,
+                           person=person,
+                           method=method,
+                           notes=notes)
+
+
+"""Functions to Delete Records"""
+
+@views_bp.route('/delete-area/<area_id>/<person_id>', methods=['GET', 'POST'])
+@login_required
+def delete_area(area_id, person_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    area = Area.query.filter_by(area_id=area_id).first()
+    
+    db_session.execute(f'DELETE FROM person_area \
+                        WHERE fk_person_id = { person.person_id }\
+                        AND fk_area_id = { area.area_id };')
+    db_session.commit()
+
+    return redirect(url_for('views_bp.view_person',
+                            public_id=person.public_id))
+
+
+@views_bp.route('/delete-person-unit/<person_id>/<unit_name>', methods=['GET', 'POST'])
+@login_required
+def delete_person_unit(person_id, unit_name):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    unit_name_list = unit_name.split(', ')
+    unit = None
+    subunit = None
+    if len(unit_name_list) > 1:
+        # Get unit information
+        cur_subunit_name = unit_name_list[0]
+        cur_unit_name = unit_name_list[1]
+        subunit = Subunit.query.filter_by(subunit_name=cur_subunit_name).first()
+        unit = Unit.query.filter_by(unit_name=cur_unit_name).first()
+
+        # Delete person-subunit relation
+        db_session.execute(f'DELETE FROM person_subunit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_subunit_id = { subunit.subunit_id };')
+        # Delete person-unit relation
+        db_session.execute(f'DELETE FROM person_unit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_unit_id = { unit.unit_id };')
+    else:
+        # Get unit information
+        cur_unit_name = unit_name_list[0]
+        unit = Unit.query.filter_by(unit_name=cur_unit_name)
+
+        # Delete person-unit relation
+        db_session.execute(f'DELETE FROM person_unit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_unit_id = { unit.unit_id };')
+        
+    db_session.commit()
+
+    return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+
 """Functions to Show View Pages"""
+
 @views_bp.route('/view-person/<public_id>', methods=['GET', 'POST'])
 def view_person(public_id):
     # Check if current user can update and/or delete person record
@@ -599,120 +755,3 @@ def test(username):
                            user_name=user_name,
                            vocab=vocab,
                            existing=existing,)
-
-
-"""Functions to Show Update Pages"""
-
-@views_bp.route('/update-area/<area_name>/<public_id>', methods=['GET', 'POST', 'DELETE'])
-@login_required
-def update_area(area_name, public_id):
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
-               category="error")
-        return redirect(url_for('auth_bp.login'))
-    
-    person = Person.query.filter_by(public_id=public_id).first()
-    area = Area.query.filter_by(area_name=area_name).first()
-    notes = get_person_relations(person.person_id, 
-                                 "fk_area_id", "area",
-                                 area.area_id)[0]
-    
-    if request.method == "POST":
-        updated_notes = request.form.get('notes')
-
-        db_session.execute(f'UPDATE person_area \
-                           SET notes = { updated_notes } \
-                           WHERE user_id = { person.person_id }\
-                           AND area_id = { area.area_id };')
-        db_session.commit()
-
-        return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
-    
-    if request.method == "DELETE":
-        db_session.execute(f'DELETE FROM person_area \
-                           WHERE user_id = { person.person_id }\
-                           AND area_id = { area.area_id };')
-        db_session.commit()
-
-        return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
-
-    return render_template("update-area.html",
-                           title="Update an Area | Pitt Digital Scholarship Database",
-                           user=current_user,
-                           existing=existing,
-                           vocab=vocab,
-                           person=person,
-                           area=area,
-                           notes=notes)
-
-
-"""Functions to Delete Records"""
-@views_bp.route('/delete-area/<area_id>/<person_id>', methods=['GET', 'POST'])
-@login_required
-def delete_area(area_id, person_id):
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
-               category="error")
-        return redirect(url_for('auth_bp.login'))
-    
-    person = Person.query.filter_by(person_id=person_id).first()
-    area = Area.query.filter_by(area_id=area_id).first()
-    
-    db_session.execute(f'DELETE FROM person_area \
-                        WHERE fk_person_id = { person.person_id }\
-                        AND fk_area_id = { area.area_id };')
-    db_session.commit()
-
-    return redirect(url_for('views_bp.view_person',
-                            public_id=person.public_id))
-
-
-@views_bp.route('/delete-person-unit/<person_id>/<unit_name>', methods=['GET', 'POST'])
-@login_required
-def delete_person_unit(person_id, unit_name):
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
-               category="error")
-        return redirect(url_for('auth_bp.login'))
-    
-    person = Person.query.filter_by(person_id=person_id).first()
-    unit_name_list = unit_name.split(', ')
-    unit = None
-    subunit = None
-    if len(unit_name_list) > 1:
-        # Get unit information
-        cur_subunit_name = unit_name_list[0]
-        cur_unit_name = unit_name_list[1]
-        subunit = Subunit.query.filter_by(subunit_name=cur_subunit_name).first()
-        unit = Unit.query.filter_by(unit_name=cur_unit_name).first()
-
-        # Delete person-subunit relation
-        db_session.execute(f'DELETE FROM person_subunit \
-                        WHERE fk_person_id = { person_id }\
-                        AND fk_subunit_id = { subunit.subunit_id };')
-        # Delete person-unit relation
-        db_session.execute(f'DELETE FROM person_unit \
-                        WHERE fk_person_id = { person_id }\
-                        AND fk_unit_id = { unit.unit_id };')
-    else:
-        # Get unit information
-        cur_unit_name = unit_name_list[0]
-        unit = Unit.query.filter_by(unit_name=cur_unit_name)
-
-        # Delete person-unit relation
-        db_session.execute(f'DELETE FROM person_unit \
-                        WHERE fk_person_id = { person_id }\
-                        AND fk_unit_id = { unit.unit_id };')
-        
-    db_session.commit()
-
-    return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
