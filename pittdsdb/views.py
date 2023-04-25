@@ -621,7 +621,6 @@ def delete_area(area_id, person_id):
                         AND fk_area_id = { area.area_id };')
     db_session.commit()
     
-
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))
 
