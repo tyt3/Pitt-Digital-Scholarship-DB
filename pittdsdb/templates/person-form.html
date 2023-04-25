@@ -46,6 +46,7 @@
     {% endif %}
     >
 </div>
+
 <br/>
 <div class="form-group">
     <label for="affiliation">Affiliation</label>
@@ -130,90 +131,6 @@
     >
 </div>
 <br/>
-<div class="row">
-    <div class="col">
-      <label for="building">Building</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="building" 
-      name="building"
-      value="{{ person_address['building_name'] }}"
-      required>
-    </div>
-    <div class="col">
-    <label for="office">Office Room #</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="office" 
-      name="office"
-      value="{{ person_address['room_number'] }}">
-    </div>
-</div>
-<br/>
-<div class="form-group">
-    <label for="street_address">Street Address</label>
-    <input 
-    type="text" 
-    class="form-control" 
-    id="street_address" 
-    name="street_address"
-    placeholder="1234 Main St"
-    value="{{ person_address['street_address'] }}"
-    required>
-</div>
-<br/>
-<div class="row">
-    <div class="col">
-      <label for="city">City</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="city"
-      value="{{ person_address['city'] }}"
-      required>
-    </div>
-    <div class="col">
-      <label for="state">State</label>
-      <select
-      class="form-control" 
-      id="state"
-      name="state"
-      required>
-        <option value="">Choose...</option>
-        <option value="PA" selected>PA</option>
-      </select>
-    </div>
-    <div class="col">
-      <label for="zipcode">Zipcode</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="zipcode"
-      name="zipcode"
-      value="{{ person_address['zipcode'] }}"
-      required>
-    </div>
-</div>
-<br/>
-<div class="form-group">
-    <label for="campus">Campus</label>
-    <select 
-    class="form-select form-select-md" aria-label=".form-select-md" 
-    id="campus" 
-    name="campus"
-    required>
-      <option value="">Select a campus</option>
-      {% for campus in vocab['campus'] %}
-      <option value="{{ campus }}"
-      {% if person_address['campus'] == campus %}
-          selected
-      {% endif %}>{{ campus }}</option>
-      {% endfor %}
-    </select>
-</div>
-<br/>
 <div class="form-group">
     <label for="preferred_contact">Preferred Contact</label>
     <select 
@@ -265,6 +182,20 @@
     name="notes"
     rows="3"
     >{% if person.notes %}{{ person.notes }}{% endif %}</textarea>
+</div>
+<br/>
+<div class="form-group">
+    <label for="photo_url">Profile Photo URL</label>
+    <input 
+    type="url" 
+    class="form-control" 
+    id="photo_url" 
+    name="photo_url"
+    {% if person.photo_url %}
+    value="{{ person.photo_url }}"
+    {% endif %}
+    >
+    <small class="text-muted">e.g., LibCal, Outlook calendar</small>
 </div>
 <br/>
 <div class="d-grid gap-2 d-md-flex justify-content-md-center">

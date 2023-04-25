@@ -88,7 +88,7 @@ class Person(Base):
     def __init__(self, first_name, last_name, title, pronouns, email,
                  web_address, phone, scheduler_address, other_contact,
                  preferred_contact, support_type, bio, notes, photo_url, 
-                 added_by,):
+                 added_by):
         self.first_name = first_name
         self.last_name = last_name
         self.title = title

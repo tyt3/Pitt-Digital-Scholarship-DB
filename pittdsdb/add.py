@@ -98,42 +98,47 @@ def add_person_to_db(first_name, last_name, title, pronouns, email,
     return True, new_person
 
 
-def add_person_affiliation(person_id=int, affiliation=str):
-    affiliation_id = Affiliation.query.filter_by(affiliation_type=affiliation).first()
+def add_person_affiliation(person_id=int, affiliation_type=str):
+    affiliation = Affiliation.query.filter_by(affiliation_type=affiliation_type).first()
+    print(affiliation.affiliation_type)
 
     try:
         db_session.execute(f'INSERT INTO person_affiliation \
                         (fk_person_id, fk_affiliation_id) \
                         VALUES \
-                        ("{ person_id }", "{ affiliation_id }")')
+                        ({ person_id }, { affiliation.affiliation_id })')
         db_session.commit()
+
         return True
     except:
         return False
     
-    
-def add_person_unit(person_id=int, unit=str):
-    unit_id = Unit.query.filter_by(unit_name=unit).first()
+
+def add_person_unit_to_db(person_id=int, unit_name=str):
+    unit = Unit.query.filter_by(unit_name=unit_name).first()
+    print("unit", unit)
 
     try:
         db_session.execute(f'INSERT INTO person_unit \
                         (fk_person_id, fk_unit_id) \
                         VALUES \
-                        ("{ person_id }", "{ unit_id }")')
+                        ({ person_id }, { unit.unit_id })')
         db_session.commit()
+        print("added unit")
         return True
     except:
+        print("unit wasn't added")
         return False
 
 
-def add_person_subunit(person_id=int, subunit=str):
-    subunit_id = Subunit.query.filter_by(subunit_name=subunit).first()
+def add_person_subunit_to_db(person_id=int, subunit_name=str):
+    subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
 
     try:
         db_session.execute(f'INSERT INTO person_subunit \
                         (fk_person_id, fk_subunit_id) \
                         VALUES \
-                        ("{ person_id }", "{ subunit_id }")')
+                        ({ person_id }, { subunit.subunit_id })')
         db_session.commit()
         return True
     except:

@@ -170,23 +170,31 @@ entities = [areas, campuses, career_levels, funding_types, payment_types,
             methods, resources, support_types, tools, units, subunits]
 
 existing = {
-    'areas': None,
-    'campuses': None,
-    'career_levels': None,
-    'funding_types': None,
-    'payment_types': None,
-    'methods': None,
-    'resources': None,
-    'support_types': None,
-    'tools': None,
-    'units': None,
-    'subunits': None
+    'areas': [],
+    'campuses': [],
+    'career_levels': [],
+    'funding_types': [],
+    'payment_types': [],
+    'methods': [],
+    'resources': [],
+    'support_types': [],
+    'tools': [],
+    'units': [],
+    'subunits': []
 }
 
 i = 0
 for entity in existing:
-    existing[entity] = entities[i]
+    entity_values = entities[i]
+    if entity_values:
+        value_list = list(entity_values)
+        value_list.sort()
+        existing[entity] = value_list
     i += 1
+
+all_units = existing['units'] + existing['subunits']
+all_units.sort()
+existing['all_units'] = all_units
 
 area_name = ['2D Scanning and Digitization',
                  '3D Scanning and Modeling',

@@ -1,8 +1,89 @@
 {% extends 'base.html' %}
-  {% block title %}Search People | Pitt Digital Scholarship Database{% endblock %}
+  {% block title %}Search People | Pitt Digital Scholarship Databse{% endblock %}
   {% block navbar_search_active %}
     <span style="color: black;">Search</span>
   {% endblock %}
   {% block content %}
-    <h1>Search People</h1>
-  {% endblock %}
+  <br/>
+    <form action="/search" method="get">
+    <h3 align = "center">Search People</h1>
+  <br/>
+
+    <div class="row">
+  <div class="col">
+    <div class="form-group">
+      <label for="first-name"><span style="font-weight: 500">First Name</span></label>
+      <input type="text" class="form-control" id="first-name" name="first_name">
+    </div>
+    <br/>
+
+    <div class="form-group">
+      <label for="last-name"><span style="font-weight: 500">Last Name</span></label>
+      <input type="text" class="form-control" id="last-name" name="last_name">
+    </div>
+    <br/>
+
+    <div class="form-group">
+      <label for="title"><span style="font-weight: 500">Title</span></label>
+      <input type="text" class="form-control" id="title" name="title">
+    </div>
+    <br/>
+
+    <div class="form-group">
+      <label for="support-type"><span style="font-weight: 500">Support Type</span></label>
+      <select class="form-control" id="support-type" name="support_type" multiple>
+        <option value="technical-support">Technical Support</option>
+      </select>
+    </div>
+    <br/>
+
+    <div class="form-group">
+      <label for="campus"><span style="font-weight: 500">Campus</span></label>
+      <select class="form-control" id="campus" name="campus" multiple>
+        <option value="pittsburgh">Pittsburgh</option>
+        <option value="bradford">Bradford</option>
+        <option value="greensburg">Greensburg</option>
+        <option value="johnstown">Johnstown</option>
+        <option value="titusville">Titusville</option>
+      </select>
+    </div>
+    <br/>
+    
+    <div class="form-group">
+      <label for="supported-area"><span style="font-weight: 500">Supported Area</span></label>
+      <select class="form-control" id="supported-area" name="supported_area" multiple>
+        <option value="data-analysis">Data analysis</option>
+        <option value="digital-humanities">Digital humanities</option>
+        <option value="geospatial-data">Geospatial data</option>
+        <option value="media-production">Media production</option>
+        <option value="text-mining">Text mining</option>
+      </select>
+    </div>
+    <br/>
+
+    <div class="form-group">
+          <label for="supported-method"><span style="font-weight: 500">Supported Method</span></label>
+          <select class="form-control" id="supported-method" name="supported_method" multiple>
+            <option value="programming">Programming</option>
+            <option value="data-visualization">Data visualization</option>
+            <option value="project-management">Project management</option>
+          </select>
+        </div>
+        <br/>
+    
+    <div class="form-group">
+          <label for="supported-tool"><span style="font-weight: 500">Supported Tool</span></label>
+          <select class="form-control" id="supported-tool" name="supported_tool" multiple>
+            <option value="python">Python</option>
+            <option value="r"> R</option>
+            <option
+            value="arcgis">ArcGIS</option>
+        <option value="qgis">QGIS</option>
+        <option value="tableau">Tableau</option>
+      </select>
+    </div>
+    <br>
+    
+    <button type="submit">Search</button>
+  </form>
+{% endblock %}

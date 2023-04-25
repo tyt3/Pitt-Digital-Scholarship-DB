@@ -153,50 +153,55 @@ def add_person(public_id):
         title = request.form.get('title')
         affiliation = request.form.getlist('affiliation')
         unit = request.form.getlist('unit')
-        department = request.form.getlist('department')
         subunit = request.form.getlist('subunit')
         email = request.form.get('email')
         web_address = request.form.get('web_address')
         phone = request.form.get('phone')
         scheduler_address = request.form.get('scheduler')
-        building = request.form.get('building')
-        office = request.form.get('office')
-        street_address = request.form.get('street_address')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        zipcode = request.form.get('zipcode')
-        campus = request.form.get('campus')
+        other_contact = request.form.get('other_contact')
+        # building = request.form.get('building')
+        # office = request.form.get('office')
+        # street_address = request.form.get('street_address')
+        # city = request.form.get('city')
+        # state = request.form.get('state')
+        # zipcode = request.form.get('zipcode')
+        # campus = request.form.get('campus')
         preferred_contact = request.form.get('preferred_contact') 
         support_type = request.form.get('support_type')
         bio = request.form.get('bio')
         notes = request.form.get('notes')
+        photo_url = request.form.get('photo_url')
 
         person = Person.query.filter_by(public_id=public_id).first()
 
         if person:
             person.first_name = first_name
-            person.last_name = request.form.get('last_name')
-            person.pronouns = request.form.get('pronouns')
-            person.title = request.form.get('title')
-            person.affiliation = request.form.getlist('affiliation')
-            person.unit = request.form.getlist('unit')
-            person.department = request.form.getlist('department')
-            person.subunit = request.form.getlist('subunit')
-            person.email = request.form.get('email')
-            person.web_address = request.form.get('web_address')
-            person.phone = request.form.get('phone')
-            person.scheduler_address = request.form.get('scheduler')
-            person.building = request.form.get('building')
-            person.office = request.form.get('office')
-            person.street_address = request.form.get('street_address')
-            person.city = request.form.get('city')
-            person.state = request.form.get('state')
-            person.zipcode = request.form.get('zipcode')
-            person.campus = request.form.get('campus')
-            person.preferred_contact = request.form.get('preferred_contact') 
-            person.support_type = request.form.get('support_type')
-            person.bio = request.form.get('bio')
-            person.notes = request.form.get('notes')
+            person.last_name = last_name
+            person.pronouns = pronouns
+            person.title = title
+            person.affiliation = affiliation
+            person.unit = unit
+            person.subunit = subunit
+            person.email = email
+            person.web_address = web_address
+            person.phone = phone
+            person.scheduler_address = scheduler_address
+            # person.building = building
+            # person.office = office
+            # person.street_address = street_address
+            # person.city = city
+            # person.state = state
+            # person.zipcode = zipcode
+            # person.campus = campus
+            person.preferred_contact = preferred_contact 
+            person.support_type = support_type
+            person.bio = bio
+            person.notes = notes
+            person.photo_url = photo_url
+
+            # Update affiliations
+            for a in affiliation:
+                add_person_affiliation(person.person_id, a)
 
             # Commit changes
             db_session.commit()
@@ -205,10 +210,11 @@ def add_person(public_id):
                                 public_id=person.public_id))
         else:
             new_person = add_person_to_db(first_name, last_name, title, 
-                                            pronouns,  email, web_address, phone,
-                                            scheduler_address, preferred_contact,
-                                            support_type, bio, 
-                                            current_user.get_id(), notes)
+                                            pronouns, email, web_address, phone,
+                                            scheduler_address, other_contact,
+                                            preferred_contact, support_type, 
+                                            bio, current_user.get_id(), notes,
+                                            photo_url)
                                             
         
             # Check if the person was added succesfully
@@ -234,12 +240,6 @@ def add_person(public_id):
                         address_id = address_added[1]
                     cursor.close()
 
-                    # Add units
-                    for u in unit:
-                        add_person_unit(person_id, u)
-                    for s in subunit:
-                        add_person_subunit(person_id, s)
-
                     # Add new person to database
                     db_session.add(new_person)
 
@@ -261,6 +261,46 @@ def add_person(public_id):
                            vocab=vocab,
                            existing=existing,
                            public_id=public_id)
+
+
+@views_bp.route('/add-person-unit/<public_id>', 
+                methods=['POST'])
+@login_required
+def add_person_unit(public_id):
+    person = Person.query.filter_by(public_id=public_id).first()
+    
+    # Check if the user is logged in and, if so, set permissions
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+
+        if current_user.permission_level == 4:
+            user_can_update = user_can_delete = True
+        elif person.added_by == current_user.user_id:
+            user_can_update = True
+
+    # Check if user can add to the database and, if not, redirect
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    if request.method == "POST":
+        # Get data from form and submit to database
+        unit_name = request.form.get('unit_name')
+        parent_unit_name = request.form.get('parent_unit_name')
+
+        print("unit_name", unit_name)
+
+        # Add unit(s)
+        if parent_unit_name == "None":
+            add_person_unit_to_db(person.person_id, parent_unit_name)
+        else:
+            add_person_subunit_to_db(person.person_id, unit_name)
+            add_person_unit_to_db(person.person_id, parent_unit_name)
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+    
 
 
 @views_bp.route('/add-unit', methods=['GET', 'POST'])
@@ -426,7 +466,7 @@ def add_tool(person_id):
                            vocab=vocab,
                            existing=existing,
                            tool=None,
-                           person_id=per)
+                           person_id=person_id)
 
 
 @views_bp.route('/add-resource', methods=['GET', 'POST'])
@@ -470,12 +510,11 @@ def view_person(public_id):
             user_can_update = user_can_delete = True
         elif person.added_by == current_user.user_id:
             user_can_update = True
-    else:
-        print("logged out", user_can_delete, user_can_update)
     
     # Get person record
     person = db_session.query(Person).filter_by(public_id=public_id).first()
 
+    # Notify if person was not found in the DB and redirect to homepage
     if not person:
         flash("404: Not Found. That person does not exist in the database.",
               category="error")
@@ -500,13 +539,14 @@ def view_person(public_id):
     person_address_result = get_person_relations(person.person_id,
                                                  "*",
                                                  "address")
-    address_items = ['building_name', 'room_number', 'street_address', 
-                 'address_2', 'address_3', 'city', 'state', 'zipcode', 'campus']
     person_address = {}
-    i = 3
-    for item in address_items:
-        person_address[item] = person_address_result[i]
-        i += 1
+    if person_address_result:
+        address_items = ['building_name', 'room_number', 'street_address', 
+                    'address_2', 'address_3', 'city', 'state', 'zipcode', 'campus']
+        i = 3
+        for item in address_items:
+            person_address[item] = person_address_result[i]
+            i += 1
     
     return render_template("view-person.html",
                            title="View a Person | Pitt Digital Scholarship Database",
@@ -631,3 +671,48 @@ def delete_area(area_id, person_id):
 
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))
+
+
+@views_bp.route('/delete-person-unit/<person_id>/<unit_name>', methods=['GET', 'POST'])
+@login_required
+def delete_person_unit(person_id, unit_name):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    unit_name_list = unit_name.split(', ')
+    unit = None
+    subunit = None
+    if len(unit_name_list) > 1:
+        # Get unit information
+        cur_subunit_name = unit_name_list[0]
+        cur_unit_name = unit_name_list[1]
+        subunit = Subunit.query.filter_by(subunit_name=cur_subunit_name).first()
+        unit = Unit.query.filter_by(unit_name=cur_unit_name).first()
+
+        # Delete person-subunit relation
+        db_session.execute(f'DELETE FROM person_subunit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_subunit_id = { subunit.subunit_id };')
+        # Delete person-unit relation
+        db_session.execute(f'DELETE FROM person_unit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_unit_id = { unit.unit_id };')
+    else:
+        # Get unit information
+        cur_unit_name = unit_name_list[0]
+        unit = Unit.query.filter_by(unit_name=cur_unit_name)
+
+        # Delete person-unit relation
+        db_session.execute(f'DELETE FROM person_unit \
+                        WHERE fk_person_id = { person_id }\
+                        AND fk_unit_id = { unit.unit_id };')
+        
+    db_session.commit()
+
+    return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
