@@ -85,10 +85,10 @@ class Person(Base):
     fk_subunits = relationship('Subunit', secondary='person_subunit')
     fk_units = relationship('Unit', secondary='person_unit')
 
-    def __init__(self, first_name, last_name, title, pronouns, email,
-                 web_address, phone, scheduler_address, other_contact,
-                 preferred_contact, support_type, bio, notes, photo_url, 
-                 added_by):
+    def __init__(self, first_name=str, last_name=str, title=str, pronouns=str, 
+                 email=str, web_address=str, phone=str, scheduler_address=str, 
+                 other_contact=str, preferred_contact=str, support_type=str, 
+                 bio=str, notes=str, photo_url=str, added_by=str):
         self.first_name = first_name
         self.last_name = last_name
         self.title = title

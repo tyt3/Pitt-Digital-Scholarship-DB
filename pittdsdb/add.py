@@ -65,9 +65,9 @@ def add_method_to_db(name):
     return True
 
 
-def add_person_to_db(first_name, last_name, title, pronouns, email,
-                 web_address, phone, scheduler_address, preferred_contact, 
-                 support_type, bio, added_by, notes):
+def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
+                     phone, scheduler_address, other_contact, preferred_contact,
+                     support_type, bio, added_by, notes, photo_url):
     person = Person.query.filter_by(email=email).first()
     
     if person:
@@ -83,10 +83,12 @@ def add_person_to_db(first_name, last_name, title, pronouns, email,
                             phone = phone,
                             scheduler_address = scheduler_address,
                             preferred_contact = preferred_contact,
+                            other_contact = other_contact,
                             support_type = support_type,
                             bio = bio,
                             added_by = added_by,
-                            notes = notes)  
+                            notes = notes,
+                            photo_url = photo_url)  
 
         # Add new area to database
         db_session.add(new_person)
