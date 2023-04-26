@@ -1,4 +1,262 @@
 {% extends 'base.html' %}
-  {% block content %}
-    <h1>Home</h1>
-  {% endblock %}
+  {% block title %}Pitt Digital Scholarship Databse{% endblock %}
+  {% block head %}
+        <style type="text/css">
+            #viz {
+                width: 900px;
+                height: 700px;
+                font: 10
+            }
+        </style>
+        <script src="https://rawgit.com/neo4j-contrib/neovis.js/master/dist/neovis.js"></script>
+        
+         <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+   {% endblock %} 
+   {% block body_tag %}onload="draw()"{% endblock %}
+   {% block content %}
+    <script>
+        function draw() {
+            let neoViz;
+            
+            var config = {
+                containerId: "viz",
+                neo4j: {
+                    serverUrl: "neo4j://34.138.97.57:7687",
+                    serverUser: "neo4j",
+                    serverPassword: "INFSCI2710"
+                },
+                visConfig: {
+                        nodes: {
+                            shape: 'circle',
+                            labelHighlightBold: false,
+                        },
+                        edges: {
+                            arrows: {
+                                to: {enabled: true}
+                            },
+                        }
+                    },
+                 labels: {
+                    "Person": {
+                        label: "name",
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "orange",
+                                shape:'image',
+                                image: "profile.jpeg"
+							},
+						}
+                    },
+                     
+                     "Unit": {
+                        label: "name",
+                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "green",
+                                shape:'image',
+                                image: "unit.png"
+							},
+						}
+                    },
+                     
+                     "SubUnit": {
+                        label: "name",
+                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "light green",
+                                shape:'image',
+                                image: "subunit.png"
+							},
+						}
+                        
+                    },
+                     
+                     "Area": {
+                        label: "name",
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "violet",
+                                shape:'image',
+                                image: "area.jpeg"
+							},
+						}
+                    },
+                     
+                     "Method": {
+                        label: "name",
+                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "blue",
+                                shape:'image',
+                                image: "method.png"
+							},
+						}
+                    },
+                     
+                     "Tool": {
+                        label: "name",
+                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "light blue",
+                                shape:'image',
+                                image: "tool.jpeg"
+							},
+						}
+                    },
+                     
+                     "Resource": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "yellow",
+                                shape:'image',
+                                image: "resource.jpeg"
+							},
+						}
+                    },
+                     
+                     "Funding": {
+                        label: "name",  
+                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+							function: {
+								title: NeoVis.objectToTitleHtml
+							},
+                            static: {
+								color: "pink",
+                                shape:'image',
+                                image: "funding.png"
+							},
+						}
+                    }
+                },
+                relationships: {
+                    "SUPPORTS": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"SUPPORTS"
+							},
+						} 
+                    },
+                    "SUPPORTED_BY": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"SUPPORTED_BY",
+							},
+						}
+                    },
+                    "PART_OF": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"PART_OF",
+							},
+						}
+                    },
+                    "INCLUDES": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"INCLUDES",
+							},
+						}
+                    },
+                    "PROVIDES": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"PROVIDES",
+							},
+						}
+                    },
+                    "PROVIDED_BY": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"PROVIDED_BY",
+							},
+						}
+                    },
+                    "HOUSES": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"HOUSES",
+							},
+						}
+                    },
+                    "HOUSED_IN": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"HOUSED_IN",
+							},
+						}
+                    },
+                    "OFFERS": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"OFFERS",
+							},
+						}
+                    },
+                    "OFFERED_BY": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"OFFERED_BY",
+							},
+						}
+                    },
+                    "USES": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"USES",
+							},
+						}
+                    },
+                    "USED_FOR": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"USED_FOR",
+							},
+						}
+                    },
+                    "TYPE_OF": {
+                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
+                            static: {
+                                label:"TYPE_OF",
+							},
+						}
+                    }
+                },
+                arrows: true,
+                initialCypher: "MATCH p = (n)-[r]->(m) RETURN p"
+            };
+
+            var viz = new NeoVis.default(config);
+            viz.render();
+            viz.registerOnEvent('clickNode', (e) => {
+                if (e.node.raw.labels[0] == "Person"){
+                    window.open(e.node.raw.properties['profile_uri'],'_self')
+                }
+            });
+        }
+    </script>
+        <div id="viz"></div>
+{% endblock %}

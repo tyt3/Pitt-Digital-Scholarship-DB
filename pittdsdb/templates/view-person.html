@@ -42,7 +42,8 @@
         <br/>
         <strong>Email:</strong> <a href="mailto:{{ person.email }}">{{ person.email }}</a><br/>
         {% if person.web_address %}
-        <strong>Website:</strong> {{ person.web_address }}<br/>
+        <strong>Website:</strong> 
+        <a href="{{ person.web_address }}" target="_blank">{{ person.web_address }}</a><br/>
         {% endif %}
         {% if person.phone %}
         <strong>Phone:</strong> 
@@ -58,7 +59,7 @@
         <strong>Preferred Contact Method:</strong> {{ person.preferred_contact }}<br/>
         <strong>Support Type:</strong> {{ person.support_type }}<br/>
         {% endif %}
-        <strong>Affiliation:</strong>
+        <strong>Affiliation:</strong> 
         {% if person_affiliation|length > 1 %}
             <ul>
                 {% for a in person_affiliation %}
@@ -96,13 +97,14 @@
         {% endif %}
             <ul>
             {% for method in person_support[area] %}
+                {% if method['profiency'] %}
                 <li><span style="font-size: 18px"><strong>{{ method }}:</strong>
                     {{ person_support[area][method]['proficiency'] }}</span>
                     {% if user_can_update %}
                     &nbsp;
                     <a role="button" class="btn btn-outline-primary btn-sm"
                     style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-                    href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Method</a>
+                    href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">Update Method</a>
                     {% endif %}
                 </li>
                     <ul>
@@ -117,6 +119,7 @@
                             {% endif %}
                         {% endfor %}
                     </ul>
+                {% endif %}
             {% endfor %}
             </ul> 
         {% endfor %}
@@ -238,7 +241,7 @@ tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
 
 <!-- Add Area Form Modal -->
 <div class="modal fade" id="addAreaModal" name="addAreaModal" 
-tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+tabindex="-1" aria-labelledby="addAreaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -260,6 +263,56 @@ tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
     </div>
   </div>
 
+<!-- Add Method Form Modal -->
+<div class="modal fade" id="addMethodModal" name="addMethodModal" 
+tabindex="-1" aria-labelledby="addMethodModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5"
+           id="addMethodModal">Add Method</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Person Form -->
+          <div id="add_method_form">
+            <form method="POST" action="{{ url_for('views_bp.add_method', public_id=person.public_id) }}" 
+            target="_parent">
+              {% include "add-method.html" %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Add Tool Form Modal -->
+<div class="modal fade" id="addToolModal" name="addToolModal" 
+tabindex="-1" aria-labelledby="addToolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5"
+           id="addToolModal">Add Tool</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Person Form -->
+          <div id="add_tool_form">
+            <form method="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}" 
+            target="_parent">
+              {% include "add-tool.html" %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
 
   <!-- Update Tool Form Modal -->
 <div class="modal fade" id="updateToolModal" name="updateToolModal" 
@@ -275,7 +328,7 @@ tabindex="-1" aria-labelledby="updateToolModalLabel" aria-hidden="true">
         <div class="modal-body">
           <!-- Person Form -->
           <div id="update_tool_form">
-            <form metod="POST" action="{{ url_for('views_bp.add_tool', person_id=person.person_id) }}" 
+            <form metod="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}" 
                 target="updateToolModal">
               {% include "add-tool.html" %}
             </form>

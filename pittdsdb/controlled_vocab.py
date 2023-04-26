@@ -154,6 +154,12 @@ try:
 except:
     pass
 
+tool_types = None
+try:
+    tool_types = list(zip(*db_session.query(Tool.tool_type).distinct()))[0]
+except:
+    pass
+
 units = None
 try:
     units = list(zip(*db_session.query(Unit.unit_name).distinct()))[0]
@@ -167,7 +173,7 @@ except:
     pass
 
 entities = [areas, campuses, career_levels, funding_types, payment_types, 
-            methods, resources, support_types, tools, units, subunits]
+            methods, resources, support_types, tools, tool_types, units, subunits]
 
 existing = {
     'areas': [],
@@ -179,9 +185,11 @@ existing = {
     'resources': [],
     'support_types': [],
     'tools': [],
+    'tool_types': [],
     'units': [],
     'subunits': []
 }
+
 
 i = 0
 for entity in existing:

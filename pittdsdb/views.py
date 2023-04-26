@@ -354,17 +354,23 @@ def add_area(public_id):
     new_area_name = request.form.get('new_area')
     notes = request.form.get('notes')
 
-    print("area", area_name)
-    print("new area", new_area_name)
-    print("notes", notes)
-
     person = Person.query.filter_by(public_id=public_id).first()
 
     if new_area_name:
-        new_area = Area(new_area_name, current_user.user_id)
+        existing_area = Area.query.filter_by(area_name=new_area_name).first()
 
-        # Add new_area to db
+        if existing_area:
+            flash("That area already exists!", category='error')
+        else:
+            new_area = Area(new_area_name, current_user.user_id)
+            person_area = PersonArea(person.person_id, new_area.area_id, notes)
+
+        # Add new_area and person-area relationship to db
+        #with db_session.begin():
         db_session.add(new_area)
+        db_session.add(person_area)
+        db_session.commit()
+
         db_session.commit()
 
         #Add Area node
@@ -387,7 +393,7 @@ def add_area(public_id):
                                 public_id=person.public_id))
 
 
-@views_bp.route('/add-method', methods=['GET', 'POST'])
+@views_bp.route('/add-method/<public_id>', methods=['POST'])
 @login_required
 def add_method(public_id):
     if current_user.is_authenticated:
@@ -397,83 +403,48 @@ def add_method(public_id):
                category="error")
         return redirect(url_for('auth_bp.login'))
     
-    if request.method == "POST":
-        method_name = request.form.get('method_name')
-        proficiency = request.form.get('proficiency')
+    # Get form values
+    area_name = request.form.getlist('area')
+    method_name = request.form.get('method')
+    new_method_name = request.form.get('new_method')
+    proficiency_level = request.form.get('proficiency')
+    notes = request.form.get('notes')
 
+    person = Person.query.filter_by(public_id=public_id).first()
+    proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
+
+    if new_method_name:
+        existing_method = Method.query.filter_by(method_name=new_method_name).first()
+
+        if existing_method:
+            flash("That method already exists!", category='error')
+        else:
+            new_method = Method(new_method_name, current_user.user_id)
+            person_method = PersonMethod(person.person_id, new_method.method_id, 
+                                         proficiency.proficiency_id, notes)
+            # Add new_method and person-method relationship to db
+            db_session.add(new_method)
+            db_session.add(person_method)
+            db_session.commit()
+
+    else:
         method = Method.query.filter_by(method_name=method_name).first()
+        person_method = PersonMethod(person.person_id, method.method_id, 
+                                     proficiency.proficiency_id, notes)
 
-        # if method:
-            
-
-        #     # Commit changes
-        #     db_session.commit()
-
-        #     return redirect(url_for('views_bp.view_person',
-        #                         public_id=person.public_id))
-        # else:
-        #     new_person = add_person_to_db(first_name, last_name, title, 
-        #                                     pronouns,  email, web_address, phone,
-        #                                     scheduler_address, preferred_contact,
-        #                                     support_type, bio, 
-        #                                     current_user.get_id(), notes)
-                                            
         
-        #     # Check if the person was added succesfully
-        #     if new_person:
-        #         if new_person[0]:
-        #             # Get person object
-        #             p = new_person[1]
-        #             person_id = p.person_id
-        #             public_id = p.public_id
-
-        #             # Add affiliation
-        #             for a in affiliation:
-        #                 add_person_affiliation(person_id, a)
-
-        #             # Add address
-        #             cursor = db_session.cursor()
-        #             cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
-        #                                             building, office, street_address,
-        #                                             "", "", city, state, zipcode, 
-        #                                             campus, 0, 0])
-        #             address_added = list(cursor.fetchall()) # Get output params
-        #             if address_added[0]:
-        #                 address_id = address_added[1]
-        #             cursor.close()
-
-        #             # Add units
-        #             for u in unit:
-        #                 add_person_unit(person_id, u)
-        #             for s in subunit:
-        #                 add_person_subunit(person_id, s)
-
-        #             # Add new person to database
-        #             db_session.add(new_person)
-
-            #         # Commit changes
-            #         db_session.commit()
-
-            #         return redirect(url_for('views_bp.view_person',
-            #                     public_id=new_person.public_id))
-            # else:
-            #     flash('The person record was not added. Please try again.',
-            #       category='error')
-                
-            #     return redirect(url_for('views_bp.add_method', 
-            #                             public_id=public_id))
-
-    return render_template("add-method.html",
-                           title="Add a Method | Pitt Digital Scholarship Database",
-                           user=current_user,
-                           vocab=vocab,
-                           existing=existing,
-                           public_id=public_id)
+        # Add method and person-method relationship to db
+        db_session.add(person_method)
+        db_session.commit()
 
 
-@views_bp.route('/add-tool/<person_id>', methods=['GET', 'POST'])
+    return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+
+@views_bp.route('/add-tool/<public_id>', methods=['GET', 'POST'])
 @login_required
-def add_tool(person_id):
+def add_tool(public_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -493,7 +464,7 @@ def add_tool(person_id):
                            vocab=vocab,
                            existing=existing,
                            tool=None,
-                           person_id=person_id)
+                           person_id=public_id)
 
 
 @views_bp.route('/add-resource', methods=['GET', 'POST'])
@@ -507,7 +478,9 @@ def add_resource():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-resource.html",
                            title="Add a Resource | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing)
 
 
 @views_bp.route('/add-funding', methods=['GET', 'POST'])
@@ -521,7 +494,9 @@ def add_funding():
         return redirect(url_for('auth_bp.login'))
     return render_template("add-funding.html",
                            title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing)
 
 
 """Functions to Show Update Pages"""
@@ -539,7 +514,7 @@ def update_area(area_name, public_id):
     person = Person.query.filter_by(public_id=public_id).first()
     area = Area.query.filter_by(area_name=area_name).first()
     notes = get_person_relations(person.person_id, 
-                                 "fk_area_id", "area",
+                                 "notes", "area",
                                  area.area_id)[0]
     
     if request.method == "POST":
@@ -564,7 +539,7 @@ def update_area(area_name, public_id):
                            notes=notes)
 
 
-@views_bp.route('/update-area/<method_name>/<public_id>', methods=['GET', 'POST'])
+@views_bp.route('/update-method/<method_name>/<public_id>', methods=['GET', 'POST'])
 @login_required
 def update_method(method_name, public_id):
     if current_user.is_authenticated:
@@ -575,12 +550,13 @@ def update_method(method_name, public_id):
         return redirect(url_for('auth_bp.login'))
     
     person = Person.query.filter_by(public_id=public_id).first()
-    method = Area.query.filter_by(method_name=method_name).first()
+    method = Method.query.filter_by(method_name=method_name).first()
     notes = get_person_relations(person.person_id, 
-                                 "fk_method_id", "method",
+                                 "notes", "method",
                                  method.method_id)[0]
     
     if request.method == "POST":
+        updated_proficiency = request.form.get('notes')
         updated_notes = request.form.get('notes')
 
         db_session.execute(f'UPDATE person_area \

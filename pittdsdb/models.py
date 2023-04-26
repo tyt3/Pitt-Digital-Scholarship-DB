@@ -368,7 +368,7 @@ class Funding(Base):
     payment_type = Column(String(50), nullable=False)
     payment_amount = Column(Float(asdecimal=True))
     payment_frequency = Column(String(50), nullable=False)
-    amount = Column(Float(asdecimal=True))
+    amount = Column(Float(asdecimal=True)) # remove?
     career_level = Column(String(50), nullable=False)
     duration = Column(String(50))
     frequency = Column(String(50))
@@ -464,6 +464,9 @@ class PersonMethod(Base):
         self.fk_method_id = fk_method_id
         self.fk_proficiency = fk_proficiency_id
         self.notes = notes
+
+    def __rep__(self):
+        return f"{self.fk_person_id}, {self.fk_method_id}"
 
 
 class PersonTool(Base):

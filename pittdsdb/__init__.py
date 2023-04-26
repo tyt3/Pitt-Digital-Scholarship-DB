@@ -3,13 +3,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_marshmallow import Marshmallow
-from datetime import datetime
 from flask_login import LoginManager
+from flask_mail import Mail, Message
+from datetime import datetime
 
 
 def init_app():
     from .database import db_session
-    from .views import views_bp
+    from .views import views_bp, mail
     from .auth import auth_bp
     from .api import api_bp
     from .models import User
@@ -36,6 +37,9 @@ def init_app():
 
     # Create api object
     api = Api(api_bp)
+
+    # Initiate Mail object
+    mail.init_app(app)
 
     # Register Blueprints
     app.register_blueprint(views_bp, url_prefix='/')

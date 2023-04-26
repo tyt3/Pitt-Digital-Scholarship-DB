@@ -5,21 +5,21 @@
   {% endblock %}
   {% block content %}
   <br/>
-    <form action="/search" method="get">
-    <h3 align = "center">Search People</h1>
+    <form action="/search-people" method="GET">
+    <h3 align="center">Search People</h3>
   <br/>
 
-    <div class="row">
-  <div class="col">
-    <div class="form-group">
-      <label for="first-name"><span style="font-weight: 500">First Name</span></label>
-      <input type="text" class="form-control" id="first-name" name="first_name">
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="first_name"><span style="font-weight: 500">First Name</span></label>
+      <input type="text" class="form-control" id="first_name" name="first_name">
     </div>
     <br/>
 
     <div class="form-group">
-      <label for="last-name"><span style="font-weight: 500">Last Name</span></label>
-      <input type="text" class="form-control" id="last-name" name="last_name">
+      <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
+      <input type="text" class="form-control" id="last_name" name="last_name">
     </div>
     <br/>
 
@@ -28,62 +28,81 @@
       <input type="text" class="form-control" id="title" name="title">
     </div>
     <br/>
-
+    <hr style="margin-bottom: 27.5px"/>
     <div class="form-group">
-      <label for="support-type"><span style="font-weight: 500">Support Type</span></label>
-      <select class="form-control" id="support-type" name="support_type" multiple>
-        <option value="technical-support">Technical Support</option>
-      </select>
+      <label for="support_type"><span style="font-weight: 500">Support Type</span></label>
+      <select class="form-control" id="support_type" name="support_type" multiple>
+          <option value="">Select Support Type</option>
+          {% for support_type in existing['support_types'] %}
+          <option value="{{ support_type }}">{{ support_type }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
     </div>
     <br/>
 
     <div class="form-group">
       <label for="campus"><span style="font-weight: 500">Campus</span></label>
       <select class="form-control" id="campus" name="campus" multiple>
-        <option value="pittsburgh">Pittsburgh</option>
-        <option value="bradford">Bradford</option>
-        <option value="greensburg">Greensburg</option>
-        <option value="johnstown">Johnstown</option>
-        <option value="titusville">Titusville</option>
-      </select>
+          <option value="">Select Campus</option>
+          {% for campus in existing['campuses'] %}
+          <option value="{{ campus }}">{{ campus }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
     </div>
     <br/>
-    
+    </div>
+
+    <div class="col">
     <div class="form-group">
       <label for="supported-area"><span style="font-weight: 500">Supported Area</span></label>
-      <select class="form-control" id="supported-area" name="supported_area" multiple>
-        <option value="data-analysis">Data analysis</option>
-        <option value="digital-humanities">Digital humanities</option>
-        <option value="geospatial-data">Geospatial data</option>
-        <option value="media-production">Media production</option>
-        <option value="text-mining">Text mining</option>
-      </select>
+      <select class="form-control" id="supported_area" name="supported_area" multiple>
+          <option value="">Select Supported Area</option>
+          {% for area in existing['areas'] %}
+          <option value="{{ area }}">{{ area }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
     </div>
     <br/>
 
     <div class="form-group">
-          <label for="supported-method"><span style="font-weight: 500">Supported Method</span></label>
-          <select class="form-control" id="supported-method" name="supported_method" multiple>
-            <option value="programming">Programming</option>
-            <option value="data-visualization">Data visualization</option>
-            <option value="project-management">Project management</option>
-          </select>
-        </div>
-        <br/>
+      <label for="supported-method"><span style="font-weight: 500">Supported Method</span></label>
+      <select class="form-control" id="supported_method" name="supported_method" multiple>
+          <option value="">Select Supported Method</option>
+          {% for method in existing['methods'] %}
+          <option value="{{ method }}">{{ method }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
+    </div>
+    <br/>
     
     <div class="form-group">
-          <label for="supported-tool"><span style="font-weight: 500">Supported Tool</span></label>
-          <select class="form-control" id="supported-tool" name="supported_tool" multiple>
-            <option value="python">Python</option>
-            <option value="r"> R</option>
-            <option
-            value="arcgis">ArcGIS</option>
-        <option value="qgis">QGIS</option>
-        <option value="tableau">Tableau</option>
-      </select>
+          <label for="supported_tool"><span style="font-weight: 500">Supported Tool</span></label>
+          <select class="form-control" id="supported_tool" name="supported_tool" multiple>
+          <option value="">Select Supported Tool</option>
+          {% for tool in existing['tools'] %}
+          <option value="{{ tool }}">{{ tool }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
     </div>
-    <br>
-    
-    <button type="submit">Search</button>
+    <br/>
+    <div class="form-group">
+      <label for="supported_tool_type"><span style="font-weight: 500">Supported Tool Type</span></label>
+      <select class="form-control" id="supported_tool_type" name="supported_tool_type" multiple>
+      <option value="">Select Supported Tool</option>
+      {% for tool_type in existing['tool_types'] %}
+      <option value="{{ tool_type }}">{{ tool_type }}</option>
+      {% endfor %}
+      <!-- Add more options as needed -->
+    </select>
+</div>
+  </div>
+  </div>
+    <button type="submit" class="btn btn-primary">Search</button>
   </form>
+  <br/>
 {% endblock %}

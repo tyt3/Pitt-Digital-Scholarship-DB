@@ -1,8 +1,99 @@
 {% extends 'base.html' %}
-  {% block title %}Search Funding Opportunities | Pitt Digital Scholarship Database{% endblock %}
+  {% block title %}Search Funding Opportunities | Pitt Digital Scholarship Databse{% endblock %}
   {% block navbar_search_active %}
     <span style="color: black;">Search</span>
   {% endblock %}
   {% block content %}
-    <h1>Search Funding Opportunities</h1>
-  {% endblock %}
+  <br/>
+  <form action="/search-funding" method="GET">
+    <h3 align="center">Search Funding</h3>
+    <br/>
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="funding_name"><span style="font-weight: 500">Funding Name</span></label>
+        <input type="text" class="form-control" id="funding_name" name="funding_name">
+        </div>
+        <br/>
+        <div class="form-group">
+          <label for="type"><span style="font-weight: 500">Funding Type</span></label>
+          <select class="form-control" id="funding_type" name="funding_type" multiple>
+            <option value="" >Select Funding Type</option>
+            {% for funding_type in existing['funding_type'] %}
+            <option value="{{ funding_type }}">{{ funding_type }}</option>
+            {% endfor %}
+            <!-- Add more options as needed -->
+            </select>
+        </div>
+        <br>
+
+     <div class="form-group">
+      <label for="type"><span style="font-weight: 500">Payment Type</span></label>
+      <select class="form-control" id="payment_type" name="payment_type" multiple>
+          <option value="" >Select Payment Type</option>
+          {% for payment_type in existing['payment_type'] %}
+          <option value="{{ payment_type }}">{{ payment_type }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
+    </div>
+    <br/>
+    <div>
+      <label for="type"><span style="font-weight: 500">Amount</span></label>
+      <div class="row">
+        <div class="col">
+          <label for="min_amount">Min:</label>
+          <input type="number" class="form-control" id="min_amount" name="min_amount">
+       </div>
+      
+      <div class="col">
+        <label for="max_amount">Max:</label>
+        <input type="number" class="form-control" id="max_amount" name="max_amount">
+      </div>
+
+    </div>
+    </div>
+    </div>
+      <div class="col">
+      <div class="form-group">
+      <label for="type"><span style="font-weight: 500">Career Level</span></label>
+      <select class="form-control" id="career_level" name="career_level" multiple>
+          <option value="" >Select Career Level</option>
+          {% for career_level in existing['career_level'] %}
+          <option value="{{ career_level }}">{{ career_level }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
+      <br>
+
+      <div class="form-group">
+      <label for="type"><span style="font-weight: 500">Duration</span></label>
+      <select class="form-control" id="duration" name="duration" multiple>
+          <option value="" >Select Duration</option>
+          {% for duration in existing['duration'] %}
+          <option value="{{ duration }}">{{ duration }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
+      <br>
+
+      <div class="form-group">
+      <label for="type"><span style="font-weight: 500">Frequency</span></label>
+      <select class="form-control" id="frequency" name="frequency" multiple>
+          <option value="" >Select Frequency</option>
+          {% for frequency in existing['frequency'] %}
+          <option value="{{ frequency }}">{{ frequency }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+          </select>
+      <br>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <br/>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <br/>
+{% endblock %}

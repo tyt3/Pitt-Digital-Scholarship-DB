@@ -4,5 +4,92 @@
     <span style="color: black;">Add Info</span>
   {% endblock %}
   {% block content %}
-    <h1>Add a Funding Opportunity</h1>
+  <br/>
+  <div class="row">
+    <div class="mx-auto col-6 col-md-6 col-lg-4">
+      <form method="POST" >
+        <h3 align="center">Add a Funding Opportunity</h3>
+        <div class="form-group">
+          <label for="funding_name">Funding Name</label>
+          <input type="text" 
+              class="form-control" 
+              id="funding_name" 
+              name="funding_name" required>
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="funding_type"><span style="font-weight: 500"></span style="font-weight: 500">Type</label>
+            <select class="form-select form-select-md" aria-label=".form-select-md example">
+                <option value="">Select a funding type</option>
+                {% for type in vocab['funding_type'] %}
+                <option value="{{ type }}">{{ type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="funding_website"><span style="font-weight: 500"></span style="font-weight: 500">Website</label>
+            <input type="url" class="form-control" id="funding_website" name="funding_website">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="payment_amount"><span style="font-weight: 500"></span style="font-weight: 500">Payment Amount</label>
+            <input type="url" class="form-control" id="payment_amount" name="payment_amount">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="payment_frequency"><span style="font-weight: 500"></span style="font-weight: 500">Payment Frequency</label>
+            <input type="url" class="form-control" id="payment_frequency" name="payment_frequency">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="career_level"><span style="font-weight: 500"></span style="font-weight: 500">Career Level</label>
+            <input type="url" class="form-control" id="career_level" name="career_level">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="duration"><span style="font-weight: 500"></span style="font-weight: 500">Duration</label>
+            <input type="url" class="form-control" id="duration" name="duration">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="frequency"><span style="font-weight: 500"></span style="font-weight: 500">Frequency</label>
+            <input type="url" class="form-control" id="frequency" name="frequency">
+        </div>
+        <br/>
+
+        <div class="form-group">
+            <label for="description"><span style="font-weight: 500"></span style="font-weight: 500">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <br/>
+
+         <div class="form-group">
+            <label for="frequency"><span style="font-weight: 500"></span style="font-weight: 500">Notes</label>
+            <input type="url" class="form-control" id="notes" name="notes">
+        </div>
+        <br/>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+  <br/>
   {% endblock %}
+
+
+
+
+
+
+

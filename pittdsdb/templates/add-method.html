@@ -1,4 +1,4 @@
-<form method="POST" action="{{ url_for('views_bp.add_method') }}">
+<form method="POST" action="{{ url_for('views_bp.add_method', public_id=person.public_id) }}">
   {% include 'area-form.html' %}
   <br/>
   {% include 'method-form.html' %}
@@ -23,8 +23,10 @@
   </div>
   <div class="form-group">
     <label for="proficiency">Method Proficiency Level</label>
-    <select class="form-select form-select-md" aria-label=".form-select-md example">
-      <option selected disabled>Select a proficiency level</option>
+    <select class="form-select form-select-md" aria-label=".form-select-md example"
+      id="proficiency"
+      name="proficiency">
+      <option>Select a proficiency level</option>
       {% for level in vocab['proficiency_level'] %}
       <option value="{{ level }}">{{ level }}</option>
       {% endfor %}

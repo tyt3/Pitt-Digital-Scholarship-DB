@@ -7,11 +7,11 @@
   <br/>
   <div class="mx-auto col-6 col-md-6 col-lg-4">
     <form method="POST" action="{{ url_for('views_bp.add_person', public_id='new') }}">
-      <h3 align="center">Add Person</h3>
+      <h3 align="center">Add a Person</h3>
       <br/>
       <div class="row">
         <div class="col">
-          <label for="first_name">First Name</label>
+          <label for="first_name"><span style="font-weight: 500">First Name</span></label>
           <input 
           type="text" 
           class="form-control" 
@@ -21,7 +21,7 @@
           required>
         </div>
         <div class="col">
-        <label for="last_name">Last Name</label>
+        <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
           <input 
           type="text" 
           class="form-control" 
@@ -33,7 +33,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="pronouns">Pronouns</label>
+        <label for="pronouns"><span style="font-weight: 500">Pronouns</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -43,7 +43,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="title">Title</label>
+        <label for="title"><span style="font-weight: 500">Title</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -53,13 +53,13 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="affiliation">Affiliation</label>
+        <label for="affiliation"><span style="font-weight: 500">Affiliation</span></label>
         <select class="form-control"
          id="affiliation"
          name="affiliation" 
          multiple
          required>
-          <option value="" disabled>Select an Affiliation</option>
+          <option value=""><span style="font-weight: 500">Select an Affiliation</span></option>
           {% for affiliation in vocab['affiliation_type'] %}
           <option value="{{ affiliation }}">{{ affiliation }}</option>
           {% endfor %}
@@ -67,7 +67,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email"><span style="font-weight: 500">Email</span></label>
         <input 
         type="email" 
         class="form-control" 
@@ -78,7 +78,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="web_address">Website</label>
+        <label for="web_address"><span style="font-weight: 500">Website</span></label>
         <input 
         type="url" 
         class="form-control" 
@@ -88,7 +88,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="phone">Phone</label>
+        <label for="phone"><span style="font-weight: 500">Phone</span></label>
         <input 
         type="tel" 
         class="form-control" 
@@ -100,7 +100,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="scheduler">Appointment Scheduler</label>
+        <label for="scheduler"><span style="font-weight: 500">Appointment Scheduler</span></label>
         <input 
         type="url" 
         class="form-control" 
@@ -111,7 +111,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="other_contact">Other Contact Method</label>
+        <label for="other_contact"><span style="font-weight: 500">Other Contact Method</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -121,7 +121,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="preferred_contact">Preferred Contact</label>
+        <label for="preferred_contact"><span style="font-weight: 500">Preferred Contact</span></label>
         <select 
         class="form-select form-select-md" aria-label=".form-select-md"
         id="preferred_contact"
@@ -136,7 +136,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="support_type">Support Type</label>
+        <label for="support_type"><span style="font-weight: 500">Support Type</span></label>
         <select 
         class="form-select form-select-md" aria-label=".form-select-md"
         id="support_type"
@@ -150,7 +150,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="bio">Bio</label>
+        <label for="bio"><span style="font-weight: 500">Bio</span></label>
         <textarea class="form-control"
          id="bio"
          name="bio"
@@ -158,7 +158,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="notes">Notes</label>
+        <label for="notes"><span style="font-weight: 500">Notes</span></label>
         <textarea class="form-control"
          id="notes"
          name="notes"

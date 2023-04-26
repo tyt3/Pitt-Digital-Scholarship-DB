@@ -1,4 +1,4 @@
-<form method="POST" action="{{ url_for('views_bp.add_tool', person_id=0) }}">
+<form method="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}">
   {% include 'area-form.html' %}
   <br/>
   {% include 'method-form.html' %}

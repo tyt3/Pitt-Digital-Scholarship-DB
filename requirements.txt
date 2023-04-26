@@ -13,7 +13,7 @@ passlib>=1.7.4
 python-dotenv>=1.0.0
 PyMySQL>=1.0.3
 SQLAlchemy>=2.0.7
-jwt
+Flask-Mail>=0.9.1jwt
 flask_mail
 Neo4j
 pandas

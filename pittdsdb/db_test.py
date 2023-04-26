@@ -12,7 +12,7 @@ INFSCI2710_MyDatabase = mysql.connector.connect(
 
 my_cursor = INFSCI2710_MyDatabase.cursor()
 
-my_cursor.execute("SELECT * FROM transactions")
+my_cursor.execute("SELECT * FROM person")
 
 records = my_cursor.fetchall()
 

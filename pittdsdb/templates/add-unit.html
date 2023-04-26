@@ -9,8 +9,9 @@
   <div class="mx-auto col-6 col-md-6 col-lg-4">
     <form method="POST" >
       <h3 align="center">Add a Unit</h3>
+      <br/>
       <div class="form-group">
-        <label for="unit_name">Unit Name</label>
+        <label for="unit_name"><span style="font-weight: 500">Unit Name</span></label>
         <input type="text" 
             class="form-control" 
             id="unit_name" 
@@ -18,7 +19,7 @@
       </div>
       <br/>
       <div class="form-group">
-          <label for="unit_parent">Parent Unit <small>(if any)</small></label>
+          <label for="unit_parent"><span style="font-weight: 500">Parent Unit</span> <small>(if any)</small></label>
           <select class="form-select form-select-md" aria-label=".form-select-md example">
               <option value="">Select a parent unit</option>
               {% for unit in existing['units'] %}
@@ -30,7 +31,7 @@
       </div>
       <br/>
       <div class="form-group">
-          <label for="unit_type">Type</label>
+          <label for="unit_type"><span style="font-weight: 500">Type</span></label>
           <select class="form-select form-select-md" aria-label=".form-select-md example">
               <option value="">Select a unit type</option>
               {% for type in vocab['unit_type'] %}
@@ -40,17 +41,17 @@
       </div>
       <br/>
       <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email"><span style="font-weight: 500">Email</span></label>
           <input type="email" class="form-control" id="email" name="email" placeholder="@pitt.edu">
       </div>
       <br/>
       <div class="form-group">
-          <label for="unit_website">Website</label>
+          <label for="unit_website"><span style="font-weight: 500">Website</span></label>
           <input type="url" class="form-control" id="unit_website" name="unit_website">
       </div>
       <br/>
       <div class="form-group">
-          <label for="unit_contact_method">Preferred Contact Method</label>
+          <label for="unit_contact_method"><span style="font-weight: 500">Preferred Contact Method</span></label>
           <select class="form-control" id="unit_contact_method" name="unit_contact_method" required>
               <option value="">Select a preferred contact method</option>
               <option value="Email">Email</option>
@@ -60,7 +61,7 @@
       </div>
       <br/>
       <div class="form-group">
-          <label for="unit_description">Description</label>
+          <label for="unit_description"><span style="font-weight: 500">Description</span></label>
           <textarea class="form-control" id="unit_description" name="unit_description" rows="3"></textarea>
       </div>
       <br/>

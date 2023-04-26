@@ -29,7 +29,6 @@ def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
     results_list = []
 
     for result in results:
-        print("result", result)
         if entity == "unit":
             subunit = result[0]
             unit = result[1]
