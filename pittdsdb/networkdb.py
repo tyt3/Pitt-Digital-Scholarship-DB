@@ -31,6 +31,7 @@ def get(entity, attribute, attribute_value):
     return result
 
 ### NODES
+
 ### PERSON
 
 def add_person_node(name, public_id):
@@ -80,12 +81,12 @@ def add_area_node(name):
     person_cqry = "CREATE (:Area { name: '" + name + "'})"
     neo4j_dbconn.query(person_cqry)
 
-###     METHOD
+### METHOD
 
 def add_method_node(name):
     method_cqry =  "CREATE (:Method { name: '"+name+"'})"
     neo4j_dbconn.query(method_cqry)
-    
+
 ### TOOL
 
 def add_tool_node(name, web_address, github):
@@ -132,29 +133,29 @@ def update_funding_node(name, public_id):
 def attach_person_unit(person, unit):
     add_relations("Person", "public_id", person, "Unit", "public_id", unit, "PART_OF", "INCLUDES")
 
-def attach_person_subunit(person, subunit):
-    add_relations("Person", "public_id", person, "SubUnit", "public_id", subunit, "PART_OF", "INCLUDES")
-
-def attach_person_area(person, area):
-    add_relations("Person", "public_id", person, "Area", "name", area, "SUPPORTS", "SUPPORTED_BY")
-
-def attach_person_method(person, method):
-    add_relations("Person", "public_id", person, "Method", "name", method, "SUPPORTS", "SUPPORTED_BY")
-
-def attach_person_tool(person, tool):
-    add_relations("Person", "public_id", person, "Tool", "name", tool, "SUPPORTS", "SUPPORTED_BY")
-
 def detach_person_unit(person, unit):
     detch_relations("Person", "public_id", person, "Unit", "public_id", unit, ['PART_OF', 'INCLUDES'])
+
+def attach_person_subunit(person, subunit):
+    add_relations("Person", "public_id", person, "SubUnit", "public_id", subunit, "PART_OF", "INCLUDES")
 
 def detach_person_subunit(person, subunit):
     detch_relations("Person", "public_id", person, "SubUnit", "public_id", subunit, ['PART_OF', 'INCLUDES'])
 
+def attach_person_area(person, area):
+    add_relations("Person", "public_id", person, "Area", "name", area, "SUPPORTS", "SUPPORTED_BY")
+
 def detach_person_area(person, area):
     detch_relations("Person", "public_id", person, "Area", "name", area, ['SUPPORTS', "SUPPORTED_BY"])
 
+def attach_person_method(person, method):
+    add_relations("Person", "public_id", person, "Method", "name", method, "SUPPORTS", "SUPPORTED_BY")
+
 def detach_person_method(person, method):
     detch_relations("Person", "public_id", person, "Method", "name", method, ['SUPPORTS', "SUPPORTED_BY"])
+
+def attach_person_tool(person, tool):
+    add_relations("Person", "public_id", person, "Tool", "name", tool, "SUPPORTS", "SUPPORTED_BY")
 
 def detach_person_tool(person, tool):
     detch_relations("Person", "public_id", person, "Tool", "name", tool, ['SUPPORTS', "SUPPORTED_BY"])
@@ -162,54 +163,53 @@ def detach_person_tool(person, tool):
 def attach_unit_subunit(unit, subunit):
     add_relations("Unit", "public_id", unit, "SubUnit", "public_id", subunit, "HOUSES", "HOUSED_IN")
 
-def attach_unit_resource(unit, resource):
-    add_relations("Unit", "public_id", unit, "Resource", "name", resource, "PROVIDES", "PROVIDED_BY")
-
-def attach_unit_funding(unit, funding):
-    add_relations("Unit", "public_id", unit, "Funding", "public_id", funding, "PROVIDES", "PROVIDED_BY")
-
 def detach_unit_subunit(unit, subunit):
     detch_relations("Unit", "public_id", unit, "SubUnit", "public_id", subunit, ['HOUSES', "HOUSED_IN"])
+
+def attach_unit_resource(unit, resource):
+    add_relations("Unit", "public_id", unit, "Resource", "name", resource, "PROVIDES", "PROVIDED_BY")
 
 def detach_unit_resource(unit, resource):
     detch_relations("Unit", "public_id", unit, "Resource", "name", resource, ["PROVIDES", "PROVIDED_BY"])
 
+def attach_unit_funding(unit, funding):
+    add_relations("Unit", "public_id", unit, "Funding", "public_id", funding, "OFFERS", "OFFERED_BY")
+
 def detach_unit_funding(unit, funding):
-    detch_relations("Unit", "public_id", unit, "Funding", "public_id", funding, ["PROVIDES", "PROVIDED_BY"])
+    detch_relations("Unit", "public_id", unit, "Funding", "public_id", funding, ["OFFERS", "OFFERED_BY"])
 
 def attach_subunit_resource(unit, resource):
     add_relations("SubUnit", "public_id", unit, "Resource", "name", resource, "PROVIDES", "PROVIDED_BY")
 
-def attach_subunit_funding(unit, funding):
-    add_relations("SubUnit", "public_id", unit, "Funding", "public_id", funding, "PROVIDES", "PROVIDED_BY")
-
 def detach_subunit_resource(unit, resource):
     detch_relations("SubUnit", "public_id", unit, "Resource", "name", resource, ["PROVIDES", "PROVIDED_BY"])
 
+def attach_subunit_funding(unit, funding):
+    add_relations("SubUnit", "public_id", unit, "Funding", "public_id", funding, "OFFERS", "OFFERED_BY")
+
 def detach_subunit_funding(unit, funding):
-    detch_relations("SubUnit", "public_id", unit, "Funding", "public_id", funding, ["PROVIDES", "PROVIDED_BY"])
+    detch_relations("SubUnit", "public_id", unit, "Funding", "public_id", funding, ["OFFERS", "OFFERED_BY"])
 
 def attach_area_method(area, method):
-    add_relations("Area", "name", area, "Method", "name", method, 'INCLUDES', 'INCLUDED_BY')
-
-def attach_area_tool(area, tool):
-    add_relations("Area", "name", area, "Tool", "name", tool, 'USES', 'USED_BY')
-
-def attach_area_resource(area, resource):
-    add_relations("Area", "name", area, "Resource", "name", resource, "USES", "USED_BY")
+    add_relations("Area", "name", area, "Method", "name", method, 'INCLUDES', 'TYPE_OF')
 
 def detach_area_method(area, method):
-    detch_relations("Area", "name", area, "Method", "name", method, ['INCLUDES', 'INCLUDED_BY'])
+    detch_relations("Area", "name", area, "Method", "name", method, ['INCLUDES', 'TYPE_OF'])
+
+def attach_area_tool(area, tool):
+    add_relations("Area", "name", area, "Tool", "name", tool, 'USES', 'USED_FOR')
 
 def detach_area_tool(area, tool):
-    detch_relations("Area", "name", area, "Tool", "name", tool, ['USES', 'USED_BY'])
+    detch_relations("Area", "name", area, "Tool", "name", tool, ['USES', 'USED_FOR'])
+
+def attach_area_resource(area, resource):
+    add_relations("Area", "name", area, "Resource", "name", resource, "USES", "USED_FOR")
 
 def detach_area_resource(area, resource):
-    detch_relations("Area", "name", area, "Resource", "name", resource, ["USES", "USED_BY"])
+    detch_relations("Area", "name", area, "Resource", "name", resource, ["USES", "USED_FOR"])
 
 def attach_tool_method(tool, method):
     add_relations("Method", "name", method, "Tool", "name", tool, "USES", "USED_FOR")
-
 
 def detach_tool_method(tool, method):
     detch_relations("Method", "name", method, "Tool", "name", tool, ['USES', 'USED_FOR'])
