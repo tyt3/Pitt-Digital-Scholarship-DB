@@ -1,11 +1,11 @@
 from .neo4j_database import neo4j_dbconn
+from flask import url_for
 
 def delete_node(entity, attribute, attribute_value):
     del_qry =  "MATCH (n:"+entity+") " \
                 "WHERE "+attribute+" = '"+attribute_value+"' " \
                 "DETACH DELETE n"  
     neo4j_dbconn.query(del_qry)
-
 
 def get_relations(from_entity, from_unique_attribute, from_unique_attribute_value, to_entity, to_unique_attribute):
     get_relations_qry = "MATCH (:"+from_entity+" {"+from_unique_attribute+": '"+from_unique_attribute_value+"'})-[r]->(t:"+to_entity+") RETURN t."+to_unique_attribute
@@ -92,13 +92,13 @@ def attach_unit_subunit(unit, subunit):
     add_relations("Unit", "public_id", unit, "SubUnit", "public_id", unit, "HOUSES", "HOUSED_IN")
 
 def attach_unit_resource(unit, resource):
-    add_relations("Unit", "public_id", unit, "Resource", "public_id", subunit, "PROVIDES", "PROVIDED_BY")
+    add_relations("Unit", "public_id", unit, "Resource", "name", resource, "PROVIDES", "PROVIDED_BY")
 
 def attach_unit_funding(unit, funding):
     add_relations("Unit", "public_id", unit, "Funding", "public_id", funding, "PROVIDES", "PROVIDED_BY")
 
 def detach_unit_subunit(unit, subunit):
-    detch_relations("Unit", "public_id", unit, "SubUnit", "public_id", area, ['HOUSES', "HOUSED_IN"])
+    detch_relations("Unit", "public_id", unit, "SubUnit", "public_id", subunit, ['HOUSES', "HOUSED_IN"])
 
 def detach_unit_resource(unit, resource):
     detch_relations("Unit", "public_id", unit, "Resource", "name", resource, ["PROVIDES", "PROVIDED_BY"])
@@ -120,7 +120,7 @@ def update_subunit_node(public_id, name):
     neo4j_dbconn.query(unit_cqry)
 
 def attach_subunit_resource(unit, resource):
-    add_relations("SubUnit", "public_id", unit, "Resource", "public_id", subunit, "PROVIDES", "PROVIDED_BY")
+    add_relations("SubUnit", "public_id", unit, "Resource", "name", resource, "PROVIDES", "PROVIDED_BY")
 
 def attach_subunit_funding(unit, funding):
     add_relations("SubUnit", "public_id", unit, "Funding", "public_id", funding, "PROVIDES", "PROVIDED_BY")
