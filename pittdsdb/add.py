@@ -112,6 +112,57 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
     else:
         return False
 
+def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0):
+    session = Session(engine)
+    query = f"INSERT INTO person_support \
+        (fk_person_id, fk_area_id"
+    values = f"{ person_id }, { area_id }"
+    flag = False
+
+    # Build query
+    if method_id > 0:
+        query += ", fk_method_id"
+        query_values += f", { method_id }"
+
+        # Add method area relationship
+        with session.begin():
+            session.execute(f"INSERT INTO method_area \
+                            (fk_method_id, fk_area_id) \
+                            VALUES \
+                            ({ method_id }, { area_id });")
+            session.commit()
+    if tool_id > 0:
+        query += ", fk_tool_id"
+        values += f", { tool_id }"
+
+        # Add tool area relationship
+        with session.begin():
+            session.execute(f"INSERT INTO tool_area \
+                            (fk_tool_id, fk_area_id) \
+                            VALUES \
+                            ({ tool_id }, { area_id });")
+            session.commit()
+
+         # Add method tool relationship
+        if method_id > 0:
+            with session.begin():
+                session.execute(f"INSERT INTO method_area \
+                                (fk_method_id, fk_area_id) \
+                                VALUES \
+                                ({ method_id }, { tool_id });")
+                
+    # Complete query string
+    query += f") VALUES ({ values });"
+
+    # Execute and commit query
+    try:
+        db_session.execute(query)
+        db_session.commit()
+
+        return True
+    except:
+        return False
+
     
 def add_person_unit_to_db(person_id=int, unit_name=str):
     unit = Unit.query.filter_by(unit_name=unit_name).first()

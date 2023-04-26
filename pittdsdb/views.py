@@ -360,6 +360,7 @@ def add_area(public_id):
     area = Area.query.filter_by(area_name=area_name).first()
     add_person_support(person.person_id, "area", area.area_id,
                                proficiency.proficiency_id, notes)
+    add_person_support_combos(person.person_id, area.area_id)
     attach_person_area(public_id, area_name)
 
     return redirect(url_for('views_bp.view_person',
