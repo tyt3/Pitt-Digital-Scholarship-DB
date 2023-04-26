@@ -462,7 +462,7 @@ class PersonMethod(Base):
     def __init__(self, fk_person_id, fk_method_id, fk_proficiency_id, notes):
         self.fk_person_id = fk_person_id
         self.fk_method_id = fk_method_id
-        self.fk_proficiency = fk_proficiency_id
+        self.fk_proficiency_id = fk_proficiency_id
         self.notes = notes
 
     def __rep__(self):
@@ -566,6 +566,14 @@ t_person_subunit = Table(
     Column('fk_subunit_id', ForeignKey('subunit.subunit_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
 
+t_person_support = Table(
+    'person_support', metadata,
+    Column('fk_person_id', ForeignKey('person.person_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_method_id', ForeignKey('method.method_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_tool_id', ForeignKey('tool.tool_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
+)
+
 
 t_subunit_address = Table(
     'subunit_address', metadata,
@@ -592,4 +600,29 @@ t_unit_subunit = Table(
     'unit_subunit', metadata,
     Column('fk_unit_id', ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
     Column('fk_subunit_id', ForeignKey('subunit.subunit_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+)
+
+
+""" VIEWS """
+
+t_vw_person_support = Table(
+    'vw_person_support', metadata,
+    Column('person_id', Integer, server_default=text("'0'")),
+    Column('first_name', String(100)),
+    Column('last_name', String(100)),
+    Column('support_type', String(50)),
+    Column('area_id', Integer, server_default=text("'0'")),
+    Column('area_name', String(100)),
+    Column('area_notes', String(5000)),
+    Column('method_id', Integer, server_default=text("'0'")),
+    Column('method_name', String(100)),
+    Column('method_proficiency_id', Integer, server_default=text("'0'")),
+    Column('method_proficiency', String(50)),
+    Column('method_notes', String(5000)),
+    Column('tool_id', Integer, server_default=text("'0'")),
+    Column('tool_name', String(100)),
+    Column('tool_proficiency_id', Integer, server_default=text("'0'")),
+    Column('tool_proficiency', String(50)),
+    Column('tool_notes', String(5000)),
+    Column('campus', String(50))
 )
