@@ -237,7 +237,7 @@ def add_person(public_id):
                     db_session.commit()
 
                     #Add Person Node
-                    add_person_node(new_person.public_id, first_name + ' ' + last_name)
+                    add_person_node(first_name + ' ' + last_name, new_person.public_id)
 
                     return redirect(url_for('views_bp.view_person',
                                 public_id=new_person.public_id))
