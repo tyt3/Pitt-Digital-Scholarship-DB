@@ -45,6 +45,37 @@ class User(Base):
     last_login = Column(DateTime, nullable=False)
 
 
+t_vw_person_support = Table(
+    'vw_person_support', metadata,
+    Column('person_id', Integer, server_default=text("'0'")),
+    Column('first_name', String(100)),
+    Column('last_name', String(100)),
+    Column('support_type', String(50)),
+    Column('area_id', Integer, server_default=text("'0'")),
+    Column('area_name', String(100)),
+    Column('area_notes', String(5000)),
+    Column('method_id', Integer, server_default=text("'0'")),
+    Column('method_name', String(100)),
+    Column('method_proficiency_id', Integer, server_default=text("'0'")),
+    Column('method_proficiency', String(50)),
+    Column('method_notes', String(5000)),
+    Column('tool_id', Integer, server_default=text("'0'")),
+    Column('tool_name', String(100)),
+    Column('tool_proficiency_id', Integer, server_default=text("'0'")),
+    Column('tool_proficiency', String(50)),
+    Column('tool_notes', String(5000)),
+    Column('campus', String(50))
+)
+
+
+t_vw_person_units = Table(
+    'vw_person_units', metadata,
+    Column('person_id', Integer),
+    Column('subunit_name', String(100)),
+    Column('unit_name', String(100))
+)
+
+
 class Addres(Base):
     __tablename__ = 'address'
 
@@ -256,6 +287,15 @@ class PersonMethod(Base):
     fk_method = relationship('Method')
     fk_person = relationship('Person')
     fk_proficiency = relationship('Proficiency')
+
+
+t_person_support = Table(
+    'person_support', metadata,
+    Column('fk_person_id', ForeignKey('person.person_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_method_id', ForeignKey('method.method_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_tool_id', ForeignKey('tool.tool_id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
+)
 
 
 class PersonTool(Base):

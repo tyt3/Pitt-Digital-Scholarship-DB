@@ -484,7 +484,7 @@ class PersonTool(Base):
     def __init__(self, fk_person_id, fk_tool_id, fk_proficiency_id, notes):
         self.fk_person_id = fk_person_id
         self.fk_tool_id = fk_tool_id
-        self.fk_proficiency = fk_proficiency_id
+        self.fk_proficiency_id = fk_proficiency_id
         self.notes = notes
 
 

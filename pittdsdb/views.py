@@ -296,8 +296,6 @@ def add_person_unit(public_id):
         unit_name = request.form.get('unit_name')
         parent_unit_name = request.form.get('parent_unit_name')
 
-        print("unit_name", unit_name)
-
         # Add unit(s)
         if parent_unit_name == "None":
             add_person_unit_to_db(person.person_id, parent_unit_name)
@@ -409,7 +407,6 @@ def add_method(public_id):
     new_method_name = request.form.get('new_method')
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
-
     person = Person.query.filter_by(public_id=public_id).first()
     area = Area.query.filter_by(area_name=area_name).first()
     method = None
@@ -451,7 +448,6 @@ def add_method(public_id):
     
     # If person and area relationship already in person_support
     if person_area:
-        print("person support not added")
         try:
             db_session.execute(text(f'UPDATE person_support \
                             SET \
@@ -461,7 +457,6 @@ def add_method(public_id):
         except: 
             flash("Could not update person support")
     else:
-        print("person support added")
         try:
             db_session.execute(text(f'INSERT INTO person_support \
                             (fk_person_id, fk_area_id, fk_method_id, fk_tool_id) \
@@ -490,23 +485,24 @@ def add_tool(public_id):
                category="error")
         return redirect(url_for('auth_bp.login'))
     
-    # Get form values
+        # Get form values
     area_name = request.form.getlist('area')
     method_name = request.form.get('method')
-    new_method_name = request.form.get('new_method')
     tool_name = request.form.get('tool')
     new_tool_name = request.form.get('new_tool')
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
 
     person = Person.query.filter_by(public_id=public_id).first()
+    area = Area.query.filter_by(area_name=area_name).first()
+    method = Method.query.filter_by(method_name=method_name).first()
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
-    if new_method_name:
-        existing_method = Method.query.filter_by(method_name=new_method_name).first()
-
-        if existing_method:
-            flash("That method already exists!", category='error')
+    if new_tool_name:
+        # Make sure the tool name being added doesn't already exist
+        existing_tool = Tool.query.filter_by(tool_name=new_tool_name).first()
+        if existing_tool:
+            flash("That tool already exists!", category='error')
         else:
             new_method = Method(new_method_name, current_user.user_id)
             db_session.add(new_method)
@@ -523,14 +519,46 @@ def add_tool(public_id):
             db_session.commit()
 
     else:
-        method = Method.query.filter_by(method_name=method_name).first()
-        try:
-            person_method = PersonMethod(person.person_id, method.method_id, 
-                                        proficiency.proficiency_id, notes)
-        except:
-            flash("Either the method has already been added to this person record \
-                    or could not be added for another reason.", category="error")
-        db_session.commit()
+        # Get existing tool
+        tool = Tool.query.filter_by(tool_name=tool_name).first()
+    
+    #try:
+        # Add person-tool relationship
+    person_tool = PersonTool(person.person_id, tool.tool_id, 
+                                proficiency.proficiency_id, notes)
+    db_session.add(person_tool)
+    db_session.commit()
+    #except:
+        # flash("Either the method has already been added to this person record \
+        #         or could not be added for another reason.", category="error")
+        
+    # # Add person_support relationships
+    # person_area = db_session.execute(f'SELECT * FROM person_area \
+    #                                  WHERE fk_person_id = { person.person_id } \
+    #                                  AND fk_area_id = {area.area_id}')
+    
+    # # If person and area relationship already in person_support
+    # if person_area:
+    #     print("person support not added")
+    #     try:
+    #         db_session.execute(f'UPDATE person_support \
+    #                            SET \
+    #                            fk_method_id = {method.method_id} \
+    #                            WHERE fk_person_id = { person.person_id } \
+    #                            AND fk_area_id = {area.area_id};')
+    #     except: 
+    #         flash("Could not update person support")
+    # else:
+    #     print("person support added")
+    #     try:
+    #         db_session.execute(f'INSERT INTO person_support \
+    #                         (fk_person_id, fk_area_id, fk_method_id, fk_tool_id) \
+    #                         VALUES \
+    #                         ({ person.person_id }, { area.area_id }, \
+    #                            { method.method_id }, { tool.tool_id });')
+    #     except:
+    #         flash("Could not update person support")
+    # db_session.commit()
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -552,9 +580,9 @@ def add_resource(public_id):
                                 public_id=person.public_id))
 
 
-@views_bp.route('/add-funding', methods=['POST'])
+@views_bp.route('/add-funding', methods=['GET', 'POST'])
 @login_required
-def add_funding(public_id):
+def add_funding():
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
@@ -562,10 +590,12 @@ def add_funding(public_id):
                category="error")
         return redirect(url_for('auth_bp.login'))
     
-    person = Person.query.filter_by(public_id=public_id).first()
     
-    return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
+    return render_template("/add-funding.html",
+                           title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing)
 
 
 """Functions to Show Update Pages"""
