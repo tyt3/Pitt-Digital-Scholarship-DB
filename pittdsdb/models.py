@@ -132,12 +132,13 @@ class Unit(Base):
     user = relationship('User')
 
     def __init__(self, unit_name, unit_type, email, web_address, phone, 
-                 preferred_contact, description, added_by):
+                 other_contact, preferred_contact, description, added_by):
         self.unit_name = unit_name
         self.unit_type = unit_type
         self.email = email
         self.web_address = web_address
         self.phone = phone
+        self.other_contact = other_contact
         self.preferred_contact = preferred_contact
         self.description = description
         self.added_by = added_by
@@ -171,13 +172,15 @@ class Subunit(Base):
     fk_unit = relationship('Unit')
     fk_units = relationship('Unit', secondary='unit_subunit')
 
-    def __init__(self, subunit_name, subunit_type, email, web_address, phone,
-                 preferred_contact, description, fk_unit_id):
+    def __init__(self, subunit_name=str, subunit_type=str, email=str, 
+                 web_address=str, phone=str, other_contact=str, 
+                 preferred_contact=str, description=str, fk_unit_id=str):
         self.subunit_name = subunit_name
         self.subunit_type = subunit_type
         self.email = email
         self.web_address = web_address
         self.phone = phone
+        self.other_contact = other_contact
         self.preferred_contact = preferred_contact
         self.description = description
         self.fk_unit_id = fk_unit_id
@@ -409,17 +412,13 @@ class Modification(Base):
     __tablename__ = 'modification'
 
     modification_id = Column(Integer, primary_key=True)
-    entity_type = Column(String(10), nullable=False)
-    entity_id = Column(Integer, nullable=False)
     modification = Column(String(500), nullable=False)
     modified_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
-    modification_date = Column(DateTime, nullable=False)
+    modificaiton_date = Column(DateTime, nullable=False)
 
     user = relationship('User')
 
-    def __init__(self, entity_type, entity_id, modification, modified_by, modification_date):
-        self.entity_type = entity_type
-        self.entity_id = entity_id
+    def __init__(self, modification, modified_by, modification_date):
         self.modification = modification
         self.modified_by = modified_by
         self.modification_date = modification_date

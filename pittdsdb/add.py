@@ -2,22 +2,20 @@ from flask import Blueprint, request, jsonify
 from flask_login import current_user
 from sqlalchemy import select
 from sqlalchemy.sql import text
+from sqlalchemy.orm import Session
 from flask_restful import Api, Resource
 from functools import wraps
-from .database import db_session
+from .database import db_session, engine
 from .models import *
 from .schemas import *
 
 
-def add_modification(entity, entity_type, description):
+def add_modification(entity, description):
     # Get details
-    user_id = current_user.user_id
     timestamp = entity.date_added
 
-    modification = Modification(entity_type=entity_type,
-                                entity_id=entity.get_id(),
-                                modification=description,
-                                modified_by=user_id,
+    modification = Modification(modification=description,
+                                modified_by=current_user.user_id,
                                 modification_date=timestamp)
     
     # Add modification log to database
@@ -25,54 +23,12 @@ def add_modification(entity, entity_type, description):
     db_session.commit()
 
 
-def add_area_to_db(name):
-    area_name = name.title()
-    area = Area.query.filter_by(area_name=area_name).first()
-    
-    if area:
-        return False
-    else:
-        # Create new area object
-        new_area = Area(area_name=area_name)  
-
-        # Add new area to database
-        db_session.add(new_area)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_area, "area", f"add {repr(new_area)}")
-
-    return True, new_area
-
-    
-def add_method_to_db(name):
-    method_name = name.title()
-    method = Method.query.filter_by(method_name=method_name).first()
-    
-    if method:
-        return False
-    else:
-        # Create new area object
-        new_method = Method(method_name=method_name)  
-
-        # Add new area to database
-        db_session.add(new_method)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_method, "method", f"add {repr(new_method)}")
-
-    return True
-
-
 def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
                      phone, scheduler_address, other_contact, preferred_contact,
                      support_type, bio, added_by, notes, photo_url):
-    person = Person.query.filter_by(email=email).first()
-    
-    if person:
-        return False
-    else:
+    session = Session(engine)
+
+    with session.begin():
         # Create new person object
         new_person = Person(first_name = first_name,
                             last_name = last_name,
@@ -91,13 +47,19 @@ def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
                             photo_url = photo_url)  
 
         # Add new area to database
-        db_session.add(new_person)
-        db_session.commit()
+        session.add(new_person)
+        session.commit()
+    
+    # Get person information
+    person = Person.query.filter_by(email=email).first()
 
+    if person:
         # Add modification to database
-        add_modification(new_person, "person", f"add {repr(new_person)}")
+        add_modification(new_person, f"add {repr(new_person)}")
 
-    return True, new_person
+        return True, new_person
+    else:
+        return False, None
 
 
 def add_person_affiliation(person_id=int, affiliation_type=str):
@@ -115,10 +77,43 @@ def add_person_affiliation(person_id=int, affiliation_type=str):
     except:
         return False
     
+    
+def add_person_support(person_id=int, entity_type=str, entity_id=int, 
+                       proficiency_id=int, notes=str):
+    session = Session(engine)
 
+    with session.begin():
+        if entity_type == "area":
+            new_person_support = PersonArea(person_id, entity_id, proficiency_id, notes)
+            description = f"add ({ person_id }, { entity_id }) to person_area"
+        elif entity_type == "method":
+            new_person_support = PersonMethod(person_id, entity_id, proficiency_id, notes)
+            description = f"add ({ person_id }, { entity_id }) to person_method"
+        elif entity_type == "tool":
+            new_person_support = PersonTool(person_id, entity_id, proficiency_id, notes)
+            description = f"add ({ person_id }, { entity_id }) to person_tool"
+
+        session.add(new_person_support)
+        session.commit()
+    
+    person_support = None
+    if entity_type == "area":
+        person_support = PersonArea.query.filter_by(fk_area_id=entity_id)
+    elif entity_type == "method":
+        person_support = PersonMethod.query.filter_by(fk_method_id=entity_id)
+    elif entity_type == "tool":
+        person_support = PersonTool.query.filter_by(fk_tool_id=entity_id)
+
+    if person_support:
+        # Add modification to database
+        add_modification(person_support, description)
+        return True
+    else:
+        return False
+
+    
 def add_person_unit_to_db(person_id=int, unit_name=str):
     unit = Unit.query.filter_by(unit_name=unit_name).first()
-    print("unit", unit)
 
     try:
         db_session.execute(f'INSERT INTO person_unit \
@@ -126,10 +121,8 @@ def add_person_unit_to_db(person_id=int, unit_name=str):
                         VALUES \
                         ({ person_id }, { unit.unit_id })')
         db_session.commit()
-        print("added unit")
         return True
     except:
-        print("unit wasn't added")
         return False
 
 
@@ -145,94 +138,20 @@ def add_person_subunit_to_db(person_id=int, subunit_name=str):
         return True
     except:
         return False
-
-
-def add_resource_to_db(name, resource_type):
-    resource_name = name.title()
-    resource = Resource.query.filter_by(resource_name=resource_name).first()
     
-    if resource:
-        return False
-    else:
-        # Create new area object
-        new_resource = Resource(resource_name=resource_name,
-                                resource_type=resource_type)  
 
-        # Add new area to database
-        db_session.add(new_resource)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_resource, "area", f"add {repr(new_resource)}")
-
-    return True
-
-
-def add_subunit_to_db(name, subunit_type, email, web_address, phone, 
-                 preferred_contact, description, parent_unit_name):
-    subunit_name = name.title()
-    subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
-    
-    if subunit:
-        return False
-    else:
-        # Get parent unit name
-        parent_unit = Unit.query.filter_by(unit_name=parent_unit_name).first()
-        parent_unit_id = parent_unit.get_id()
-
-        # Create new department object
-        new_subunit = Subunit(subunit_name = subunit_name,
-                              subunit_type = subunit_type,
-                              email = email,
-                              web_address = web_address,
-                              phone = phone,
-                              preferred_contact = preferred_contact,
-                              description = description)  
-
-        # Add new department to database
-        db_session.add(new_subunit)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_subunit, "department", 
-                         f"add {repr(new_subunit)}")
-
-    return True
-
-
-def add_tool_to_db(name, web_address, github):
-    tool_name = name.title()
-    tool = Tool.query.filter_by(tool_name=tool_name).first()
-    
-    if tool:
-        return False
-    else:
-        # Create new area object
-        new_tool = Tool(tool_name=tool_name)  
-
-        # Add new area to database
-        db_session.add(new_tool)
-        db_session.commit()
-
-        # Add modification to database
-        add_modification(new_tool, "tool", f"add {repr(new_tool)}")
-
-    return True
-
-
-def add_unit_to_db(name, unit_type, email, web_address, phone, preferred_contact, description):
-    unit_name = name.title()
-    unit = Unit.query.filter_by(unit_name=unit_name).first()
-    
-    if unit:
-        return False
-    else:
+def add_unit_to_db(unit_name, unit_type, email, web_address, phone, 
+                   other_contact, preferred_contact, description):
+     session = Session(engine)
+     
+     with session.begin():
         # Create new department object
         new_unit = Unit(unit_name = unit_name,
                         unit_type = unit_type,
                         email = email,
                         web_address = web_address,
                         phone = phone,
+                        other_contact = other_contact,
                         preferred_contact = preferred_contact,
                         description = description)  
 
@@ -240,9 +159,150 @@ def add_unit_to_db(name, unit_type, email, web_address, phone, preferred_contact
         db_session.add(new_unit)
         db_session.commit()
 
+     unit = Unit.query.filter_by(unit_name=unit_name).first()
+
+     if unit:
         # Add modification to database
         add_modification(new_unit, "unit", 
                          f"add {repr(new_unit)}")
 
-    return True
+        return True
+     else:
+         return False, unit
+
+
+def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone, 
+                      other_contact, preferred_contact, description, 
+                      parent_unit_name):  
+    # Get parent unit name
+    parent_unit = Unit.query.filter_by(unit_name=parent_unit_name).first()
+    parent_unit_id = parent_unit.get_id()
+
+    session = Session(engine)
+
+    with session.begin():
+        # Create new department object
+        new_subunit = Subunit(subunit_name = subunit_name,
+                              subunit_type = subunit_type,
+                              email = email,
+                              web_address = web_address,
+                              phone = phone,
+                              other_contact = other_contact,
+                              preferred_contact = preferred_contact,
+                              description = description,
+                              fk_unit_id=parent_unit_id)  
+
+        # Add new department to database
+        session.add(new_subunit)
+        session.commit()
+
+    subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
+
+    if subunit:
+        # Add modification to database
+        add_modification(new_subunit, "department", 
+                         f"add {repr(new_subunit)}")
+
+        return True, subunit
+    else:
+        return False, None
+
+
+def add_area_to_db(area_name):
+    session = Session(engine)
+
+    with session.begin():
+        # Create new area object
+        new_area = Area(area_name=area_name,
+                        added_by=current_user.user_id)  
+
+        # Add new area to database
+        session.add(new_area)
+        session.commit()
+        
+    # Get area information
+    area = Area.query.filter_by(area_name=area_name).first()
+
+    if area:
+        # Add modification to database
+        add_modification(area, f"add {repr(new_area)}")
+
+        return True, area
+    else:
+        return False, None
+
+    
+def add_method_to_db(method_name):
+    session = Session(engine)
+
+    with session.begin():
+        # Create new method object
+        new_method = Method(method_name=method_name,
+                        added_by=current_user.user_id)  
+
+        # Add new method to database
+        session.add(new_method)
+        session.commit()
+
+    # Get method information
+    method = Method.query.filter_by(method_name=method_name).first()
+
+    if method:    
+        # Add modification to database
+        add_modification(method, f"add {repr(new_method)}")
+        return True, method
+    else:
+        return False, None
+
+
+def add_tool_to_db(tool_name, tool_type, web_address):
+    session = Session(engine)
+
+    with session.begin():
+        # Create new tool object
+        new_tool = Tool(tool_name=tool_name,
+                        tool_type=tool_type,
+                        web_address=web_address,
+                        added_by=current_user.user_id)  
+
+        # Add new tool to database
+        session.add(new_tool)
+        session.commit()
+
+    # Get tool information
+    tool = Tool.query.filter_by(tool_name=tool_name).first()
+
+    if tool:    
+        # Add modification to database
+        add_modification(tool, f"add {repr(new_tool)}")
+
+        return True, tool
+    else:
+        return False, None
+
+
+def add_resource_to_db(resource_name, resource_type, web_address):
+    session = Session(engine)
+
+    with session.begin():
+        # Create new resource object
+        new_resource = Resource(resource_name=resource_name,
+                                resource_type=resource_type,
+                                web_addres=web_address,
+                                added_by=current_user.user_id)  
+
+        # Add new resource to database
+        session.add(new_resource)
+        session.commit()
+
+    # Get resource information
+    resource = Resource.query.filter_by(resource_name=resource_name).first()
+    
+    if resource:
+        # Add modification to database
+        add_modification(new_resource, f"add {repr(new_resource)}")
+
+        return True, resource
+    else:
+        return False, None
 

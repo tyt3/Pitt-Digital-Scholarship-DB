@@ -123,20 +123,6 @@ def search_funding():
 # Initialize add variables for database values
 # see controlled_vocab.py
 
-@views_bp.route('/add', methods=['GET', 'POST'])
-@login_required
-def add():
-    if current_user.is_authenticated:
-        current_user.set_permissions()
-    if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
-               category="error")
-        return redirect(url_for('auth_bp.login'))
-    return render_template("add.html",
-                           title="Add Info | Pitt Digital Scholarship Database",
-                           user=current_user)
-
-
 @views_bp.route('/add-person/<public_id>', methods=['GET', 'POST'])
 @login_required
 def add_person(public_id):
@@ -349,13 +335,12 @@ def add_area(public_id):
     
     # Get form values
     area_name = request.form.get('area')
-    new_area_name = request.form.get('new_area')
+    new_area_name = request.form.get('new_area').title()
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
 
     person = Person.query.filter_by(public_id=public_id).first()
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
-    
 
     if new_area_name:
         existing_area = Area.query.filter_by(area_name=new_area_name).first()
@@ -363,19 +348,11 @@ def add_area(public_id):
         if existing_area:
             flash("That area already exists!", category='error')
         else:
-            new_area = Area(new_area_name, current_user.user_id)
-            person_area = PersonArea(person.person_id, new_area.area_id, 
-                                     proficiency.proficiency_id, notes)
+            new_area = add_area_to_db(new_area_name)
+            add_person_support(person.person_id, "area", new_area.area_id,
+                               proficiency.proficiency_id, notes)
 
-        # Add new_area and person-area relationship to db
-        #with db_session.begin():
-        db_session.add(new_area)
-        db_session.add(person_area)
-        db_session.commit()
-
-        db_session.commit()
-
-        #Add Area node
+        # Add Area node
         add_area_node(new_area_name)
 
         #update area name to the new area
