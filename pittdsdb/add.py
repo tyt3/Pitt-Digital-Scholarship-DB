@@ -55,9 +55,9 @@ def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
 
     if person:
         # Add modification to database
-        add_modification(new_person, f"add {repr(new_person)}")
+        add_modification(person, f"add {repr(new_person)}")
 
-        return True, new_person
+        return True, person
     else:
         return False, None
 
@@ -82,16 +82,17 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
                        proficiency_id=int, notes=str):
     session = Session(engine)
 
+    description = f"add ({ person_id }, { entity_id }) "
     with session.begin():
         if entity_type == "area":
             new_person_support = PersonArea(person_id, entity_id, proficiency_id, notes)
-            description = f"add ({ person_id }, { entity_id }) to person_area"
+            description += f"to person_area"
         elif entity_type == "method":
             new_person_support = PersonMethod(person_id, entity_id, proficiency_id, notes)
-            description = f"add ({ person_id }, { entity_id }) to person_method"
+            description += f"to person_method"
         elif entity_type == "tool":
             new_person_support = PersonTool(person_id, entity_id, proficiency_id, notes)
-            description = f"add ({ person_id }, { entity_id }) to person_tool"
+            description += f"to person_tool"
 
         session.add(new_person_support)
         session.commit()

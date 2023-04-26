@@ -29,9 +29,10 @@
             <a role="button" class="btn btn-outline-danger btn-sm"
             style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 2.5px;"
             href="{{ url_for('views_bp.delete_person_unit', person_id=person.person_id, unit_name=person_unit[0])}}">Delete Unit</a>
-            {% endif %}<br/>
+            {% endif %}
         {% endif %}
         {% if user_can_update %}
+            <br/>
             <button type="button" class="btn btn-outline-primary btn-sm"
                 data-bs-toggle="modal" data-bs-target="#addUnitModal"
                 style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 5px 0 10px 0">
@@ -83,12 +84,11 @@
         </button>
         {% endif %}
         <br/>
-        <br/>
         <hr/>
         <h4>Areas of Support/Practice</h4>
         {% if person_support['areas']|length > 0 %}
         {% for area in person_support['areas'] %}
-        <span style="font-size: 18px">{{ area }}</span> 
+        <span style="font-size: 18px; font-weight: 500">{{ area }}</span> 
         {% if user_can_update %}
         &nbsp;
         <a role="button" class="btn btn-outline-primary btn-sm"
@@ -111,12 +111,11 @@
         </button>
         {% endif %}
         <br/>
-        <br/>
-        
+        <hr/>
         <h4>Supported Methods</h4>
         {% if person_support['methods']|length > 0 %}
         {% for method in person_support['methods'] %}
-        <span style="font-size: 18px">{{ method }}</span>
+        <span style="font-size: 18px; font-weight: 500">{{ method }}</span>
         {% if user_can_update %}
         &nbsp;
         <a role="button" class="btn btn-outline-primary btn-sm"
@@ -139,12 +138,11 @@
         </button>
         {% endif %}
         <br/>
-        <br/>
-
+        <hr/>
         <h4>Supported Tools</h4>
         {% if person_support['tools']|length > 0 %}
         {% for tool in person_support['tools'] %}
-        <span style="font-size: 18px">{{ tool }}</span>
+        <span style="font-size: 18px; font-weight: 500">{{ tool }}</span>
         {% if user_can_update %}
         &nbsp;
         <a role="button" class="btn btn-outline-primary btn-sm"

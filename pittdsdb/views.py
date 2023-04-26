@@ -348,25 +348,19 @@ def add_area(public_id):
         if existing_area:
             flash("That area already exists!", category='error')
         else:
-            new_area = add_area_to_db(new_area_name)
-            add_person_support(person.person_id, "area", new_area.area_id,
-                               proficiency.proficiency_id, notes)
+            area = add_area_to_db(new_area_name)
 
         # Add Area node
         add_area_node(new_area_name)
 
-        #update area name to the new area
+        # Update area name to the new area
         area_name = new_area_name
 
+    # Add person-person area relationships
     area = Area.query.filter_by(area_name=area_name).first()
-    person_area = PersonArea(person.person_id, area.area_id, notes)
-
-    #Attach person to area
+    add_person_support(person.person_id, "area", area.area_id,
+                               proficiency.proficiency_id, notes)
     attach_person_area(public_id, area_name)
-
-    # Add person-area relationship to db session and commit changes to db
-    db_session.add(person_area)
-    db_session.commit()
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))

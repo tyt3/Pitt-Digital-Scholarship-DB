@@ -47,39 +47,58 @@ def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
 
 
 def get_person_support(person_id):
-    person_support = {'areas': [], 'methods': [], 'tools': []}
+    person_support = {'areas': {}, 'methods': {}, 'tools': {}}
 
 
     results = pd.DataFrame(db_session.execute(text(f'SELECT * FROM vw_person_support \
                                  WHERE person_id = { person_id };')).fetchall())
     
     if not results.empty:
-        results.columns = ['person_id', 'first_name', 'last_name', 'support_type', 
-                        'area_id', 'area_name', 'method_id', 'method_name', 
-                        'method_proficiency_id', 'method_proficiency', 'tool_id', 
-                        'tool_name', 'tool_proficiency_id', 'tool_proficiency', 
-                        'campus']
-    
+        results.columns = ['person_id', 'first_name', 'last_name', 'support_type',
+                            'area_id', 'area_name', 'area_proficiency_id',
+                            'area_proficiency', 'area_notes', 'method_id', 
+                            'method_name', 'method_proficiency_id', 
+                            'method_proficiency',  'method_notes', 'tool_id', 
+                            'tool_name', 'tool_proficiency_id', 'tool_website', 
+                            'tool_proficiency', 'tool_notes', 'campus']
+          
         for index, row in results.iterrows():
             area = row['area_name']
             method = row['method_name']
             tool = row['tool_name']
+            area_proficiency = row['area_proficiency']
             method_proficiency = row['method_proficiency']
             tool_proficiency = row['tool_proficiency']
+            area_notes = row['area_notes']
+            method_notes = row['method_notes']
+            tool_notes = row['tool_notes']
+            tool_website = row['tool_website']
 
-            if area not in person_support: # no area, method, or tool
-                if method and tool:
-                    person_support[area] = { method: {'proficiency': method_proficiency,
-                                                    'tools': {tool: tool_proficiency}}}
-                elif method:
-                    person_support[area] = { method: {'proficiency': method_proficiency,
-                                                    'tools': {}}}
-                else:
-                    person_support[area] = {}
-            elif method and method not in person_support[area]: # area, method, no tool
-                person_support[area][method] = {'proficiency': method_proficiency,
-                                                    'tools': {}}
-            elif tool and tool not in person_support[area][method]['tools']: # area, method, tool
-                person_support[area][method]['tools'][tool] = tool_proficiency
+            if area not in person_support['areas']:
+                person_support['areas'][area] = {'proficiency': area_proficiency,
+                                                 'notes': area_notes}
+            if area not in person_support['methods']:
+                person_support['methods'][method] = {'proficiency': method_proficiency,
+                                                     'notes': method_notes}
+            if area not in person_support['tools']:
+                person_support['tools'][tool] = {'website': tool_website,
+                                                     'proficiency': tool_proficiency,
+                                                     'notes': tool_notes}
+
+
+            # if area not in person_support: # no area, method, or tool
+            #     if method and tool:
+            #         person_support[area] = { method: {'proficiency': method_proficiency,
+            #                                         'tools': {tool: tool_proficiency}}}
+            #     elif method:
+            #         person_support[area] = { method: {'proficiency': method_proficiency,
+            #                                         'tools': {}}}
+            #     else:
+            #         person_support[area] = {}
+            # elif method and method not in person_support[area]: # area, method, no tool
+            #     person_support[area][method] = {'proficiency': method_proficiency,
+            #                                         'tools': {}}
+            # elif tool and tool not in person_support[area][method]['tools']: # area, method, tool
+            #     person_support[area][method]['tools'][tool] = tool_proficiency
 
     return person_support

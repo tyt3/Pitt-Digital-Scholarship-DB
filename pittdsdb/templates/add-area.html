@@ -20,6 +20,18 @@
     </div>
     <br/>
     <div class="form-group">
+        <label for="proficiency">Area Proficiency Level</label>
+        <select class="form-select form-select-md" aria-label=".form-select-md example"
+          id="proficiency"
+          name="proficiency">
+          <option>Select a proficiency level</option>
+          {% for level in vocab['proficiency_level'] %}
+          <option value="{{ level }}">{{ level }}</option>
+          {% endfor %}
+        </select>
+    </div>
+    <br/>
+    <div class="form-group">
         <label for="notes">Notes</label>
         <textarea class="form-control"
         id="notes"
