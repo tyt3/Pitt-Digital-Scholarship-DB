@@ -436,15 +436,18 @@ class PersonArea(Base):
 
     fk_person_id = Column(ForeignKey('person.person_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
     fk_area_id = Column(ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
+    fk_proficiency_id = Column(ForeignKey('proficiency.proficiency_id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     notes = Column(String(5000))
-
-    def __init__(self, fk_person_id, fk_area_id, notes):
-        self.fk_person_id = fk_person_id
-        self.fk_area_id = fk_area_id
-        self.notes = notes
 
     fk_area = relationship('Area')
     fk_person = relationship('Person')
+    fk_proficiency = relationship('Proficiency')
+
+    def __init__(self, fk_person_id, fk_area_id, fk_proficiency_id, notes):
+        self.fk_person_id = fk_person_id
+        self.fk_area_id = fk_area_id
+        self.fk_proficiency_id = fk_proficiency_id
+        self.notes = notes
 
 
 class PersonMethod(Base):
@@ -613,6 +616,7 @@ t_vw_person_support = Table(
     Column('support_type', String(50)),
     Column('area_id', Integer, server_default=text("'0'")),
     Column('area_name', String(100)),
+    Column('area_proficiency', Integer),
     Column('area_notes', String(5000)),
     Column('method_id', Integer, server_default=text("'0'")),
     Column('method_name', String(100)),
@@ -622,7 +626,15 @@ t_vw_person_support = Table(
     Column('tool_id', Integer, server_default=text("'0'")),
     Column('tool_name', String(100)),
     Column('tool_proficiency_id', Integer, server_default=text("'0'")),
+    Column('tool_website', String(300)),
     Column('tool_proficiency', String(50)),
     Column('tool_notes', String(5000)),
     Column('campus', String(50))
+)
+
+t_vw_person_units = Table(
+    'vw_person_units', metadata,
+    Column('person_id', Integer),
+    Column('subunit_name', String(100)),
+    Column('unit_name', String(100))
 )

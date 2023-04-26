@@ -47,7 +47,8 @@ def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
 
 
 def get_person_support(person_id):
-    person_support = {}
+    person_support = {'areas': [], 'methods': [], 'tools': []}
+
 
     results = pd.DataFrame(db_session.execute(text(f'SELECT * FROM vw_person_support \
                                  WHERE person_id = { person_id };')).fetchall())

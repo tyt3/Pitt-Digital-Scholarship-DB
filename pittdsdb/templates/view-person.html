@@ -86,45 +86,95 @@
         <br/>
         <hr/>
         <h4>Areas of Support/Practice</h4>
-        {% if person_support %}
-        {% for area in person_support %}
-        <span style="font-size: 20px; font-weight: 500;">{{ area }}</span>
+        {% if person_support['areas']|length > 0 %}
+        {% for area in person_support['areas'] %}
+        <span style="font-size: 18px">{{ area }}</span> 
         {% if user_can_update %}
         &nbsp;
         <a role="button" class="btn btn-outline-primary btn-sm"
         style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
         href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Area</a>
         {% endif %}
-            <ul>
-            {% for method in person_support[area] %}
-                <li><span style="font-size: 18px"><strong>{{ method }}:</strong>
-                    {{ person_support[area][method]['proficiency'] }}</span>
-                    {% if user_can_update %}
-                    &nbsp;
-                    <a role="button" class="btn btn-outline-primary btn-sm"
-                    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-                    href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">Update Method</a>
-                    {% endif %}
-                </li>
-                    <ul>
-                        {% for tool in person_support[area][method]['tools'] %}
-                         <li><strong>{{ tool }}:</strong> 
-                            {{ person_support[area][method]['tools'][tool] }}
-                            {% if user_can_update %}
-                            &nbsp;
-                            <a role="button" class="btn btn-outline-primary btn-sm"
-                            style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-                            href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Tool</a>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-            {% endfor %}
-            </ul> 
+        <ul>
+            <li><strong>Proficiency:</strong> {{ person_support['areas'][area]['proficiency'] }}</li>
+            {% if person_support['areas'][area]['notes'] %}
+            <li><strong>Notes:</strong> {{ person_support[area]['notes'] }}</li>
+            {% endif %}
+        </ul>
         {% endfor %}
         {% endif %}
-        </div>
         <br/>
         {% if user_can_update %}
+        <button type="button" class="btn btn-primary btn-sm"
+            data-bs-toggle="modal" data-bs-target="#addAreaModal">
+            Add an Area
+        </button>
+        {% endif %}
+        <br/>
+        <br/>
+        
+        <h4>Supported Methods</h4>
+        {% if person_support['methods']|length > 0 %}
+        {% for method in person_support['methods'] %}
+        <span style="font-size: 18px">{{ method }}</span>
+        {% if user_can_update %}
+        &nbsp;
+        <a role="button" class="btn btn-outline-primary btn-sm"
+        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
+        href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">Update Method</a>
+        {% endif %}
+        <ul>
+            <li><strong>Proficiency:</strong> {{ person_support['methods'][method]['proficiency'] }}</li>
+            {% if person_support['methods'][method]['notes'] %}
+            <li><strong>Notes:</strong><br/> {{ person_support['methods'][method]['notes'] }}</li>
+            {% endif %}
+        </ul>
+        {% endfor %}
+        {% endif %}
+        <br/>
+        {% if user_can_update %}
+        <button type="button" class="btn btn-primary btn-sm"
+            data-bs-toggle="modal" data-bs-target="#addMethodModal">
+            Add a Method
+        </button>
+        {% endif %}
+        <br/>
+        <br/>
+
+        <h4>Supported Tools</h4>
+        {% if person_support['tools']|length > 0 %}
+        {% for tool in person_support['tools'] %}
+        <span style="font-size: 18px">{{ tool }}</span>
+        {% if user_can_update %}
+        &nbsp;
+        <a role="button" class="btn btn-outline-primary btn-sm"
+        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
+        href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Tool</a>
+        {% endif %}
+        <ul>
+            <li><strong>Proficiency:</strong> {{ person_support['tools'][tool]['proficiency'] }}</li>
+            {% if person_support['tools'][tool]['website'] %}
+            <li><strong>Tool Website:</strong> 
+                <a href="{{ person_support['tools'][tool]['website'] }}" 
+                target="_blank">{{ person_support['tools'][tool]['website'] }}</a></li>
+            {% endif %}
+            {% if person_support['tools'][tool]['notes'] %}
+            <li><strong>Notes:</strong> {{ person_support['tools'][tool]['notes'] }}</li>
+            {% endif %}
+        </ul>
+        {% endfor %}
+        {% endif %}
+        {% if user_can_update %}
+        <br/>
+        <button type="button" class="btn btn-primary btn-sm"
+            data-bs-toggle="modal" data-bs-target="#addToolModal">
+            Add a Tool
+        </button>
+        {% endif %}
+        <br/>
+        </div>
+        <br/>
+        <!-- {% if user_can_update %}
         <div class="row">
             <div class="col">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -152,7 +202,7 @@
             </div>
         </div>
         <br/>
-        {% endif %}
+        {% endif %} -->
 
 <!-- Update Person Form Modal -->
 <div class="modal fade" id="updatePersonModal" name="updatePersonModal" 
