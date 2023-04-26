@@ -424,6 +424,9 @@ def add_method(public_id):
             new_method = Method(new_method_name, current_user.user_id)
             db_session.add(new_method)
             method = Method.query.filter_by(method_name=new_method_name).first()
+
+            #Add Method node
+            add_method_node(new_method_name)
     else:
         # Get existing method
         method = Method.query.filter_by(method_name=method_name).first()
@@ -434,36 +437,44 @@ def add_method(public_id):
                                     proficiency.proficiency_id, notes)
         db_session.add(person_method)
         db_session.commit()
+
+        #attach method to person node
+        attach_person_method(person.public_id, method.method_name)
     except:
         flash("Either the method has already been added to this person record \
                 or could not be added for another reason.", category="error")
         
     # Add person_support relationships
-    person_area = db_session.execute(f'SELECT * FROM person_area \
+    person_area = db_session.execute(text(f'SELECT * FROM person_area \
                                      WHERE fk_person_id = { person.person_id } \
-                                     AND fk_area_id = {area.area_id}')
+                                     AND fk_area_id = {area.area_id}'))
     
     # If person and area relationship already in person_support
     if person_area:
         print("person support not added")
         try:
-            db_session.execute(f'UPDATE person_support \
+            db_session.execute(text(f'UPDATE person_support \
                             SET \
                             fk_method_id = {method.method_id} \
                             WHERE fk_person_id = { person.person_id } \
-                            AND fk_area_id = {area.area_id};')
+                            AND fk_area_id = {area.area_id};'))
         except: 
             flash("Could not update person support")
     else:
         print("person support added")
         try:
-            db_session.execute(f'INSERT INTO person_support \
+            db_session.execute(text(f'INSERT INTO person_support \
                             (fk_person_id, fk_area_id, fk_method_id, fk_tool_id) \
                             VALUES \
-                            ({ person.person_id }, {area.area_id}, {method.method_id}, None);')
+                            ({ person.person_id }, {area.area_id}, {method.method_id}, None);'))
+            # attach area to person
+            attach_person_area(person.public_id, area.area_name)
         except:
             flash("Could not update person support")
     db_session.commit()
+
+    if method:
+        attach_area_method(area.area_name, method.method_name)
     
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -499,6 +510,7 @@ def add_tool(public_id):
         else:
             new_method = Method(new_method_name, current_user.user_id)
             db_session.add(new_method)
+
 
             try:
                 person_method = PersonMethod(person.person_id, new_method.method_id, 
