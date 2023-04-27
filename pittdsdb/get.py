@@ -74,31 +74,15 @@ def get_person_support(person_id):
             tool_notes = row['tool_notes']
             tool_website = row['tool_website']
 
-            if area not in person_support['areas']:
+            if area and area not in person_support['areas']:
                 person_support['areas'][area] = {'proficiency': area_proficiency,
                                                  'notes': area_notes}
-            if area not in person_support['methods']:
+            if method and method not in person_support['methods']:
                 person_support['methods'][method] = {'proficiency': method_proficiency,
                                                      'notes': method_notes}
-            if area not in person_support['tools']:
+            if tool and tool not in person_support['tools']:
                 person_support['tools'][tool] = {'website': tool_website,
                                                      'proficiency': tool_proficiency,
                                                      'notes': tool_notes}
-
-
-            # if area not in person_support: # no area, method, or tool
-            #     if method and tool:
-            #         person_support[area] = { method: {'proficiency': method_proficiency,
-            #                                         'tools': {tool: tool_proficiency}}}
-            #     elif method:
-            #         person_support[area] = { method: {'proficiency': method_proficiency,
-            #                                         'tools': {}}}
-            #     else:
-            #         person_support[area] = {}
-            # elif method and method not in person_support[area]: # area, method, no tool
-            #     person_support[area][method] = {'proficiency': method_proficiency,
-            #                                         'tools': {}}
-            # elif tool and tool not in person_support[area][method]['tools']: # area, method, tool
-            #     person_support[area][method]['tools'][tool] = tool_proficiency
 
     return person_support
