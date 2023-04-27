@@ -166,7 +166,7 @@ def add_person(public_id):
             person.last_name = last_name
             person.pronouns = pronouns
             person.title = title
-            person.affiliation = affiliation
+            person.affiliation = affiliation # add functionality to remove affiliations in db
             person.unit = unit
             person.subunit = subunit
             person.email = email
@@ -219,24 +219,13 @@ def add_person(public_id):
                     for a in affiliation:
                         add_person_affiliation(person_id, a)
 
-                    # Add address
-                    cursor = db_session.cursor()
-                    # cursor.callproc("sp_AddAddress", [person_id, "person", public_id,
-                    #                                 building, office, street_address,
-                    #                                 "", "", city, state, zipcode, 
-                    #                                 campus, 0, 0])
-                    address_added = list(cursor.fetchall()) # Get output params
-                    if address_added[0]:
-                        address_id = address_added[1]
-                    cursor.close()
+                    # # Add new person to database
+                    # db_session.add(new_person)
 
-                    # Add new person to database
-                    db_session.add(new_person)
+                    # # Commit changes
+                    # db_session.commit()
 
-                    # Commit changes
-                    db_session.commit()
-
-                    #Add Person Node
+                    # Add Person Node
                     add_person_node(first_name + ' ' + last_name, new_person.public_id)
 
                     return redirect(url_for('views_bp.view_person',

@@ -414,7 +414,7 @@ class Modification(Base):
     modification_id = Column(Integer, primary_key=True)
     modification = Column(String(500), nullable=False)
     modified_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
-    modificaiton_date = Column(DateTime, nullable=False)
+    modification_date = Column(DateTime, nullable=False)
 
     user = relationship('User')
 

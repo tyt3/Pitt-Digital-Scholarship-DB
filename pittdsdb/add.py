@@ -26,40 +26,41 @@ def add_modification(entity, description):
 def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
                      phone, scheduler_address, other_contact, preferred_contact,
                      support_type, bio, added_by, notes, photo_url):
-    session = Session(engine)
 
-    with session.begin():
-        # Create new person object
-        new_person = Person(first_name = first_name,
-                            last_name = last_name,
-                            title = title,
-                            pronouns = pronouns,
-                            email = email,
-                            web_address = web_address,
-                            phone = phone,
-                            scheduler_address = scheduler_address,
-                            preferred_contact = preferred_contact,
-                            other_contact = other_contact,
-                            support_type = support_type,
-                            bio = bio,
-                            added_by = added_by,
-                            notes = notes,
-                            photo_url = photo_url)  
+    # Create new person object
+    new_person = Person(first_name = first_name,
+                        last_name = last_name,
+                        title = title,
+                        pronouns = pronouns,
+                        email = email,
+                        web_address = web_address,
+                        phone = phone,
+                        scheduler_address = scheduler_address,
+                        preferred_contact = preferred_contact,
+                        other_contact = other_contact,
+                        support_type = support_type,
+                        bio = bio,
+                        added_by = added_by,
+                        notes = notes,
+                        photo_url = photo_url)  
 
-        # Add new area to database
-        session.add(new_person)
-        session.commit()
-    
+    # Add new area to database
+    db_session.add(new_person)
+    db_session.commit()
+
     # Get person information
     person = Person.query.filter_by(email=email).first()
 
     if person:
         # Add modification to database
-        add_modification(person, f"add {repr(new_person)}")
-
+        add_modification(new_person, f"add {repr(person)}")
+        
+        print("person added")
         return True, person
     else:
+        print("person not added")
         return False, None
+    
 
 
 def add_person_affiliation(person_id=int, affiliation_type=str):
