@@ -796,13 +796,42 @@ def view_person(public_id):
 
 
 @views_bp.route('/view-unit/<public_id>', methods=['GET', 'POST'])
-def view_unit():
+def view_unit(public_id):
+    is_subunit = False
+    unit = None
+    # Check if current user can update and/or delete person record
+    user_can_update = user_can_delete = False
     if current_user.is_authenticated:
         current_user.set_permissions()
-        
+        unit = db_session.query(Unit).filter_by(public_id=public_id).first()
+        if not unit:
+            unit = db_session.query(Subunit).filter_by(public_id=public_id).first()
+            if not unit:
+                flash("404: Not Found. That Unit does not exist in the database.", category="error")
+                return render_template("index.html",
+                                   title="Pitt Digital Scholarship Database",
+                                   user=current_user)
+            else:
+                is_subunit = True
+
+        if not current_user.is_anonymous and current_user.is_authenticated:
+            current_user.set_permissions()
+
+            if current_user.permission_level == 4:
+                user_can_update = user_can_delete = True
+            elif unit.added_by == current_user.user_id:
+                user_can_update = True
+
     return render_template("view-unit.html",
                            title="View a Unit | Pitt Digital Scholarship Database",
-                           user=current_user)
+                           user=current_user,
+                           vocab=vocab,
+                           existing=existing,
+                           unit=unit,
+                           is_subunit = is_subunit,
+                           user_can_update=user_can_update,
+                           user_can_delete=user_can_delete
+                           )
 
 
 @views_bp.route('/view-funding/<public_id>', methods=['GET', 'POST'])
