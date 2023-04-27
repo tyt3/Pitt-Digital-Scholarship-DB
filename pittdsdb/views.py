@@ -226,10 +226,10 @@ def add_person(public_id):
                     # db_session.commit()
 
                     # Add Person Node
-                    add_person_node(first_name + ' ' + last_name, new_person.public_id)
+                    add_person_node(first_name + ' ' + last_name, public_id)
 
                     return redirect(url_for('views_bp.view_person',
-                                public_id=new_person.public_id))
+                                public_id=public_id))
             else:
                 flash('The person record was not added. Please try again.',
                   category='error')
@@ -398,7 +398,17 @@ def add_method(public_id):
                             proficiency.proficiency_id, notes, True)
     add_person_support_combos(person.person_id, area.area_id, 
                                 method.method_id)
-    
+
+    result = get_relations("Person", "public_id", person.public_id, "Area", "name", area.area_name)
+    if len(result) == 0:
+        attach_person_area(person.public_id, area.area_name)
+    result = get_relations("Person", "public_id", person.public_id, "Method", "name", method.method_name)
+    if len(result) == 0:
+        attach_person_method(person.public_id, method.method_name)
+    result = get_relations("Area", "name", area.area_name, "Method", "name", method.method_name)
+    if len(result) == 0:
+        attach_area_method(area.area_name, method.method_name)
+
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
 
@@ -452,6 +462,28 @@ def add_tool(public_id):
                             proficiency.proficiency_id, notes, True)
     add_person_support_combos(person.person_id, area.area_id, 
                                 method.method_id, tool.tool_id)
+    result = get_relations("Person", "name", person.public_id, "Area", "name", area.area_name)
+    if len(result) == 0:
+        attach_person_area(person.public_id, area.area_name)
+    result = get_relations("Person", "name", person.public_id, "Method", "name", method.method_name)
+    if len(result) == 0:
+        attach_person_method(person.public_id, method.method_name)
+    result = get_relations("Person", "name", person.public_id, "Tool", "name", tool.tool_name)
+    if len(result) == 0:
+        attach_person_tool(person.public_id, tool.tool_name)
+
+    # attach area to method if not exists
+    result = get_relations("Area", "name", area.area_name, "Method", "name", method.method_name)
+    if len(result) == 0:
+        attach_area_method(area.area_name, method.method_name)
+    # attach tool to method if not exists
+    result = get_relations("Tool", "name", tool.tool_name, "Method", "name", method.method_name)
+    if len(result) == 0:
+        attach_tool_method(tool.tool_name, method.method_name)
+    # attach tool to area if not exists
+    result = get_relations("Area", "name", area.area_name, "Tool", "name", tool.tool_name)
+    if len(result) == 0:
+        attach_area_tool(area.area_name, tool.tool_name)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
