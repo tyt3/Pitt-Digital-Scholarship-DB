@@ -88,7 +88,7 @@
         <h4>Areas of Support/Practice</h4>
         {% if person_support['areas']|length > 0 %}
         {% for area in person_support['areas'] %}
-        <span style="font-size: 18px; font-weight: 500">{{ area }}</span> 
+        <span style="font-size: 18px; font-weight: 500">{{ area }}</span>
         {% if user_can_update %}
         &nbsp;
         <a role="button" class="btn btn-outline-primary btn-sm"
@@ -254,7 +254,7 @@ tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
                         {% endfor %}
                     </select>
                     <small>Don't see your unit?  
-                        <a href="{{ url_for('views_bp.add_unit') }}" target="_blank">
+                        <a href="{{ url_for('views_bp.add_unit', public_id='new') }}" target="_blank">
                             Add it to the database</a>!
                     </small>
                 </div>

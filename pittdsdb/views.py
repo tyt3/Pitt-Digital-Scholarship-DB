@@ -590,13 +590,12 @@ def update_area(area_name, public_id):
     
     person = Person.query.filter_by(public_id=public_id).first()
     area = Area.query.filter_by(area_name=area_name).first()
-    notes = get_person_relations(person.person_id, 
+    notes = get_person_relations(person.person_id,
                                  "notes", "area",
                                  area.area_id)[0]
     
     if request.method == "POST":
         updated_notes = request.form.get('notes')
-
         db_session.execute(f'UPDATE person_area \
                            SET notes = { updated_notes } \
                            WHERE user_id = { person.person_id }\
@@ -780,7 +779,7 @@ def view_person(public_id):
         for item in address_items:
             person_address[item] = person_address_result[i]
             i += 1
-    
+
     return render_template("view-person.html",
                            title="View a Person | Pitt Digital Scholarship Database",
                            user=current_user,

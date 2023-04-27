@@ -3,8 +3,8 @@
   {% block content %}
   <div class="row">
     <div class="mx-auto col-6 col-md-6 col-lg-4">
-      <form metod="POST" 
-        action="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">
+      <form method="POST"
+        action="{{ url_for('views_bp.update_area', area_name=area.area_name, public_id=person.public_id) }}">
         <div class="form-group">
           <label for="name"><span style="font-weight: 500">Area Name</span></label>
           <input 
