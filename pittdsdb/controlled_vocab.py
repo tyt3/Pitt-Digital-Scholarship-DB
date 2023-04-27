@@ -21,11 +21,25 @@ vocab = {
         'Titusville'
         ],
     'career_level': [
-        'Undergraduate',
-        'Masters',
+        'Any',
         'Doctoral',
+        'Graduate',
+        'Masters',
         'Postdoctoral',
-        'Professional'
+        'Postgraduate',
+        'Professional',
+        'Secondary School',
+        'Undergraduate',
+        'Other'
+        ],
+    'duration': [
+        'Academic Year',
+        'Calendar Year',
+        'Fall Semester',
+        'Multi-year',
+        'Spring Semester',
+        'Summer',
+        'Other'
         ],
     'entity_type': [
         'person',
@@ -47,8 +61,10 @@ vocab = {
         'Graduate Student Assistant',
         'Grant',
         'Internship',
-        'Research Assistant',
+        'Graduate Research Assistant',
         'Scholarship',
+        'Undergraduate Research Assistant',
+        'Undergraduate Student Assistant',
         'Other'
         ],
     'payment_type': [
