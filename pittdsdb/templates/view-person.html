@@ -98,7 +98,7 @@
         <ul>
             <li><strong>Proficiency:</strong> {{ person_support['areas'][area]['proficiency'] }}</li>
             {% if person_support['areas'][area]['notes'] %}
-            <li><strong>Notes:</strong> {{ person_support[area]['notes'] }}</li>
+            <li><strong>Notes:</strong> {{ person_support['areas'][area]['notes'] }}</li>
             {% endif %}
         </ul>
         {% endfor %}
