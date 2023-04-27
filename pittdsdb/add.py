@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, flash
 from flask_login import current_user
 from sqlalchemy import select
 from sqlalchemy.sql import text
@@ -64,26 +64,32 @@ def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
 
 def add_person_affiliation(person_id=int, affiliation_type=str):
     affiliation = Affiliation.query.filter_by(affiliation_type=affiliation_type).first()
-    print(affiliation.affiliation_type)
-
+ 
+    session = Session(engine)
+    session.begin()
     try:
-        db_session.execute(f'INSERT INTO person_affiliation \
+        session.execute(f'INSERT INTO person_affiliation \
                         (fk_person_id, fk_affiliation_id) \
                         VALUES \
                         ({ person_id }, { affiliation.affiliation_id })')
-        db_session.commit()
+        session.commit()
 
         return True
     except:
+        session.rollback()
+        flash("Person affiliation(s) could not be added", category="error")
+        print("Person affiliation(s) could not be added")
         return False
     
     
 def add_person_support(person_id=int, entity_type=str, entity_id=int, 
-                       proficiency_id=int, notes=str):
-    session = Session(engine)
-
+                       proficiency_id=int, notes=str, notify=False):
+    
     description = f"add ({ person_id }, { entity_id }) "
-    with session.begin():
+
+    session = Session(engine)
+    session.begin()
+    try:
         if entity_type == "area":
             new_person_support = PersonArea(person_id, entity_id, proficiency_id, notes)
             description += f"to person_area"
@@ -96,42 +102,59 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
 
         session.add(new_person_support)
         session.commit()
+    except:
+        session.rollback()
+        if notify:
+            flash("Person support record(s) could not be added", category="error")
+            print("Person support record(s) could not be added")
+        return False
     
+    # Add person support addition to modification log
     person_support = None
     if entity_type == "area":
-        person_support = PersonArea.query.filter_by(fk_area_id=entity_id)
+        person_support = PersonArea.query.filter_by(fk_area_id=entity_id).first()
     elif entity_type == "method":
-        person_support = PersonMethod.query.filter_by(fk_method_id=entity_id)
+        person_support = PersonMethod.query.filter_by(fk_method_id=entity_id).first()
     elif entity_type == "tool":
-        person_support = PersonTool.query.filter_by(fk_tool_id=entity_id)
+        person_support = PersonTool.query.filter_by(fk_tool_id=entity_id).first()
 
-    if person_support:
-        # Add modification to database
-        add_modification(person_support, description)
-        return True
-    else:
-        return False
+
+    # Add modification to database
+    add_modification(person_support, description)
+
+    return True
+
 
 def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0):
     session = Session(engine)
 
+    session.begin()
     # Add method area relationship
-    with session.begin():
+    try:
         session.execute(f"INSERT INTO method_area \
                         (fk_method_id, fk_area_id) \
                         VALUES \
                         ({ method_id }, { area_id });")
         session.commit()
+    except:
+        session.rollback()
+        flash("Method/area relationship could not be added", category="error")
+        print("Method/area relationship could not be added")
+        return False
 
     # Build query
     if method_id > 0 and tool_id > 0:
         # Add tool area relationship
-        with session.begin():
+        session.begin()
+        try:
             session.execute(f"INSERT INTO tool_area \
                             (fk_tool_id, fk_area_id) \
                             VALUES \
                             ({ tool_id }, { area_id });")
             session.commit()
+        except:
+            print("Tool/area relationship could not be added.")
+            flash("Tool/area relationship could not be added.")
 
         # Add method tool relationship
         with session.begin():
@@ -150,8 +173,9 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
         
         # Check if person-area-method relationship already in person_support
         if person_support.rowcount > 0:
-             # Update existing record
-             with session.begin():
+            # Update existing record
+            session.begin()
+            try:
                 session.execute(f'UPDATE person_support \
                                 SET \
                                 fk_tool_id = { tool_id } \
@@ -159,15 +183,26 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
                                 AND fk_area_id = { area_id } \
                                 AND fk_method_id = { method_id };')
                 session.commit()
+            except:
+                session.rollback()
+                flash("Person support record could not be added", category="error")
+                print("Person support record could not be added")
+                return False
         else:
             # Add new record
-            with session.begin():
+            session.begin()
+            try:
                 session.execute(f'INSERT INTO person_support \
                                 (fk_person_id, fk_area_id, fk_method_id, fk_tool) \
                                 VALUES \
                                 ({ person_id }, { area_id }, \
                                 { method_id }, { tool_id });')
                 session.commit()
+            except:
+                session.rollback()
+                flash("Person support record could not be added", category="error")
+                print("Person support record could not be added")
+                return False
     elif method_id > 0:
         # Add person support relations
         person_support = db_session.execute(f'SELECT * FROM person_support \
@@ -177,22 +212,34 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
         
         # Check if person-area-method relationship already in person_support
         if person_support.rowcount > 0:
-             # Update existing record
-             with session.begin():
+            # Update existing record
+            session.begin()
+            try:
                 session.execute(f'UPDATE person_support \
                                 SET \
                                 fk_method_id = { method_id } \
                                 WHERE fk_person_id = { person_id } \
                                 AND fk_area_id = { area_id };')
                 session.commit()
+            except:
+                session.rollback()
+                print("Person support record could not be added")
+                flash("Person support record could not be added", category="error")
+                return False
         else:
             # Add new record
-            with session.begin():
+            session.begin()
+            try:
                 session.execute(f'INSERT INTO person_support \
                                 (fk_person_id, fk_area_id, fk_method_id) \
                                 VALUES \
                                 ({ person_id }, { area_id }, { method_id });')
                 session.commit()
+            except:
+                session.rollback()
+                print("Person support record could not be added")
+                flash("Person support record could not be added", category="error")
+                return False
 
     
 def add_person_unit_to_db(person_id=int, unit_name=str):

@@ -350,16 +350,16 @@ def add_area(public_id):
         else:
             area = add_area_to_db(new_area_name)
 
-        # Add Area node
-        add_area_node(new_area_name)
+            # Add Area node
+            add_area_node(new_area_name)
 
-        # Update area name to the new area
-        area_name = new_area_name
+            # Update area name to the new area
+            area_name = new_area_name
 
     # Add person-person area relationships
     area = Area.query.filter_by(area_name=area_name).first()
     add_person_support(person.person_id, "area", area.area_id,
-                               proficiency.proficiency_id, notes)
+                               proficiency.proficiency_id, notes, True)
     add_person_support_combos(person.person_id, area.area_id)
     attach_person_area(public_id, area_name)
 
@@ -402,13 +402,13 @@ def add_method(public_id):
         # Get existing method
         method = Method.query.filter_by(method_name=method_name).first()
     
-        # Add person-support relationships
-        add_person_support(person.person_id, "area", area.area_id,
-                            proficiency.proficiency_id, notes)
-        add_person_support(person.person_id, "method", method.method_id,
-                               proficiency.proficiency_id, notes)
-        add_person_support_combos(person.person_id, area.area_id, 
-                                  method.method_id)
+    # Add person-support relationships
+    add_person_support(person.person_id, "area", area.area_id,
+                        proficiency.proficiency_id, notes)
+    add_person_support(person.person_id, "method", method.method_id,
+                            proficiency.proficiency_id, notes, True)
+    add_person_support_combos(person.person_id, area.area_id, 
+                                method.method_id)
     
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -454,15 +454,15 @@ def add_tool(public_id):
         # Get existing tool
         tool = Tool.query.filter_by(tool_name=tool_name).first()
     
-        # Add person-support relationships
-        add_person_support(person.person_id, "area", area.area_id,
+    # Add person-support relationships
+    add_person_support(person.person_id, "area", area.area_id,
+                        proficiency.proficiency_id, notes)
+    add_person_support(person.person_id, "method", method.method_id,
                             proficiency.proficiency_id, notes)
-        add_person_support(person.person_id, "method", method.method_id,
-                               proficiency.proficiency_id, notes)
-        add_person_support(person.person_id, "tool", tool.tool_id,
-                               proficiency.proficiency_id, notes)
-        add_person_support_combos(person.person_id, area.area_id, 
-                                  method.method_id, tool.tool_id)
+    add_person_support(person.person_id, "tool", tool.tool_id,
+                            proficiency.proficiency_id, notes, True)
+    add_person_support_combos(person.person_id, area.area_id, 
+                                method.method_id, tool.tool_id)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
