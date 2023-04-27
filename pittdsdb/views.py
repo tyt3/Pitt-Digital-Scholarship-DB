@@ -383,58 +383,31 @@ def add_method(public_id):
     new_method_name = request.form.get('new_method')
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
+
+    # Get object information
     person = Person.query.filter_by(public_id=public_id).first()
     area = Area.query.filter_by(area_name=area_name).first()
     method = None
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
+    # Add method and relations
     if new_method_name:
         # Make sure the method name being added doesn't already exist
         existing_method = Method.query.filter_by(method_name=new_method_name).first()
         if existing_method:
             flash("That method already exists!", category='error')
         else:
-            new_method = Method(new_method_name, current_user.user_id)
-            db_session.add(new_method)
-            method = Method.query.filter_by(method_name=new_method_name).first()
+            method = add_method_to_db(new_method_name)
     else:
         # Get existing method
         method = Method.query.filter_by(method_name=method_name).first()
     
-    try:
-        # Add person-method relationship
-        person_method = PersonMethod(person.person_id, method.method_id, 
-                                    proficiency.proficiency_id, notes)
-        db_session.add(person_method)
-        db_session.commit()
-    except:
-        flash("Either the method has already been added to this person record \
-                or could not be added for another reason.", category="error")
-        
-    # Add person_support relationships
-    person_area = db_session.execute(f'SELECT * FROM person_area \
-                                     WHERE fk_person_id = { person.person_id } \
-                                     AND fk_area_id = {area.area_id}')
-    
-    # If person and area relationship already in person_support
-    if person_area.rowcount > 0:
-        try:
-            db_session.execute(f'UPDATE person_support \
-                            SET \
-                            fk_method_id = {method.method_id} \
-                            WHERE fk_person_id = { person.person_id } \
-                            AND fk_area_id = {area.area_id};')
-        except: 
-            flash("Could not update person support")
-    else:
-        try:
-            db_session.execute(f'INSERT INTO person_support \
-                            (fk_person_id, fk_area_id, fk_method_id) \
-                            VALUES \
-                            ({ person.person_id }, {area.area_id}, {method.method_id});')
-        except:
-            flash("Could not update person support")
-    db_session.commit()
+        # Add person-support relationships
+        add_person_support(person.person_id, "area", area.area_id,
+                            proficiency.proficiency_id, notes)
+        add_person_support(person.person_id, "method", method.method_id,
+                               proficiency.proficiency_id, notes)
+        add_person_support_combos(person.person_id, area.area_id, method.method_id)
     
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -455,6 +428,8 @@ def add_tool(public_id):
     method_name = request.form.get('method')
     tool_name = request.form.get('tool')
     new_tool_name = request.form.get('new_tool')
+    tool_type = request.form.get('tool_type')
+    web_address = request.form.get('web_address')
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
 
@@ -473,57 +448,20 @@ def add_tool(public_id):
             return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
         else:
-            new_tool = Tool(new_tool_name, current_user.user_id)
-            db_session.add(new_tool)
-            tool = Tool.query.filter_by(tool_name=new_tool_name).first()
+            tool = add_tool_to_db(new_tool_name, tool_type, web_address)
     else:
         # Get existing tool
         tool = Tool.query.filter_by(tool_name=tool_name).first()
     
-    # Add person-tool relationship
-    person_tool = db_session.execute(f'SELECT * FROM person_tool \
-                                    WHERE fk_person_id = { person.person_id } \
-                                    AND fk_tool_id = { tool.tool_id };')
-    try:
-        if person_tool.rowcount == 0:
-            person_tool = PersonTool(person.person_id, tool.tool_id, 
-                                    proficiency.proficiency_id, notes)
-            db_session.add(person_tool)
-            db_session.commit()
-    except:
-        flash("The tool could not be added to the person record. \
-                Please try again or submit a help ticket via the Contact form.", 
-                category="error")
-        return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
-        
-    # Look for existing person_support relationships
-    person_support = db_session.execute(f'SELECT * FROM person_support \
-                                        WHERE fk_person_id = { person.person_id } \
-                                        AND fk_area_id = {area.area_id} \
-                                        AND fk_method_id = { method.method_id };')
-    
-    # If person and area relationship already in person_support
-    if person_support.rowcount > 0:
-        try:
-            db_session.execute(f'UPDATE person_support \
-                               SET \
-                               fk_tool_id = {tool.tool_id} \
-                               WHERE fk_person_id = { person.person_id } \
-                               AND fk_area_id = {area.area_id} \
-                               AND fk_method_id = { method.method_id };')
-        except: 
-            flash("Could not update person support")
-            return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
-    else:
-        db_session.execute(f'INSERT INTO person_support \
-                        (fk_person_id, fk_area_id, fk_method_id, fk_tool_id) \
-                        VALUES \
-                        ({ person.person_id }, { area.area_id }, \
-                            { method.method_id }, { tool.tool_id });')
-
-    db_session.commit()
+        # Add person-support relationships
+        add_person_support(person.person_id, "area", area.area_id,
+                            proficiency.proficiency_id, notes)
+        add_person_support(person.person_id, "method", method.method_id,
+                               proficiency.proficiency_id, notes)
+        add_person_support(person.person_id, "tool", tool.method_id,
+                               proficiency.proficiency_id, notes)
+        add_person_support_combos(person.person_id, area.area_id, 
+                                  method.method_id, tool.tool_id)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
