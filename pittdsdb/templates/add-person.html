@@ -78,16 +78,6 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="web_address"><span style="font-weight: 500">Website</span></label>
-        <input 
-        type="url" 
-        class="form-control" 
-        id="web_address" 
-        name="web_address"
-        value="{{ request.form['web_address'] }}">
-      </div>
-      <br/>
-      <div class="form-group">
         <label for="phone"><span style="font-weight: 500">Phone</span></label>
         <input 
         type="tel" 
@@ -147,6 +137,16 @@
           <option value="{{ type }}">{{ type }}</option>
           {% endfor %}
         </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="web_address"><span style="font-weight: 500">Website</span></label>
+        <input 
+        type="url" 
+        class="form-control" 
+        id="web_address" 
+        name="web_address"
+        value="{{ request.form['web_address'] }}">
       </div>
       <br/>
       <div class="form-group">
