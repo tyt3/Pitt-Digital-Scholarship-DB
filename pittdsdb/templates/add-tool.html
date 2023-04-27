@@ -1,7 +1,35 @@
 <form method="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}">
-  {% include 'area-form.html' %}
+  <div class="form-group">
+    <label for="area"><span style="font-weight: 500">Area</span></label>
+    <select class="form-control"
+      id="area"
+      name="area" 
+      multiple
+      required>
+      <option value="" disabled><span style="font-weight: 500">Select an Area</span></option>
+      {% for area in existing['areas'] %}
+      {% if area in person_support['areas'] %}
+      <option value="{{ area }}">{{ area }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </div>
   <br/>
-  {% include 'method-form.html' %}
+  <div class="form-group">
+    <label for="method"><span style="font-weight: 500">Method</span></label>
+    <select class="form-control"
+      id="method"
+      name="method" 
+      multiple
+      required>
+      <option value="" disabled><span style="font-weight: 500">Select a Method</span></option>
+      {% for method in existing['methods'] %}
+      {% if method in person_support['methods'] %}
+      <option value="{{ method }}">{{ method }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </div>
   <br/>
   <div class="form-group">
     <label for="tool">Tool</label>
@@ -63,6 +91,7 @@
     <textarea class="form-control"
     id="notes"
     name="notes"
+    value="{{ request.form['notes'] }}"
     rows="3"
     ></textarea>
   </div>

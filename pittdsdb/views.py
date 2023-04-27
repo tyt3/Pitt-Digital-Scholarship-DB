@@ -6,8 +6,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from .database import db_session
 from .models import *
-from .add import *
 from .get import *
+from .add import *
+from .delete import *
 from .networkdb import *
 from .controlled_vocab import vocab, existing
 
@@ -187,6 +188,7 @@ def add_person(public_id):
             person.photo_url = photo_url
 
             # Update affiliations
+            delete_affiliations(person.person_id)
             for a in affiliation:
                 add_person_affiliation(person.person_id, a)
 
@@ -329,6 +331,7 @@ def add_area(public_id):
     notes = request.form.get('notes')
 
     person = Person.query.filter_by(public_id=public_id).first()
+    area = None
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
     if new_area_name:
@@ -375,7 +378,6 @@ def add_method(public_id):
 
     # Get object information
     person = Person.query.filter_by(public_id=public_id).first()
-    area = Area.query.filter_by(area_name=area_name).first()
     method = None
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
@@ -392,12 +394,12 @@ def add_method(public_id):
         method = Method.query.filter_by(method_name=method_name).first()
     
     # Add person-support relationships
-    add_person_support(person.person_id, "area", area.area_id,
-                        proficiency.proficiency_id, notes)
     add_person_support(person.person_id, "method", method.method_id,
                             proficiency.proficiency_id, notes, True)
-    add_person_support_combos(person.person_id, area.area_id, 
-                                method.method_id)
+    for name in area_name:
+        area = Area.query.filter_by(area_name=name).first()
+        add_person_support_combos(person.person_id, area.area_id, 
+                                    method.method_id)
 
     result = get_relations("Person", "public_id", person.public_id, "Area", "name", area.area_name)
     if len(result) == 0:
@@ -425,7 +427,7 @@ def add_tool(public_id):
     
     # Get form values
     area_name = request.form.getlist('area')
-    method_name = request.form.get('method')
+    method_name = request.form.getlist('method')
     tool_name = request.form.get('tool')
     new_tool_name = request.form.get('new_tool')
     tool_type = request.form.get('tool_type')
@@ -435,8 +437,7 @@ def add_tool(public_id):
 
     # Create db record objects
     person = Person.query.filter_by(public_id=public_id).first()
-    area = Area.query.filter_by(area_name=area_name).first()
-    method = Method.query.filter_by(method_name=method_name).first()
+    tool = None
     proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
     # Check if new_tool_name was input in form
@@ -454,14 +455,14 @@ def add_tool(public_id):
         tool = Tool.query.filter_by(tool_name=tool_name).first()
     
     # Add person-support relationships
-    add_person_support(person.person_id, "area", area.area_id,
-                        proficiency.proficiency_id, notes)
-    add_person_support(person.person_id, "method", method.method_id,
-                            proficiency.proficiency_id, notes)
     add_person_support(person.person_id, "tool", tool.tool_id,
                             proficiency.proficiency_id, notes, True)
-    add_person_support_combos(person.person_id, area.area_id, 
-                                method.method_id, tool.tool_id)
+    for a_name in area_name:
+        area = Area.query.filter_by(area_name=a_name).first()
+        for m_name in method_name:
+            method = Method.query.filter_by(method_name=m_name).first()
+            add_person_support_combos(person.person_id, area.area_id, 
+                                        method.method_id, tool.tool_id)
     result = get_relations("Person", "name", person.public_id, "Area", "name", area.area_name)
     if len(result) == 0:
         attach_person_area(person.public_id, area.area_name)

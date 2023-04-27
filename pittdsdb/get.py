@@ -84,5 +84,7 @@ def get_person_support(person_id):
                 person_support['tools'][tool] = {'website': tool_website,
                                                      'proficiency': tool_proficiency,
                                                      'notes': tool_notes}
+                
+    print(person_support['areas'])
 
     return person_support

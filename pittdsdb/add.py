@@ -10,10 +10,7 @@ from .models import *
 from .schemas import *
 
 
-def add_modification(entity, description):
-    # Get details
-    timestamp = entity.date_added
-
+def add_modification(timestamp, description):
     modification = Modification(modification=description,
                                 modified_by=current_user.user_id,
                                 modification_date=timestamp)
@@ -53,12 +50,11 @@ def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
 
     if person:
         # Add modification to database
-        add_modification(new_person, f"add {repr(person)}")
+        add_modification(new_person.date_added, f"add {repr(person)}")
         
         print("person added")
-        return True, person
+        return True, new_person
     else:
-        print("person not added")
         return False, None
     
 
@@ -79,13 +75,12 @@ def add_person_affiliation(person_id=int, affiliation_type=str):
     except:
         session.rollback()
         flash("Person affiliation(s) could not be added", category="error")
-        print("Person affiliation(s) could not be added")
         return False
     
     
 def add_person_support(person_id=int, entity_type=str, entity_id=int, 
                        proficiency_id=int, notes=str, notify=False):
-    
+    new_person_support = None
     description = f"add ({ person_id }, { entity_id }) "
 
     session = Session(engine)
@@ -106,7 +101,6 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
     except:
         session.rollback()
         if notify:
-            flash("Person support record(s) could not be added", category="error")
             print("Person support record(s) could not be added")
         return False
     
@@ -119,9 +113,9 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
     elif entity_type == "tool":
         person_support = PersonTool.query.filter_by(fk_tool_id=entity_id).first()
 
-
-    # Add modification to database
-    add_modification(person_support, description)
+    if person_support:
+        # Add modification to database
+        add_modification(datetime.now().strftime("%Y/%m/%d %H:%M:%S"), description)
 
     return True
 
@@ -139,7 +133,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
         session.commit()
     except:
         session.rollback()
-        flash("Method/area relationship could not be added", category="error")
         print("Method/area relationship could not be added")
         return False
 
@@ -155,7 +148,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
             session.commit()
         except:
             print("Tool/area relationship could not be added.")
-            flash("Tool/area relationship could not be added.")
 
         # Add method tool relationship
         with session.begin():
@@ -186,7 +178,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
                 session.commit()
             except:
                 session.rollback()
-                flash("Person support record could not be added", category="error")
                 print("Person support record could not be added")
                 return False
         else:
@@ -201,7 +192,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
                 session.commit()
             except:
                 session.rollback()
-                flash("Person support record could not be added", category="error")
                 print("Person support record could not be added")
                 return False
     elif method_id > 0:
@@ -225,7 +215,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
             except:
                 session.rollback()
                 print("Person support record could not be added")
-                flash("Person support record could not be added", category="error")
                 return False
         else:
             # Add new record
@@ -239,7 +228,6 @@ def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0
             except:
                 session.rollback()
                 print("Person support record could not be added")
-                flash("Person support record could not be added", category="error")
                 return False
 
     
@@ -294,12 +282,12 @@ def add_unit_to_db(unit_name, unit_type, email, web_address, phone,
 
      if unit:
         # Add modification to database
-        add_modification(new_unit, "unit", 
+        add_modification(new_unit.date_added, "unit", 
                          f"add {repr(new_unit)}")
 
-        return True
+        return True, new_unit
      else:
-         return False, unit
+         return False, None
 
 
 def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone, 
@@ -331,10 +319,10 @@ def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone,
 
     if subunit:
         # Add modification to database
-        add_modification(new_subunit, "department", 
+        add_modification(new_subunit.date_added, "department", 
                          f"add {repr(new_subunit)}")
 
-        return True, subunit
+        return True, new_subunit
     else:
         return False, None
 
@@ -356,9 +344,9 @@ def add_area_to_db(area_name):
 
     if area:
         # Add modification to database
-        add_modification(area, f"add {repr(new_area)}")
+        add_modification(new_area.date_added, f"add {repr(new_area)}")
 
-        return True, area
+        return True, new_area
     else:
         return False, None
 
@@ -380,8 +368,8 @@ def add_method_to_db(method_name):
 
     if method:    
         # Add modification to database
-        add_modification(method, f"add {repr(new_method)}")
-        return True, method
+        add_modification(new_method.date_added, f"add {repr(new_method)}")
+        return True, new_method
     else:
         return False, None
 
@@ -405,9 +393,9 @@ def add_tool_to_db(tool_name, tool_type, web_address):
 
     if tool:    
         # Add modification to database
-        add_modification(tool, f"add {repr(new_tool)}")
+        add_modification(new_tool.date_added, f"add {repr(new_tool)}")
 
-        return True, tool
+        return True, new_tool
     else:
         return False, None
 
@@ -431,9 +419,9 @@ def add_resource_to_db(resource_name, resource_type, web_address):
     
     if resource:
         # Add modification to database
-        add_modification(new_resource, f"add {repr(new_resource)}")
+        add_modification(new_resource.date_added, f"add {repr(new_resource)}")
 
-        return True, resource
+        return True, new_resource
     else:
         return False, None
 
