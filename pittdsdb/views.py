@@ -285,33 +285,85 @@ def add_person_unit(public_id):
     
 
 
-@views_bp.route('/add-unit', methods=['GET', 'POST'])
+@views_bp.route('/add-unit/<public_id>', methods=['GET', 'POST'])
 @login_required
-def add_unit():
+def add_unit(public_id):
     # Check if the user is logged in and, if so, set permissions
     if current_user.is_authenticated:
         current_user.set_permissions()
 
     # Check if user can add to the database and, if not, redirect
     if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
-               category="error")
+        flash("Your account does not have permission to add to the database.", category="error")
         return redirect(url_for('auth_bp.login'))
     
     # Get data from form and submit to database
     if request.method == "POST":
+        unit_name = request.form.get('unit_name')
+        unit_parent = request.form.get('unit_parent')
+        unit_type = request.form.get('unit_type')
         email = request.form.get('email')
+        phone = request.form.get('phone')
+        other_contact = request.form.get('other_contact')
+        unit_website = request.form.get('unit_website')
+        unit_contact_method = request.form.get('unit_contact_method')
+        unit_description = request.form.get('unit_description')
 
-        return render_template("/add-unit.html",
-                               user=current_user,
-                               vocab=vocab,
-                               existing=existing)
+        unit = Unit.query.filter_by(public_id=public_id).first()
+
+        if unit:
+            unit.unit_name = unit_name
+            unit.unit_parent = unit_parent
+            unit.unit_type = unit_type
+            unit.email = email
+            unit.web_address = unit_website
+            unit.phone = phone
+            unit.other_contact = other_contact
+            unit.preferred_contact = unit_contact_method
+            unit.unit_description = unit_description
+
+            # Commit changes
+            db_session.commit()
+            if unit_parent:
+                update_subunit_node(unit_name, public_id, unit_parent)
+            else:
+                update_unit_node(unit_name, public_id)
+
+            return redirect(url_for('views_bp.view_unit',
+                                    public_id=unit.public_id))
+        else:
+            parent_unit = None
+            new_unit = None
+            if unit_parent:
+                parent_unit = Unit.query.filter_by(unit_name=unit_parent).first()
+                if parent_unit:
+                    new_unit = add_subunit_to_db(subunit_name=unit_name, subunit_type=unit_type, email=email, web_address=unit_website, phone=phone, other_contact=other_contact,preferred_contact=unit_contact_method, description=unit_description, parent_unit_name=unit_parent, added_by=current_user.get_id())
+            else:
+                new_unit = add_unit_to_db(unit_name=unit_name, unit_type=unit_type, email=email, web_address=unit_website, phone=phone, other_contact=other_contact, preferred_contact=unit_contact_method, description=unit_description, added_by=current_user.get_id())
+            if new_unit:
+                if new_unit[0]:
+                    # Get Unit object
+                    u = new_unit[1]
+                    public_id = u.public_id
+                    if unit_parent:
+                        # Add Sub Unit Node
+                        add_subunit_node(unit_name, public_id, unit_parent)
+                        attach_unit_subunit(parent_unit.public_id, public_id)
+                    else:
+                        # Add Unit Node
+                        add_unit_node(unit_name, public_id)
+
+                    return redirect(url_for('views_bp.view_unit', public_id=public_id))
+                else:
+                    flash('The person record was not added. Please try again.', category='error')
+                    return redirect(url_for('views_bp.add_unit', public_id=public_id))
         
     return render_template("/add-unit.html",
                            title="Add a Unit | Pitt Digital Scholarship Database",
                            user=current_user,
                            vocab=vocab,
-                           existing=existing)
+                           existing=existing,
+                           public_id=public_id)
 
 
 @views_bp.route('/add-area/<public_id>', methods=['POST'])

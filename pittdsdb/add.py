@@ -260,29 +260,26 @@ def add_person_subunit_to_db(person_id=int, subunit_name=str):
     
 
 def add_unit_to_db(unit_name, unit_type, email, web_address, phone, 
-                   other_contact, preferred_contact, description):
-     session = Session(engine)
-     
-     with session.begin():
-        # Create new department object
-        new_unit = Unit(unit_name = unit_name,
-                        unit_type = unit_type,
-                        email = email,
-                        web_address = web_address,
-                        phone = phone,
-                        other_contact = other_contact,
-                        preferred_contact = preferred_contact,
-                        description = description)  
+                   other_contact, preferred_contact, description, added_by):
+     new_unit = Unit(unit_name = unit_name,
+                     unit_type = unit_type,
+                     email = email,
+                     web_address = web_address,
+                     phone = phone,
+                     other_contact = other_contact,
+                     preferred_contact = preferred_contact,
+                     description = description,
+                     added_by = added_by)
 
-        # Add new department to database
-        db_session.add(new_unit)
-        db_session.commit()
+     # Add new Unit to database
+     db_session.add(new_unit)
+     db_session.commit()
 
      unit = Unit.query.filter_by(unit_name=unit_name).first()
 
      if unit:
         # Add modification to database
-        add_modification(new_unit.date_added, "unit", 
+        add_modification(new_unit.date_added, 
                          f"add {repr(new_unit)}")
 
         return True, new_unit
@@ -292,16 +289,12 @@ def add_unit_to_db(unit_name, unit_type, email, web_address, phone,
 
 def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone, 
                       other_contact, preferred_contact, description, 
-                      parent_unit_name):  
+                      parent_unit_name, added_by):
     # Get parent unit name
     parent_unit = Unit.query.filter_by(unit_name=parent_unit_name).first()
     parent_unit_id = parent_unit.get_id()
 
-    session = Session(engine)
-
-    with session.begin():
-        # Create new department object
-        new_subunit = Subunit(subunit_name = subunit_name,
+    new_subunit = Subunit(subunit_name = subunit_name,
                               subunit_type = subunit_type,
                               email = email,
                               web_address = web_address,
@@ -309,17 +302,18 @@ def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone,
                               other_contact = other_contact,
                               preferred_contact = preferred_contact,
                               description = description,
-                              fk_unit_id=parent_unit_id)  
+                              fk_unit_id=parent_unit_id,
+                              added_by = added_by)
 
-        # Add new department to database
-        session.add(new_subunit)
-        session.commit()
+    # Add new department to database
+    db_session.add(new_subunit)
+    db_session.commit()
 
     subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
 
     if subunit:
         # Add modification to database
-        add_modification(new_subunit.date_added, "department", 
+        add_modification(new_subunit.date_added,
                          f"add {repr(new_subunit)}")
 
         return True, new_subunit

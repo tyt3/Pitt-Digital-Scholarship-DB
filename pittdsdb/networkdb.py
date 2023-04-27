@@ -54,13 +54,13 @@ def update_person_node(name, public_id):
 
 # UNIT
 
-def add_unit_node(public_id, name):
+def add_unit_node(name, public_id):
     profile_uri = url_for('views_bp.view_unit', public_id=public_id)
     unit_cqry = "CREATE (:Unit {public_id:'" + public_id + "',  view_unit: '" + profile_uri + "', name: '" + name + "'})"
     neo4j_dbconn.query(unit_cqry)
 
 
-def update_unit_node(public_id, name):
+def update_unit_node(name, public_id):
     unit_cqry = "MATCH (u:Unit) " \
                 "WHERE u.public_id = '" + public_id + "' " \
                                                       "SET u.name = '" + name + "'"
@@ -69,16 +69,17 @@ def update_unit_node(public_id, name):
 
 # SUBUNIT
 
-def add_subunit_node(public_id, name, profile_uri, parent_node):
+def add_subunit_node(name, public_id, parent_node):
+    profile_uri = url_for('views_bp.view_unit', public_id=public_id)
     unit_cqry = "CREATE (:SubUnit {  public_id: '" + public_id + "', view_unit: '" + profile_uri + "', name: '" + name + "', parent_unit:'" + parent_node + "'})"
     neo4j_dbconn.query(unit_cqry)
 
 
-def update_subunit_node(public_id, name):
+def update_subunit_node(name, public_id, parent_name):
     unit_cqry = "MATCH (u:SubUnit) " \
                 "WHERE u.public_id = '" + public_id + "' " \
-                                                      "SET u.name = '" + name + "'"
-
+                "SET u.name = '" + name + "'" \
+                "SET u.parent_name = '" + parent_name + "' "
     neo4j_dbconn.query(unit_cqry)
 
 # AREA

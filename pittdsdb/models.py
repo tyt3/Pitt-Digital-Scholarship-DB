@@ -116,7 +116,7 @@ class Unit(Base):
     __tablename__ = 'unit'
 
     unit_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True)
+    public_id = Column(String(36), nullable=False, unique=True, default=uuid4())
     unit_name = Column(String(100), nullable=False)
     unit_type = Column(String(50), nullable=False)
     email = Column(String(256), unique=True)
@@ -154,7 +154,7 @@ class Subunit(Base):
     __tablename__ = 'subunit'
 
     subunit_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True)
+    public_id = Column(String(36), nullable=False, unique=True, default=uuid4())
     subunit_name = Column(String(100), nullable=False)
     subunit_type = Column(String(50), nullable=False)
     email = Column(String(256), unique=True)
@@ -174,7 +174,7 @@ class Subunit(Base):
 
     def __init__(self, subunit_name=str, subunit_type=str, email=str, 
                  web_address=str, phone=str, other_contact=str, 
-                 preferred_contact=str, description=str, fk_unit_id=str):
+                 preferred_contact=str, description=str, fk_unit_id=str, added_by=str):
         self.subunit_name = subunit_name
         self.subunit_type = subunit_type
         self.email = email
@@ -184,6 +184,7 @@ class Subunit(Base):
         self.preferred_contact = preferred_contact
         self.description = description
         self.fk_unit_id = fk_unit_id
+        self.added_by = added_by
 
     def __rep__(self):
         return f"{self.subunit_name} ({self.subunit_type}), {self.email}, \
