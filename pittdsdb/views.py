@@ -623,6 +623,9 @@ def delete_area(area_id, person_id):
     db_session.execute(f'DELETE FROM person_area \
                         WHERE fk_person_id = { person.person_id }\
                         AND fk_area_id = { area.area_id };')
+    db_session.execute(f'DELETE FROM person_support \
+                        WHERE fk_person_id = { person.person_id }\
+                        AND fk_area_id = { area.area_id };')
     db_session.commit()
     
     return redirect(url_for('views_bp.view_person',
