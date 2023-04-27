@@ -4,7 +4,7 @@
   <div class="row">
     <div class="mx-auto col-6 col-md-6 col-lg-4">
       <form metod="POST" 
-        action="{{ url_for('views_bp.update_area', area_name=area.area_name, public_id=public_id) }}">
+        action="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">
         <div class="form-group">
           <label for="name"><span style="font-weight: 500">Area Name</span></label>
           <input 
@@ -21,6 +21,7 @@
             <textarea class="form-control"
             id="notes"
             name="notes"
+            value="{{ request.form['notes'] }}"
             rows="3"
             >{{ notes }}</textarea>
         </div>
