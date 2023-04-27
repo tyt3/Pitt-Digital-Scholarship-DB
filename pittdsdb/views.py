@@ -407,7 +407,8 @@ def add_method(public_id):
                             proficiency.proficiency_id, notes)
         add_person_support(person.person_id, "method", method.method_id,
                                proficiency.proficiency_id, notes)
-        add_person_support_combos(person.person_id, area.area_id, method.method_id)
+        add_person_support_combos(person.person_id, area.area_id, 
+                                  method.method_id)
     
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -458,7 +459,7 @@ def add_tool(public_id):
                             proficiency.proficiency_id, notes)
         add_person_support(person.person_id, "method", method.method_id,
                                proficiency.proficiency_id, notes)
-        add_person_support(person.person_id, "tool", tool.method_id,
+        add_person_support(person.person_id, "tool", tool.tool_id,
                                proficiency.proficiency_id, notes)
         add_person_support_combos(person.person_id, area.area_id, 
                                   method.method_id, tool.tool_id)
