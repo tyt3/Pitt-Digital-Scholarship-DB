@@ -417,16 +417,15 @@ def add_method(public_id):
         return redirect(url_for('auth_bp.login'))
     
     # Get form values
-    area_name = request.form.getlist('area')
+    area_names = request.form.getlist('area')
     method_name = request.form.get('method')
-    new_method_name = request.form.get('new_method')
+    new_method_name = request.form.get('new_method').title()
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
 
     # Get object information
     person = Person.query.filter_by(public_id=public_id).first()
     method = None
-    proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
     # Add method and relations
     if new_method_name:
@@ -435,28 +434,31 @@ def add_method(public_id):
         if existing_method:
             flash("That method already exists!", category='error')
         else:
-            method = add_method_to_db(new_method_name)
+            sp_ManagePersonMethod('add', current_user.user_id, 
+                person.person_id, area_name, 
+                method.method_name, None, proficiency_level,
+                notes)
     else:
         # Get existing method
         method = Method.query.filter_by(method_name=method_name).first()
     
     # Add person-support relationships
-    add_person_support(person.person_id, "method", method.method_id,
-                            proficiency.proficiency_id, notes, True)
-    for name in area_name:
-        area = Area.query.filter_by(area_name=name).first()
-        add_person_support_combos(person.person_id, area.area_id, 
-                                    method.method_id)
-
-    result = get_relations("Person", "public_id", person.public_id, "Area", "name", area.area_name)
-    if len(result) == 0:
-        attach_person_area(person.public_id, area.area_name)
-    result = get_relations("Person", "public_id", person.public_id, "Method", "name", method.method_name)
-    if len(result) == 0:
-        attach_person_method(person.public_id, method.method_name)
-    result = get_relations("Area", "name", area.area_name, "Method", "name", method.method_name)
-    if len(result) == 0:
-        attach_area_method(area.area_name, method.method_name)
+    for area_name in area_names:
+        result = sp_ManagePersonMethod('add', current_user.user_id, 
+                                     person.person_id, area_name, 
+                                     method.method_name, None, proficiency_level,
+                                     notes)
+        
+        # Add relations in neo4j
+        result = get_relations("Person", "public_id", person.public_id, "Area", "name", area_name)
+        if len(result) == 0:
+            attach_person_area(person.public_id, area_name)
+        result = get_relations("Person", "public_id", person.public_id, "Method", "name", method.method_name)
+        if len(result) == 0:
+            attach_person_method(person.public_id, method.method_name)
+        result = get_relations("Area", "name", area_name, "Method", "name", method.method_name)
+        if len(result) == 0:
+            attach_area_method(area_name, method.method_name)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -627,6 +629,10 @@ def update_method(method_name, public_id):
     
     person = Person.query.filter_by(public_id=public_id).first()
     method = Method.query.filter_by(method_name=method_name).first()
+    proficiency_id = get_person_relations(person.person_id,
+                                 "fk_proficiency_id", "method", 
+                                 method.method_id)[0]
+    proficiency = Proficiency.query.filter_by(proficiency_id=proficiency_id).first()
     notes = get_person_relations(person.person_id, 
                                  "notes", "method",
                                  method.method_id)[0]
@@ -651,6 +657,7 @@ def update_method(method_name, public_id):
                            vocab=vocab,
                            person=person,
                            method=method,
+                           proficiency=proficiency,
                            notes=notes)
 
 
@@ -674,6 +681,55 @@ def delete_area(area_id, person_id):
     result = sp_ManagePersonArea('delete', current_user.user_id, 
                                      person.person_id, area.area_name, '',
                                      None, None)
+    
+    return redirect(url_for('views_bp.view_person',
+                            public_id=person.public_id))
+
+
+@views_bp.route('/delete-method/<method_id>/<person_id>', methods=['GET', 'POST'])
+@login_required
+def delete_method(method_id, person_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    method = Method.query.filter_by(method_id=method_id).first()
+    
+    detach_person_method(person.public_id, method.method_name)
+
+    result = sp_ManagePersonMethod('delete', current_user.user_id, 
+                                     person.person_id, method.method_name)
+    
+    print(result)
+    
+    return redirect(url_for('views_bp.view_person',
+                            public_id=person.public_id))
+
+
+@views_bp.route('/delete-tool/<tool_id>/<person_id>', methods=['GET', 'POST'])
+@login_required
+def delete_tool(tool_id, person_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(person_id=person_id).first()
+    tool = Tool.query.filter_by(tool_id=tool_id).first()
+    
+    detach_person_tool(person.public_id, tool.tool_name)
+
+    result = sp_ManagePersonMethod('delete', current_user.user_id, 
+                                     person.person_id, tool.tool_name, None,
+                                     None, None, None)
+    
+    print(result)
     
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))

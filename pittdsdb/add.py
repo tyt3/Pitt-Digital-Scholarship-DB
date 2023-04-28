@@ -31,6 +31,50 @@ def sp_ManagePersonArea(method=str, user_id=int, person_id=int, area_name=str,
     return results
 
 
+def sp_ManagePersonMethod(method=str, user_id=int, person_id=int, area_name=str,
+                          method_name=str, new_name=str, proficiency=str, 
+                          notes=str):
+    input_list = [method, user_id, person_id, method_name, area_name, new_name, 
+                  proficiency, notes, False, None]
+    results = None
+
+    connection = engine.raw_connection()
+    try:
+        cursor_obj = connection.cursor()
+        cursor_obj.callproc("sp_ManagePersonMethod", input_list)
+        results = list(cursor_obj.fetchall())
+        cursor_obj.close()
+        connection.commit()
+    finally:
+        connection.close()
+        
+        print("input list", input_list)
+        print("results", results)
+    return results
+
+
+def sp_ManagePersonTool(method=str, user_id=int, person_id=int, area_name=str,
+                        method_name=str, tool_name=str, new_name=str, 
+                        proficiency=str, notes=str):
+    input_list = [method, user_id, person_id, method_name, area_name, tool_name,
+                  new_name, proficiency, notes, False, None]
+    results = None
+
+    connection = engine.raw_connection()
+    try:
+        cursor_obj = connection.cursor()
+        cursor_obj.callproc("sp_ManagePersonTool", input_list)
+        results = list(cursor_obj.fetchall())
+        cursor_obj.close()
+        connection.commit()
+    finally:
+        connection.close()
+        
+        print("input list", input_list)
+        print("results", results)
+    return results
+
+
 def add_modification(timestamp, description):
     modification = Modification(modification=description,
                                 modified_by=current_user.user_id,

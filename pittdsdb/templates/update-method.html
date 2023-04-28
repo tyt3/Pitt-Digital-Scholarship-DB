@@ -4,7 +4,7 @@
   <div class="row">
     <div class="mx-auto col-6 col-md-6 col-lg-4">
       <form metod="POST" 
-        action="{{ url_for('views_bp.update_area', area_name=area.area_name, public_id=public_id) }}">
+        action="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">
         <div class="form-group">
             <label for="name"><span style="font-weight: 500">Method Name</span></label>
             <input 
@@ -21,18 +21,13 @@
             <select class="form-select form-select-md" aria-label=".form-select-md example">
               <option selected disabled>Select a proficiency level</option>
               {% for level in vocab['proficiency_level'] %}
-              <option value="{{ level }}">{{ level }}</option>
+              <option value="{{ level }}"
+              {% if level == proficiency.proficiency_level %}
+              selected
+              {% endif %}
+              >{{ level }}</option>
               {% endfor %}
             </select>
-          </div>
-          <br/>
-          <div class="form-group">
-            <label for="notes">Notes</label>
-            <textarea class="form-control"
-            id="notes"
-            name="notes"
-            rows="3"
-            ></textarea>
           </div>
         <br/>
         <div class="form-group">
@@ -80,7 +75,7 @@ tabindex="-1" aria-labelledby="deleteMethodModalLabel" aria-hidden="true">
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <form metod="POST" target="_parent"
-          action="{{ url_for('views_bp.delete_area', area_id=area.area_id, person_id=person.person_id) }}">
+          action="{{ url_for('views_bp.delete_method', method_id=method.method_id, person_id=person.person_id) }}">
             <button type="submit" class="btn btn-danger">Delete</button>
           </form>
         </div>
