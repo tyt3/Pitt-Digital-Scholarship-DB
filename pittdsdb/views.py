@@ -147,13 +147,6 @@ def add_person(public_id):
         phone = request.form.get('phone')
         scheduler_address = request.form.get('scheduler')
         other_contact = request.form.get('other_contact')
-        # building = request.form.get('building')
-        # office = request.form.get('office')
-        # street_address = request.form.get('street_address')
-        # city = request.form.get('city')
-        # state = request.form.get('state')
-        # zipcode = request.form.get('zipcode')
-        # campus = request.form.get('campus')
         preferred_contact = request.form.get('preferred_contact') 
         support_type = request.form.get('support_type')
         bio = request.form.get('bio')
@@ -174,13 +167,6 @@ def add_person(public_id):
             person.web_address = web_address
             person.phone = phone
             person.scheduler_address = scheduler_address
-            # person.building = building
-            # person.office = office
-            # person.street_address = street_address
-            # person.city = city
-            # person.state = state
-            # person.zipcode = zipcode
-            # person.campus = campus
             person.preferred_contact = preferred_contact 
             person.support_type = support_type
             person.bio = bio
@@ -366,6 +352,75 @@ def add_unit(public_id):
                            public_id=public_id)
 
 
+@views_bp.route('/add-address/<entity_type>/<public_id>', methods=['POST'])
+@login_required
+def add_address(entity_type, public_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    address = person = unit = subunit = None
+    entity_id = None
+    if entity_type == 'person':
+        person = Person.query.filter_by(public_id=public_id).first()
+        entity_id = person.person_id
+    elif entity_type == 'unit':
+        unit = Unit.query.filter_by(public_id=public_id).first()
+        entity_id = unit.unit_id
+    elif entity_type == 'subunit':
+        subunit = Subunit.query.filter_by(public_id=public_id).first()
+        entity_id = subunit.subunit_id
+
+    building = request.form.get('building')
+    office = request.form.get('office')
+    street_address = request.form.get('street_address')
+    address_2 = request.form.get('address_2')
+    city = request.form.get('city')
+    state = request.form.get('state')
+    zipcode = request.form.get('zipcode')
+    campus = request.form.get('campus')
+
+    existing_address = Address.query.filter_by(building_name=building).\
+        filter_by(room_number=office).filter_by(street_address=street_address).\
+        filter_by(address_2=address_2).filter_by(city=city).filter_by(state=state).\
+        filter_by(zipcode=zipcode).filter_by(campus=campus).first()
+    
+    if not existing_address:
+        print("address doesn't exist")
+        new_address = Address(building_name=building, room_number=office,
+                                street_address=street_address, 
+                                address_2=address_2, city=city, state=state, 
+                                zipcode=zipcode, campus=campus, 
+                                added_by=current_user.user_id)
+        address = new_address
+        db_session.add(address)
+        db_session.commit()
+    else:
+        print('address exists')
+        address = existing_address
+
+    # Add new address, if any, and entity-address relation to db
+    db_session.execute(f"INSERT INTO { entity_type }_address\
+                        (fk_{ entity_type }_id, fk_address_id \
+                        VALUES \
+                        ({ entity_id }, { address.address_id });")
+    db_session.commit()
+
+    print(address.building_name)
+            
+    if entity_type == 'person':
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+    else:
+         # update when routes are functioning 
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id)) 
+
+
+
 @views_bp.route('/add-area/<public_id>', methods=['POST'])
 @login_required
 def add_area(public_id):
@@ -378,7 +433,7 @@ def add_area(public_id):
     
     # Get form values
     area_name = request.form.get('area')
-    new_area_name = request.form.get('new_area').title()
+    new_area_name = request.form.get('new_area')
     proficiency_level = request.form.get('proficiency')
     notes = request.form.get('notes')
 
@@ -425,7 +480,6 @@ def add_method(public_id):
 
     # Get object information
     person = Person.query.filter_by(public_id=public_id).first()
-    method = None
 
     # Add method and relations
     if new_method_name:
@@ -434,31 +488,25 @@ def add_method(public_id):
         if existing_method:
             flash("That method already exists!", category='error')
         else:
-            sp_ManagePersonMethod('add', current_user.user_id, 
-                person.person_id, area_name, 
-                method.method_name, None, proficiency_level,
-                notes)
-    else:
-        # Get existing method
-        method = Method.query.filter_by(method_name=method_name).first()
+            method_name = new_method_name
     
     # Add person-support relationships
     for area_name in area_names:
-        result = sp_ManagePersonMethod('add', current_user.user_id, 
-                                     person.person_id, area_name, 
-                                     method.method_name, None, proficiency_level,
-                                     notes)
+        method = add_method_to_db(new_method_name)
+        # sp_ManagePersonMethod('add', current_user.user_id, person.person_id, 
+        #                       area_name, method_name, None, proficiency_level,
+        #                       notes)
         
         # Add relations in neo4j
         result = get_relations("Person", "public_id", person.public_id, "Area", "name", area_name)
         if len(result) == 0:
             attach_person_area(person.public_id, area_name)
-        result = get_relations("Person", "public_id", person.public_id, "Method", "name", method.method_name)
+        result = get_relations("Person", "public_id", person.public_id, "Method", "name", method_name)
         if len(result) == 0:
-            attach_person_method(person.public_id, method.method_name)
-        result = get_relations("Area", "name", area_name, "Method", "name", method.method_name)
+            attach_person_method(person.public_id, method_name)
+        result = get_relations("Area", "name", area_name, "Method", "name", method_name)
         if len(result) == 0:
-            attach_area_method(area_name, method.method_name)
+            attach_area_method(area_name, method_name)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -475,8 +523,8 @@ def add_tool(public_id):
         return redirect(url_for('auth_bp.login'))
     
     # Get form values
-    area_name = request.form.getlist('area')
-    method_name = request.form.getlist('method')
+    area_names = request.form.getlist('area')
+    method_names = request.form.getlist('method')
     tool_name = request.form.get('tool')
     new_tool_name = request.form.get('new_tool')
     tool_type = request.form.get('tool_type')
@@ -486,8 +534,6 @@ def add_tool(public_id):
 
     # Create db record objects
     person = Person.query.filter_by(public_id=public_id).first()
-    tool = None
-    proficiency = Proficiency.query.filter_by(proficiency_level=proficiency_level).first()
 
     # Check if new_tool_name was input in form
     if new_tool_name:
@@ -498,42 +544,37 @@ def add_tool(public_id):
             return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
         else:
-            tool = add_tool_to_db(new_tool_name, tool_type, web_address)
-    else:
-        # Get existing tool
-        tool = Tool.query.filter_by(tool_name=tool_name).first()
+            tool_name = new_tool_name
     
     # Add person-support relationships
-    add_person_support(person.person_id, "tool", tool.tool_id,
-                            proficiency.proficiency_id, notes, True)
-    for a_name in area_name:
-        area = Area.query.filter_by(area_name=a_name).first()
-        for m_name in method_name:
-            method = Method.query.filter_by(method_name=m_name).first()
-            add_person_support_combos(person.person_id, area.area_id, 
-                                        method.method_id, tool.tool_id)
-    result = get_relations("Person", "name", person.public_id, "Area", "name", area.area_name)
-    if len(result) == 0:
-        attach_person_area(person.public_id, area.area_name)
-    result = get_relations("Person", "name", person.public_id, "Method", "name", method.method_name)
-    if len(result) == 0:
-        attach_person_method(person.public_id, method.method_name)
-    result = get_relations("Person", "name", person.public_id, "Tool", "name", tool.tool_name)
-    if len(result) == 0:
-        attach_person_tool(person.public_id, tool.tool_name)
+    for area_name in area_names:
+        for method_name in method_names:
+            sp_ManagePersonTool('add', current_user.user_id, person.person_id,
+                                area_name, method_name, tool_name, tool_type,
+                                web_address, None,
+                                proficiency_level, notes)
+            result = get_relations("Person", "name", person.public_id, "Area", "name", area_name)
+            if len(result) == 0:
+                attach_person_area(person.public_id, area_name)
+            result = get_relations("Person", "name", person.public_id, "Method", "name", method_name)
+            if len(result) == 0:
+                attach_person_method(person.public_id, method_name)
+            result = get_relations("Person", "name", person.public_id, "Tool", "name", tool_name)
+            if len(result) == 0:
+                attach_person_tool(person.public_id, tool_name)
 
-    # attach area to method if not exists
-    result = get_relations("Area", "name", area.area_name, "Method", "name", method.method_name)
-    if len(result) == 0:
-        attach_area_method(area.area_name, method.method_name)
-    # attach tool to method if not exists
-    result = get_relations("Tool", "name", tool.tool_name, "Method", "name", method.method_name)
-    if len(result) == 0:
-        attach_tool_method(tool.tool_name, method.method_name)
-    # attach tool to area if not exists
-    result = get_relations("Area", "name", area.area_name, "Tool", "name", tool.tool_name)
-    if len(result) == 0:
-        attach_area_tool(area.area_name, tool.tool_name)
+            # attach area to method if not exists
+            result = get_relations("Area", "name", area_name, "Method", "name", method_name)
+            if len(result) == 0:
+                attach_area_method(area_name, method_name)
+            # attach tool to method if not exists
+            result = get_relations("Tool", "name", tool_name, "Method", "name", method_name)
+            if len(result) == 0:
+                attach_tool_method(tool_name, method_name)
+            # attach tool to area if not exists
+            result = get_relations("Area", "name", area_name, "Tool", "name", tool_name)
+            if len(result) == 0:
+                attach_area_tool(area_name, tool_name)
 
     return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -638,7 +679,8 @@ def update_method(method_name, public_id):
                                  method.method_id)[0]
     
     if request.method == "POST":
-        updated_proficiency = request.form.get('notes')
+
+        updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
 
         db_session.execute(f'UPDATE person_area \
@@ -646,6 +688,49 @@ def update_method(method_name, public_id):
                            WHERE user_id = { person.person_id }\
                            AND area_id = { method.method_id };')
         db_session.commit()
+
+        return redirect(url_for('views_bp.view_person',
+                                public_id=person.public_id))
+
+    return render_template("update-method.html",
+                           title="Update a Method | Pitt Digital Scholarship Database",
+                           user=current_user,
+                           existing=existing,
+                           vocab=vocab,
+                           person=person,
+                           method=method,
+                           proficiency=proficiency,
+                           notes=notes)
+
+
+@views_bp.route('/update-tool/<tool_name>/<public_id>', methods=['GET', 'POST'])
+@login_required
+def update_tool(tool_name, public_id):
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+               category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    person = Person.query.filter_by(public_id=public_id).first()
+    tool = Tool.query.filter_by(tool_name=tool_name).first()
+    proficiency_id = get_person_relations(person.person_id,
+                                 "fk_proficiency_id", "tool", 
+                                 tool.tool_id)[0]
+    proficiency = Proficiency.query.filter_by(proficiency_id=proficiency_id).first()
+    notes = get_person_relations(person.person_id, 
+                                 "notes", "tool",
+                                 tool.tool_id)[0]
+    
+    if request.method == "POST":
+        
+        updated_proficiency = request.form.get('notes')
+        updated_notes = request.form.get('notes')
+
+        sp_ManagePersonTool('update', current_user.user_id, person.person_id,
+                            area_name, method_name, tool_name, new_name,
+                            proficiency_level, notes)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
