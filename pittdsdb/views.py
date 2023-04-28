@@ -392,19 +392,14 @@ def add_area(public_id):
         if existing_area:
             flash("That area already exists!", category='error')
         else:
-            area = add_area_to_db(new_area_name)
-
             # Add Area node
             add_area_node(new_area_name)
-
-            # Update area name to the new area
             area_name = new_area_name
 
-    # Add person-person area relationships
-    area = Area.query.filter_by(area_name=area_name).first()
-    add_person_support(person.person_id, "area", area.area_id,
-                               proficiency.proficiency_id, notes, True)
-    add_person_support_combos(person.person_id, area.area_id)
+    result = db_session.execute(
+        text("CALL sp_ManagePersonArea ('add', "+current_user.get_id()+", "+person.person_id+", '"+area_name+"', '', '"+proficiency_level+", '"+notes+"', @status, @message)"))
+    print(result)
+
     attach_person_area(public_id, area_name)
 
     return redirect(url_for('views_bp.view_person',
@@ -596,11 +591,10 @@ def update_area(area_name, public_id):
     
     if request.method == "POST":
         updated_notes = request.form.get('notes')
-        db_session.execute(f'UPDATE person_area \
-                           SET notes = { updated_notes } \
-                           WHERE user_id = { person.person_id }\
-                           AND area_id = { area.area_id };')
-        db_session.commit()
+        result = db_session.execute(
+            text(
+                "CALL sp_ManagePersonArea ('update', " + current_user.get_id() + ", " + person.person_id + ", '" + area_name + "', NULL, NULL, '" + updated_notes + "', @status, @message)"))
+        print(result)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -670,14 +664,11 @@ def delete_area(area_id, person_id):
     area = Area.query.filter_by(area_id=area_id).first()
     
     detach_person_area(person.public_id, area.area_name)
-    
-    db_session.execute(f'DELETE FROM person_area \
-                        WHERE fk_person_id = { person.person_id }\
-                        AND fk_area_id = { area.area_id };')
-    db_session.execute(f'DELETE FROM person_support \
-                        WHERE fk_person_id = { person.person_id }\
-                        AND fk_area_id = { area.area_id };')
-    db_session.commit()
+
+    result = db_session.execute(
+        text(
+            "CALL sp_ManagePersonArea ('delete', " + current_user.get_id() + ", " + person.person_id + ", '" + area.area_name + "', NULL, NULL, NULL, @status, @message)"))
+    print(result)
     
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))
