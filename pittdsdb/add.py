@@ -54,10 +54,12 @@ def sp_ManagePersonMethod(method=str, user_id=int, person_id=int, area_name=str,
 
 
 def sp_ManagePersonTool(method=str, user_id=int, person_id=int, area_name=str,
-                        method_name=str, tool_name=str, new_name=str, 
-                        proficiency=str, notes=str):
+                        method_name=str, tool_name=str, tool_type=str,
+                        web_address=str, new_name=str,  proficiency=str, 
+                        notes=str):
     input_list = [method, user_id, person_id, method_name, area_name, tool_name,
-                  new_name, proficiency, notes, False, None]
+                  tool_type, web_address, new_name, proficiency, notes, False, 
+                  None]
     results = None
 
     connection = engine.raw_connection()

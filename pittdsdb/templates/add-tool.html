@@ -63,6 +63,19 @@
   </div>
   <br/>
   <div class="form-group">
+    <label for="tool_type"><span style="font-weight: 500">Tool Proficiency Level</span></label>
+    <select class="form-select form-select-md" aria-label=".form-select-md example"
+    id="tool_type"
+    name="tool_type"
+    value="{{ request.form['tool_type'] }}">
+      <option selected disabled>Select a tool type</option>
+      {% for type in vocab['tool_type'] %}
+      <option value="{{ type }}">{{ type }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <br/>
+  <div class="form-group">
     <label for="proficiency"><span style="font-weight: 500">Tool Proficiency Level</span></label>
     <select class="form-select form-select-md" aria-label=".form-select-md example"
     id="proficiency"
