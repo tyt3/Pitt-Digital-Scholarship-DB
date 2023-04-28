@@ -12,6 +12,7 @@ from .delete import *
 from .networkdb import *
 from .controlled_vocab import vocab, existing
 
+
 # Initialize views Blueprint
 views_bp = Blueprint('views_bp', __name__)
 
@@ -42,6 +43,7 @@ def about():
 def documentation():
     if current_user.is_authenticated:
         current_user.set_permissions()
+
     return render_template("documentation.html",
                            title="Documentation | Pitt Digital Scholarship Database",
                            user=current_user)
