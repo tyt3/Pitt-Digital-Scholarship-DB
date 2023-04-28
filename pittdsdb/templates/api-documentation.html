@@ -7,17 +7,114 @@
 </thead>
 <tbody>
 <tr>
-<td>Login</td>
-<td>[Parameter 1]<br/>
-    [Parameter 2]</td>
+<td>Logon</td>
+<td>Email*<br/>
+    Password*</td>
 </tr>
 <tr>
-<td>[Method]</td>
-<td>[Parameter]</td>
+<td>search_address</td>
+<td>first_name <br/> last_name <br/> title <br/> support_type <br/> campus <br/> area (name of the area) <br/> method (name of the method) <br/>tool (name of the tool)  </td>
 </tr>
 <tr>
-<td>[Method]</td>
-<td>[Parameter]</td>
+<td>search_person</td>
+<td>first_name <br/> last_name <br/> title <br/> support_type <br/> campus <br/> area (name of the area) <br/> method (name of the method) <br/>tool (name of the tool)  </td>
+</tr>
+<tr>
+<td>get_person/[public_id]</td>
+    <td></td>
+</tr>
+<tr>
+<td>add_person*</td>
+<td>first_name*<br/> last_name* <br/> title <br/> pronouns <br/> email* <br/>
+                 web_address <br/> phone*<br/> scheduler_address<br/> preferred_contact* <br/>
+                 support_type* <br/> bio <br/> notes</td>
+</tr>
+<tr>
+<td>delete_person**</td>
+<td>email*</td>
+</tr>
+<tr>
+<td>add_area*</td>
+<td>name* </td>
+</tr>
+<tr>
+<td>update_area*</td>
+<td>name* <br/> new_name</td>
+</tr>
+<tr>
+<td>delete_area**</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>search_area</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>get_area/[area_id]</td>
+    <td></td>
+</tr>
+<tr>
+<td>add_method*</td>
+<td>name* </td>
+</tr>
+<tr>
+<td>update_method*</td>
+<td>name*, new_name*</td>
+</tr>
+<tr>
+<td>delete_method**</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>search_method</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>get_method/[method_id]</td>
+<td></td>
+</tr>
+<tr>
+<td>add_tool*</td>
+<td>name* <br/> type* <br/> web_address</td>
+</tr>
+<tr>
+<td>update_tool*</td>
+<td>name* <br/> new_name <br/> new_type <br/> web_address</td>
+</tr>
+<tr>
+<td>delete_tool**</td>
+<td>area_name*</td>
+</tr>
+<tr>
+<td>search_tool</td>
+<td>tool_name*</td>
+</tr>
+<tr>
+<td>get_tool/[tool_id]</td>
+    <td></td>
+</tr>
+<tr>
+<td>add_resource*</td>
+<td>name* <br/> type* <br/> web_address</td>
+</tr>
+<tr>
+<td>update_resource*</td>
+<td>name* <br/> new_name <br/> new_type <br/> web_address</td>
+</tr>
+<tr>
+<td>delete_resource**</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>search_resource</td>
+<td>name*</td>
+</tr>
+<tr>
+<td>get_resource/[resource_id]</td>
+    <td></td>
 </tr>
 </tbody>
 </table>
+
+<p>*in  column means it requires authorization, ** in column means it requires special permission</p>
+<p>required parameters are marked by asterisk(*)</p>

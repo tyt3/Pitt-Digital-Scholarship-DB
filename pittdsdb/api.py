@@ -129,7 +129,7 @@ def search_person():
 def get_person(public_id):
     person = Person.query.filter_by(public_id=public_id).first()
     if person:
-        return {'first_name': person.first_name, 'last_name': person.last_name}
+        return {'first_name': person.first_name, 'last_name': person.last_name, 'public_id':person.public_id}
     return {'Error': 'Person Not exists'}, 404
 
 """Add Methods"""
@@ -365,12 +365,16 @@ def delete_tool(current_user):
         return {'Error': 'Tool Not exists'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
-@api_bp.route('/get_tool', methods=['GET'])
+@api_bp.route('/search_tool', methods=['GET'])
 def search_tool():
     args = request.args
     tool_name = args.get('name')
-    tool = Tool.query.filter_by(tool_name=tool_name).first()
-    return {'area_name': tool.tool_name}, 200
+    tools = Tool.query.filter_by(tool_name=tool_name).all()
+    results = []
+    for tool in tools:
+        tool = {'name': tool.tool_name, 'type': tool.tool_type, 'web_address':tool.web_address}
+        results.append(tool)
+    return results, 200
 
 @api_bp.route('/get_tool/<tool_id>', methods=['GET'])
 def get_tool(tool_id):
