@@ -397,7 +397,7 @@ def add_area(public_id):
             area_name = new_area_name
 
     result = db_session.execute(
-        text("CALL sp_ManagePersonArea ('add', "+current_user.get_id()+", "+person.person_id+", '"+area_name+"', '', '"+proficiency_level+", '"+notes+"', @status, @message)"))
+        text("CALL sp_ManagePersonArea ('add', "+str(current_user.get_id())+", "+str(person.person_id)+", '"+area_name+"', '', '"+proficiency_level+", '"+notes+"', @status, @message)"))
     print(result)
 
     attach_person_area(public_id, area_name)
@@ -593,7 +593,7 @@ def update_area(area_name, public_id):
         updated_notes = request.form.get('notes')
         result = db_session.execute(
             text(
-                "CALL sp_ManagePersonArea ('update', " + current_user.get_id() + ", " + person.person_id + ", '" + area_name + "', NULL, NULL, '" + updated_notes + "', @status, @message)"))
+                "CALL sp_ManagePersonArea ('update', " + str(current_user.get_id()) + ", " + str(person.person_id) + ", '" + area_name + "', NULL, NULL, '" + updated_notes + "', @status, @message)"))
         print(result)
 
         return redirect(url_for('views_bp.view_person',
@@ -667,7 +667,7 @@ def delete_area(area_id, person_id):
 
     result = db_session.execute(
         text(
-            "CALL sp_ManagePersonArea ('delete', " + current_user.get_id() + ", " + person.person_id + ", '" + area.area_name + "', NULL, NULL, NULL, @status, @message)"))
+            "CALL sp_ManagePersonArea ('delete', " + str(current_user.get_id()) + ", " + str(person.person_id) + ", '" + area.area_name + "', NULL, NULL, NULL, @status, @message)"))
     print(result)
     
     return redirect(url_for('views_bp.view_person',
