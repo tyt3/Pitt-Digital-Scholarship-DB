@@ -70,6 +70,14 @@
         {% else %}
             {{ person_affiliation[0] }}
         {% endif %}
+        <strong>Address:</strong> 
+        <br/>
+            <button type="button" class="btn btn-outline-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#addAddressModal"
+                style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 5px 0 10px 0">
+                Add an Address
+            </button>
+            <br/>
         {% if person.bio %}
         <strong>Bio:</strong> {{ person.bio }}<br/>
         {% endif %}
@@ -273,6 +281,112 @@ tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
                         <option value="None">No parent unit</option>
                     </select>
                 </div>
+                <br/>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+            <br/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Address Form Modal -->
+<div class="modal fade" id="addAddressModal" name="addAddressModal" 
+tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5"
+           id="addAddressModal">Add a Address</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="add_unit_form">
+            <form method="POST" action="{{ url_for('views_bp.add_person_unit', public_id=person.public_id) }}" 
+                target="_self">
+                <h3 align="center"><span style="font-weight: 500">Add an Address</span></h3>
+                <br/>
+                <div class="row">
+                    <div class="col">
+                      <label for="building"><span style="font-weight: 500">Building</span></label>
+                      <input 
+                      type="text" 
+                      class="form-control" 
+                      id="building" 
+                      name="building"
+                      value="{{ request.form['building'] }}">
+                    </div>
+                    <div class="col">
+                    <label for="office"><span style="font-weight: 500">Office Room #</span></label>
+                      <input 
+                      type="text" 
+                      class="form-control" 
+                      id="office" 
+                      name="office"
+                      value="{{ request.form['office'] }}">
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="form-group">
+                    <label for="street_address"><span style="font-weight: 500">Street Address</span></label>
+                    <input 
+                    type="text" 
+                    class="form-control" 
+                    id="street_address" 
+                    name="street_address"
+                    placeholder="1234 Main St"
+                    required>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col">
+                      <label for="city"><span style="font-weight: 500">City</span></label>
+                      <input 
+                      type="text" 
+                      class="form-control" 
+                      id="city"
+                      required>
+                    </div>
+                    <div class="col">
+                      <label for="state"><span style="font-weight: 500">State</span></label>
+                      <select
+                      class="form-control" 
+                      id="state"
+                      name="state"
+                      required>
+                        <option selected>Choose...</option>
+                        <option>PA</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="zipcode"><span style="font-weight: 500">Zipcode</span></label>
+                      <input 
+                      type="text" 
+                      class="form-control" 
+                      id="zipcode"
+                      name="zipcode"
+                      required>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="form-group">
+                    <label for="campus"><span style="font-weight: 500">Campus</span></label>
+                    <select 
+                    class="form-select form-select-md" aria-label=".form-select-md" 
+                    id="campus" 
+                    name="campus"
+                    required>
+                      <option value="">Select a campus</option>
+                      {% for campus in vocab['campus'] %}
+                      <option value="{{ campus }}">{{ campus }}</option>
+                      {% endfor %}
+                      <!-- Add more options as needed -->
+                    </select>
+                  </div>
                 <br/>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <button type="submit" class="btn btn-primary">Submit</button>
