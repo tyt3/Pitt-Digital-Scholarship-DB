@@ -440,3 +440,89 @@ def search_resource(resource_name):
 def get_resource(resource_id):
     resource = Resource.query.filter_by(resource_id=resource_id).first()
     return {'resource_name': resource.resource_name, 'resource_type':resource.resource_type, 'web_address': resource.web_address}
+
+@api_bp.route('/search_address/', methods=['GET'])
+def search_address():
+    args = request.args
+    building = args.get('building')
+    room_number = args.get('room_number')
+    street_address = args.get('street_address')
+    address_2 = args.get('address_2')
+    city = args.get('city')
+    state = args.get('state')
+    zipcode = args.get('zipcode')
+    campus = args.get('campus')
+    entities = ["person", "unit", "subunit"]
+    result_set = []
+    for entity in entities:
+        rows = {}
+        sql = 'SELECT '
+        if entity == "person":
+            sql += 'CONCAT (first_name , " " ,last_name) AS name, '
+        elif entity == "unit":
+            sql += 'unit_name as name, '
+        else:
+            sql += 'subunit_name as name, '
+        sql += 'public_id, a.building_name, a.room_number, a.street_address, a.address_2, a.city, a.state, a.zipcode, a.campus FROM '+entity+' e JOIN '+entity+'_address ea ON ea.fk_'+entity+'_id = e.'+entity+'_id JOIN address a ON ea.fk_address_id = a.address_id WHERE '
+        empty = True
+        if building:
+            sql += f'building LIKE "{building}"'
+            empty = False
+        if room_number:
+            if not empty:
+                sql += f' AND '
+            sql += f'room_number LIKE "{room_number}"'
+            empty = False
+        if street_address:
+            if not empty:
+                sql += f' AND '
+            sql += f'street_address = "{street_address}"'
+            empty = False
+        if address_2:
+            if not empty:
+                sql += f' AND '
+            sql += f'address_2 = "{address_2}"'
+            empty = False
+        if city:
+            if not empty:
+                sql += f' AND '
+            sql += f'city = "{city}"'
+            empty = False
+        if state:
+            if not empty:
+                sql += f' AND '
+            sql += f'state = "{state}"'
+            empty = False
+        if zipcode:
+            if not empty:
+                sql += f' AND '
+            sql += f'zipcode = "{zipcode}"'
+            empty = False
+        if campus:
+            if not empty:
+                sql += f' AND '
+            sql += f'a.campus IN ("{campus}")'
+            empty = False
+
+        if empty:
+            return "Please enter at least one parameter for your query from \
+                id, city, state, campus"
+
+        else:
+            rows = pd.DataFrame(db_session.execute(text(sql + ';')).fetchall())
+            if len(rows) > 0:
+                rows.columns = ['name', 'public_id', 'building_name','room_number','street_address','address_2','city', 'state','zipcode','campus']
+                results = {}
+                for index, row in rows.iterrows():
+                    results['name'] = row['name']
+                    results['public_id'] = row['public_id']
+                    results['building_name'] = row['building_name']
+                    results['room_number'] = row['room_number']
+                    results['street_address'] = row['street_address']
+                    results['address_2'] = row['address_2']
+                    results['city'] = row['city']
+                    results['state'] = row['state']
+                    results['zipcode'] = row['zipcode']
+                    results['campus'] = row['campus']
+                result_set.append({entity: results})
+    return result_set
