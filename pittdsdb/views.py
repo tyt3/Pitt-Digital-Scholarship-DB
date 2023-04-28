@@ -397,7 +397,7 @@ def add_area(public_id):
             area_name = new_area_name
 
     result = db_session.execute(
-        text("CALL sp_ManagePersonArea ('add', "+str(current_user.get_id())+", "+str(person.person_id)+", '"+area_name+"', '', '"+proficiency_level+", '"+notes+"', @status, @message)"))
+        text("CALL sp_ManagePersonArea ('add', "+str(current_user.get_id())+", "+str(person.person_id)+", '"+area_name+"', '', '"+proficiency_level+"', '"+notes+"', @status, @message)"))
     print(result)
 
     attach_person_area(public_id, area_name)
