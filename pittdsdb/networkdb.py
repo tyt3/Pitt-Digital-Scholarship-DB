@@ -88,10 +88,22 @@ def add_area_node(name):
     person_cqry = "CREATE (:Area { name: '" + name + "'})"
     neo4j_dbconn.query(person_cqry)
 
+def update_area_node(name, new_name):
+    area_cqry = "MATCH (a:Area) " \
+                "WHERE a.name = '" + name + "' " \
+                                            "SET a.name = '" + new_name + "'"
+    neo4j_dbconn.query(area_cqry)
+
 # METHOD
 
 def add_method_node(name):
     method_cqry = "CREATE (:Method { name: '"+name+"'})"
+    neo4j_dbconn.query(method_cqry)
+
+def update_method_node(name, new_name):
+    method_cqry = "MATCH (m:Method) " \
+                "WHERE m.name = '" + name + "' " \
+                "SET m.name = '" + new_name + "'"
     neo4j_dbconn.query(method_cqry)
 
 # TOOL
@@ -101,10 +113,10 @@ def add_tool_node(name, tool_type):
     neo4j_dbconn.query(tool_cqry)
 
 
-def update_tool_node(name, tool_type):
+def update_tool_node(name, new_tool_name, new_tool_type):
     tool_cqry = "MATCH (t:Tool) " \
                 "WHERE t.name = '" + name + "' " \
-                                            "SET t.name = '" + name + "',  t.type = '" + tool_type + "'"
+                                            "SET t.name = '" + new_tool_name + "',  t.type = '" + new_tool_type + "'"
 
     neo4j_dbconn.query(tool_cqry)
 
@@ -115,10 +127,10 @@ def add_resource_node(name, resource_type):
     neo4j_dbconn.query(rsc_cqry)
 
 
-def update_resource_node(name, resource_type):
+def update_resource_node(name, new_name, new_resource_type):
     rsc_cqry = "MATCH (r:Resource) " \
                "WHERE r.name = '" + name + "' " \
-                                           "SET r.name = '" + name + "', r.type = '" + resource_type + "'"
+                                           "SET r.name = '" + new_name + "', r.type = '" + new_resource_type + "'"
 
     neo4j_dbconn.query(rsc_cqry)
 
