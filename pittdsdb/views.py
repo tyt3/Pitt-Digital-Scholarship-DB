@@ -597,7 +597,7 @@ def update_area(area_name, public_id):
         updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
         result = sp_ManagePersonArea('update', current_user.user_id, 
-                                     person.person_id, area.area_name, '',
+                                     person.person_id, area.area_name, None,
                                      updated_proficiency, updated_notes)
         
 
