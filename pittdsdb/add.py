@@ -10,6 +10,27 @@ from .models import *
 from .schemas import *
 
 
+def sp_ManagePersonArea(method=str, user_id=int, person_id=int, area_name=str,
+                        new_name='', area_proficiency=str, area_notes=''):
+    input_list = [method, user_id, person_id, area_name, new_name, 
+                  area_proficiency, area_notes, False, None]
+    results = None
+
+    connection = engine.raw_connection()
+    try:
+        cursor_obj = connection.cursor()
+        cursor_obj.callproc("sp_ManagePersonArea", input_list)
+        results = list(cursor_obj.fetchall())
+        cursor_obj.close()
+        connection.commit()
+    finally:
+        connection.close()
+        
+        print("input list", input_list)
+        print("results", results)
+    return results
+
+
 def add_modification(timestamp, description):
     modification = Modification(modification=description,
                                 modified_by=current_user.user_id,

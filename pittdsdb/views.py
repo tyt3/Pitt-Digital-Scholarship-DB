@@ -396,8 +396,8 @@ def add_area(public_id):
             add_area_node(new_area_name)
             area_name = new_area_name
 
-    result = db_session.execute(
-        text("CALL sp_ManagePersonArea ('add', "+str(current_user.get_id())+", "+str(person.person_id)+", '"+area_name+"', '', '"+proficiency_level+"', '"+notes+"', @status, @message)"))
+    result = sp_ManagePersonArea('add', current_user.user_id, person.person_id, 
+                                 area_name, '', proficiency_level, notes)
     print(result)
 
     attach_person_area(public_id, area_name)
@@ -585,16 +585,21 @@ def update_area(area_name, public_id):
     
     person = Person.query.filter_by(public_id=public_id).first()
     area = Area.query.filter_by(area_name=area_name).first()
+    proficiency_id = get_person_relations(person.person_id,
+                                 "fk_proficiency_id", "area",
+                                 area.area_id)[0]
+    proficiency = Proficiency.query.filter_by(proficiency_id=proficiency_id).first()
     notes = get_person_relations(person.person_id,
                                  "notes", "area",
                                  area.area_id)[0]
     
     if request.method == "POST":
+        updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
-        result = db_session.execute(
-            text(
-                "CALL sp_ManagePersonArea ('update', " + str(current_user.get_id()) + ", " + str(person.person_id) + ", '" + area_name + "', NULL, NULL, '" + updated_notes + "', @status, @message)"))
-        print(result)
+        result = sp_ManagePersonArea('update', current_user.user_id, 
+                                     person.person_id, area.area_name, '',
+                                     updated_proficiency, updated_notes)
+        
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -606,6 +611,7 @@ def update_area(area_name, public_id):
                            vocab=vocab,
                            person=person,
                            area=area,
+                           proficiency=proficiency,
                            notes=notes)
 
 
@@ -665,10 +671,9 @@ def delete_area(area_id, person_id):
     
     detach_person_area(person.public_id, area.area_name)
 
-    result = db_session.execute(
-        text(
-            "CALL sp_ManagePersonArea ('delete', " + str(current_user.get_id()) + ", " + str(person.person_id) + ", '" + area.area_name + "', NULL, NULL, NULL, @status, @message)"))
-    print(result)
+    result = sp_ManagePersonArea('delete', current_user.user_id, 
+                                     person.person_id, area.area_name, '',
+                                     None, None)
     
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))
