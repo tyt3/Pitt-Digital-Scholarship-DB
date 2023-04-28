@@ -306,91 +306,9 @@ tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
         </div>
         <div class="modal-body">
           <div id="add_unit_form">
-            <form method="POST" action="{{ url_for('views_bp.add_person_unit', public_id=person.public_id) }}" 
+            <form method="POST" action="{{ url_for('views_bp.add_address', entity_type='person', public_id=person.public_id) }}" 
                 target="_self">
-                <h3 align="center"><span style="font-weight: 500">Add an Address</span></h3>
-                <br/>
-                <div class="row">
-                    <div class="col">
-                      <label for="building"><span style="font-weight: 500">Building</span></label>
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      id="building" 
-                      name="building"
-                      value="{{ request.form['building'] }}">
-                    </div>
-                    <div class="col">
-                    <label for="office"><span style="font-weight: 500">Office Room #</span></label>
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      id="office" 
-                      name="office"
-                      value="{{ request.form['office'] }}">
-                    </div>
-                  </div>
-                  <br/>
-                  <div class="form-group">
-                    <label for="street_address"><span style="font-weight: 500">Street Address</span></label>
-                    <input 
-                    type="text" 
-                    class="form-control" 
-                    id="street_address" 
-                    name="street_address"
-                    placeholder="1234 Main St"
-                    required>
-                  </div>
-                  <br/>
-                  <div class="row">
-                    <div class="col">
-                      <label for="city"><span style="font-weight: 500">City</span></label>
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      id="city"
-                      required>
-                    </div>
-                    <div class="col">
-                      <label for="state"><span style="font-weight: 500">State</span></label>
-                      <select
-                      class="form-control" 
-                      id="state"
-                      name="state"
-                      required>
-                        <option selected>Choose...</option>
-                        <option>PA</option>
-                      </select>
-                    </div>
-                    <div class="col">
-                      <label for="zipcode"><span style="font-weight: 500">Zipcode</span></label>
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      id="zipcode"
-                      name="zipcode"
-                      required>
-                    </div>
-                  </div>
-                  <br/>
-                  <div class="form-group">
-                    <label for="campus"><span style="font-weight: 500">Campus</span></label>
-                    <select 
-                    class="form-select form-select-md" aria-label=".form-select-md" 
-                    id="campus" 
-                    name="campus"
-                    required>
-                      <option value="">Select a campus</option>
-                      {% for campus in vocab['campus'] %}
-                      <option value="{{ campus }}">{{ campus }}</option>
-                      {% endfor %}
-                      <!-- Add more options as needed -->
-                    </select>
-                  </div>
-                <br/>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
+                {% include 'address-form.html' %}
             </form>
             <br/>
           </div>
