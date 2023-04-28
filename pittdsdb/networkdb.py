@@ -4,7 +4,7 @@ from flask import url_for
 
 def delete_node(entity, attribute, attribute_value):
     del_qry = "MATCH (n:"+entity+") " \
-                "WHERE "+attribute+" = '"+attribute_value+"' " \
+                "WHERE n."+attribute+" = '"+attribute_value+"' " \
                 "DETACH DELETE n"  
     neo4j_dbconn.query(del_qry)
 

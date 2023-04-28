@@ -11,6 +11,7 @@ from .token_auth import *
 from .config import SECRET_KEY
 from passlib.hash import sha256_crypt
 from .networkdb import *
+import pandas as pd
 
 
 
@@ -37,8 +38,7 @@ def logon():
 
 """Get Methods"""
 @api_bp.route('/get_person', methods=['GET'])
-@token_required
-def get_person(current_user):
+def get_person():
     args = request.args
     first_name = args.get('first_name')
     last_name = args.get('last_name')
@@ -194,7 +194,7 @@ def add_area(current_user):
 def update_area(current_user):
     args = request.args
     name = args.get('name')
-    area = Area.query.filter_by(name)
+    area = Area.query.filter_by(name).first()
     if area:
         new_name = args.get('new_name')
         update_area_node(area.area_name, new_name)
@@ -219,6 +219,25 @@ def delete_area(current_user):
         return {'Error': 'Area Not exists'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
+@api_bp.route('/search_area', methods=['GET'])
+def search_area():
+    args = request.args
+    area_name = args.get('name')
+    return get_area(area_name), 200
+
+@api_bp.route('/get_area', methods=['GET'])
+def get_area(area_name):
+    area = Area.query.filter_by(area_name=area_name).first()
+    if area:
+        area_methods = {}
+        rows = pd.DataFrame(db_session.execute(text(f'SELECT method_id, method_name FROM method_area ma JOIN method m ON ma.fk_method_id = m.method_id  \
+                                        WHERE fk_area_id = {area.area_id};')))
+        rows.columns = ['method_id', 'method_name', ]
+        for index, row in rows.iterrows():
+            method = row['method_name']
+            area_methods[method] = get_method(method)
+        return {'area_name': area.area_name, 'methods': area_methods}
+
 @api_bp.route('/add_method', methods=['GET'])
 @token_required
 def add_method(current_user):
@@ -239,7 +258,7 @@ def update_method(current_user):
     args = request.args
     method_name = args.get('name')
     new_name = args.get('new_name')
-    method = Area.query.filter_by(method_name=method_name)
+    method = Method.query.filter_by(method_name=method_name).first()
     if method:
         update_method_node(method.method_name, new_name)
         method.area_name = new_name
@@ -262,6 +281,24 @@ def delete_method(current_user):
             return 'Method Successfully deleted', 200
         return {'Error': 'Method Not exists'}, 404
     return {'Error': 'Above Permission Level'}, 403
+
+@api_bp.route('/search_method', methods=['GET'])
+def search_method():
+    args = request.args
+    method_name = args.get('name')
+    return get_method(method_name), 200
+
+@api_bp.route('/get_method/<method>', methods=['GET'])
+def get_method(method_name):
+    method = Method.query.filter_by(method_name=method_name).first()
+    method_tools = {}
+    rows = pd.DataFrame(db_session.execute(text(f'SELECT tool_id, tool_name FROM method_tool mt JOIN tool t ON mt.fk_tool_id = t.tool_id  \
+                                WHERE fk_method_id = {method.method_id};')))
+    rows.columns = ['tool_id', 'tool_name', ]
+    for index, row in rows.iterrows():
+        tool = row['tool_name']
+        method_tools[tool] = get_tool(tool)
+    return {'method_name': method.method_name, 'tools': method_tools}
 
 @api_bp.route('/add_tool', methods=['GET'])
 @token_required
@@ -314,6 +351,18 @@ def delete_tool(current_user):
             return 'Tool Successfully deleted', 200
         return {'Error': 'Tool Not exists'}, 404
     return {'Error': 'Above Permission Level'}, 403
+
+@api_bp.route('/get_tool', methods=['GET'])
+def search_tool():
+    args = request.args
+    tool_name = args.get('name')
+    tool = Tool.query.filter_by(tool_name=tool_name).first()
+    return {'area_name': tool.tool_name}, 200
+
+@api_bp.route('/get_tool', methods=['GET'])
+def get_tool(tool_name):
+    tool = Tool.query.filter_by(tool_name=tool_name).first()
+    return {'tool_name': tool.tool_name, 'tool_type':tool.tool_type, 'web_address':tool.web_address}
 
 @api_bp.route('/add_resource', methods=['GET'])
 @token_required
