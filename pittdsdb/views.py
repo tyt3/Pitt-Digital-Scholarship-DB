@@ -404,7 +404,7 @@ def add_address(entity_type, public_id):
 
     # Add new address, if any, and entity-address relation to db
     db_session.execute(f"INSERT INTO { entity_type }_address\
-                        (fk_{ entity_type }_id, fk_address_id \
+                        (fk_{ entity_type }_id, fk_address_id) \
                         VALUES \
                         ({ entity_id }, { address.address_id });")
     db_session.commit()
@@ -679,15 +679,14 @@ def update_method(method_name, public_id):
                                  method.method_id)[0]
     
     if request.method == "POST":
-
+        area_name = request.form.getlist('area_name')
+        updated_name = request.form.get('new_name')
         updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
 
-        db_session.execute(f'UPDATE person_area \
-                           SET notes = { updated_notes } \
-                           WHERE user_id = { person.person_id }\
-                           AND area_id = { method.method_id };')
-        db_session.commit()
+        sp_ManagePersonMethod('update', current_user.user_id, person.person_id,
+                            area_name, method_name, updated_name,
+                            updated_proficiency, updated_notes)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -724,24 +723,26 @@ def update_tool(tool_name, public_id):
                                  tool.tool_id)[0]
     
     if request.method == "POST":
-        
-        updated_proficiency = request.form.get('notes')
+        area_name = request.form.getlist('area_name')
+        method_name = request.form.getlist('method_name')
+        updated_name = request.form.get('new_name')
+        updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
 
         sp_ManagePersonTool('update', current_user.user_id, person.person_id,
-                            area_name, method_name, tool_name, new_name,
-                            proficiency_level, notes)
+                            area_name, method_name, tool_name, updated_name,
+                            updated_proficiency, updated_notes)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
 
-    return render_template("update-method.html",
+    return render_template("update-tool.html",
                            title="Update a Method | Pitt Digital Scholarship Database",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
                            person=person,
-                           method=method,
+                           tool=tool,
                            proficiency=proficiency,
                            notes=notes)
 
@@ -898,7 +899,7 @@ def view_person(public_id):
     person_affiliation = get_person_relations(person.person_id,
                                                "affiliation_type",
                                                "affiliation")
-
+    
     # Get Unit information
     person_unit = get_person_relations(person.person_id,
                                        "unit_name", 
@@ -910,8 +911,8 @@ def view_person(public_id):
                                                  "address")
     person_address = {}
     if person_address_result:
-        address_items = ['building_name', 'room_number', 'street_address', 
-                    'address_2', 'address_3', 'city', 'state', 'zipcode', 'campus']
+        address_items = ['building_name', 'room_number', 'street_address',
+                         'address_2', 'city', 'state', 'zipcode', 'campus']
         i = 3
         for item in address_items:
             person_address[item] = person_address_result[i]
