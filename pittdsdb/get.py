@@ -10,6 +10,84 @@ from .models import *
 from .schemas import *
 
 
+
+def search_person(first_name, last_name, title, support_type, campus, area, method, tool)
+    sql = f'SELECT DISTINCT public_id, first_name, last_name FROM person '
+    empty = True
+
+    if campus:
+        campus = campus.split(',')
+        campus = ",".join("'"+str(x)+"'" for x in campus)
+        sql += f'JOIN person_address pa ON person.person_id = pa.fk_person_id JOIN address a ON pa.fk_address_id = a.address_id '
+
+    if area:
+        area = area.split(',')
+        area = ",".join("'" + str(x) + "'" for x in area)
+        sql += f'JOIN person_area parea ON person.person_id = parea.fk_person_id JOIN area ON parea.fk_area_id = area.area_id '
+
+    if method:
+        method = method.split(',')
+        method = ",".join("'" + str(x) + "'" for x in method)
+        sql += f'JOIN person_method pm ON person.person_id = pm.fk_person_id JOIN method m ON pa.fk_method_id = m.method_id '
+
+    if tool:
+        tool = tool.split(',')
+        tool = ",".join("'" + str(x) + "'" for x in tool)
+        sql += f'JOIN person_tool pt ON person.person_id = pt.fk_person_id JOIN tool t ON pt.fk_tool_id = t.tool_id '
+
+    sql += f'WHERE '
+    if first_name:
+        sql += f'first_name LIKE "{first_name}"'
+        empty = False
+    if last_name:
+        if not empty:
+            sql += f' AND '
+        sql += f'last_name LIKE "{last_name}"'
+        empty = False
+    if title:
+        if not empty:
+            sql += f' AND '
+        sql += f'title = "{title}"'
+        empty = False
+    if support_type:
+        if not empty:
+            sql += f' AND '
+        sql += f'support_type = "{support_type}"'
+        empty = False
+    if campus:
+        if not empty:
+            sql += f' AND '
+        sql += f'a.campus IN ({campus})'
+        empty = False
+
+    if area:
+        if not empty:
+            sql += f' AND '
+        sql += f'area.area_name IN ({area})'
+        empty = False
+
+    if method:
+        if not empty:
+            sql += f' AND '
+        sql += f'm.method_name IN ({method})'
+        empty = False
+
+    if tool:
+        if not empty:
+            sql += f' AND '
+        sql += f't.tool_name IN ({tool})'
+        empty = False
+
+    if empty:
+        return "Please enter at least one parameter for your query from \
+                id, first_name, last_name, support_type, campus"
+
+    else:
+        results = db_session.execute(text(sql + ';')).fetchall()
+
+        return results
+
+
 def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
     query = None
     if entity == "unit":
