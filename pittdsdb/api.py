@@ -60,6 +60,7 @@ def get_person():
     else:
         return person_schema.jsonify(results)
 
+
 @api_bp.route('/get_unit', methods=['GET'])
 def get_unit():
     args = request.args
@@ -242,7 +243,7 @@ def update_area(current_user):
         area.area_name = new_name
         db_session.commit()
         return {'area_name': new_name}, 200
-    return {'Error': 'Area Not exists'}, 404
+    return {'Error': 'Area does not exist'}, 404
 
 
 @api_bp.route('/update_method', methods=['GET'])
@@ -257,7 +258,7 @@ def update_method(current_user):
         method.area_name = new_name
         db_session.commit()
         return {'method_name': new_name}, 200
-    return {'Error': 'Method Not exists'}, 404
+    return {'Error': 'Method does not exist'}, 404
 
 
 @api_bp.route('/update_tool', methods=['GET'])
@@ -278,7 +279,7 @@ def update_tool(current_user):
         tool.tool_type = new_type
         db_session.commit()
         return {'tool_name': new_name}, 200
-    return {'Error': 'Tool Not exists'}, 404
+    return {'Error': 'Tool does not exist'}, 404
 
 
 @api_bp.route('/update_resource', methods=['GET'])
@@ -299,7 +300,7 @@ def update_resource(current_user):
         resource.resource_type = new_type
         db_session.commit()
         return {'resource_name': new_name}, 200
-    return {'Error': 'Resource Not exists'}, 404
+    return {'Error': 'Resource does not exist'}, 404
 
 
 """Delete Methods"""
@@ -317,7 +318,7 @@ def delete_person(current_user):
                         WHERE person_id = {person.person_id };'))
             db_session.commit()
             return 'Person Successfully deleted',200
-        return {'Error': 'Person Not exists'}, 404
+        return {'Error': 'Person does not exist'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
 
@@ -334,7 +335,7 @@ def delete_area(current_user):
                         WHERE area_name = {area.area_name };'))
             db_session.commit()
             return 'Area Successfully deleted',200
-        return {'Error': 'Area Not exists'}, 404
+        return {'Error': 'Area does not exist'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
 
@@ -351,7 +352,7 @@ def delete_method(current_user):
                                     WHERE method_name = {method.method_name};'))
             db_session.commit()
             return 'Method Successfully deleted', 200
-        return {'Error': 'Method Not exists'}, 404
+        return {'Error': 'Method does not exist'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
 
@@ -368,7 +369,7 @@ def delete_tool(current_user):
                                 WHERE tool_name = {tool.tool_name};'))
             db_session.commit()
             return 'Tool Successfully deleted', 200
-        return {'Error': 'Tool Not exists'}, 404
+        return {'Error': 'Tool does not exist'}, 404
     return {'Error': 'Above Permission Level'}, 403
 
 
@@ -385,5 +386,5 @@ def delete_resource(current_user):
                                         WHERE resource_name = {resource.resource_name};'))
             db_session.commit()
             return 'Resource Successfully deleted', 200
-        return {'Error': 'Resource Not exists'}, 404
+        return {'Error': 'Resource does not exist'}, 404
     return {'Error': 'Above Permission Level'}, 403
