@@ -25,3 +25,14 @@ class PersonSchema(ma.Schema):
 person_schema = PersonSchema()
 people_schema = PersonSchema(many=True)
 
+
+class UnitSchema(ma.Schema):
+    class Meta:
+        fields = ('public_id', 'unit_name', 'unit_type', 'email', 'phone',
+        'other_contact', 'preferred_contact', 'web_address', 'description',
+        'added_by', 'date_added', 'last_modified')
+
+person_schema = PersonSchema()
+people_schema = PersonSchema(many=True)
+
+

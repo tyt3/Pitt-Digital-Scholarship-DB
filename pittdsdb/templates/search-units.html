@@ -4,17 +4,17 @@
 <span style="color: black;">Search</span>
 {% endblock %}
 {% block content %}
-<br/>
+<br />
 <form action="/search" method="POST">
   <h3 align="center">Search Units</h3>
-<br/>
+  <br />
   <div class="row">
     <div class="col">
       <div class="form-group">
         <label for="name"><span style="font-weight: 500">Unit Name</span></label>
         <input type="text" class="form-control" id="name" name="name">
       </div>
-      <br/>
+      <br />
       <div class="form-group">
         <label for="unit_type"><span style="font-weight: 500">Unit Type</span></label>
         <select class="form-select form-select-md" aria-label=".form-select-md example">
@@ -24,7 +24,7 @@
           {% endfor %}
         </select>
       </div>
-      <br/>
+      <br />
       <div class="form-group">
         <label for="campus"><span style="font-weight: 500">Campus</span></label>
         <select class="form-control" id="campus" name="campus" multiple>
@@ -35,7 +35,7 @@
           <!-- Add more options as needed -->
         </select>
       </div>
-      <br/>
+      <br />
       <div class="form-group form-check">
         <input type="checkbox" class="form-check-input" id="is_lab" name="is_lab">
         <label class="form-check-label" for="is_lab">Is a Lab</label>
@@ -43,34 +43,55 @@
     </div>
     <div class="col">
       <div class="form-group">
-      <label for="supported_area"><span style="font-weight: 500">Supported Area</span></label>
-      <select class="form-control" id="supported_area" name="supported_area" multiple>
-        <option value="" disabled>Select Supported Area</option>
-        {% for area in existing['areas'] %}
-        <option value="{{ area }}">{{ area }}</option>
-        {% endfor %}
-        <!-- Add more options as needed -->
-      </select>
+        <label for="supported_area"><span style="font-weight: 500">Supported Area</span></label>
+        <select class="form-control" id="supported_area" name="supported_area" multiple>
+          <option value="" disabled>Select Supported Area</option>
+          {% for area in existing['areas'] %}
+          <option value="{{ area }}">{{ area }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+      <br />
+      <div class="form-group">
+        <label for="supported_resource"><span style="font-weight: 500">Resource</span style="font-weight: 500"></label>
+        <select class="form-control" id="supported_resource" name="supported_resource" multiple>
+          <option value="" disabled>Select Supported Resource</option>
+          {% for resource in existing['resources'] %}
+          <option value="{{ resource }}">{{ resource }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+      <br />
     </div>
-    <br/>
-    <div class="form-group">
-      <label for="supported_resource"><span style="font-weight: 500">Resource</span style="font-weight: 500"></label>
-      <select class="form-control" id="supported_resource" name="supported_resource" multiple>
-        <option value="" disabled>Select Supported Resource</option>
-        {% for resource in existing['resources'] %}
-        <option value="{{ resource }}">{{ resource }}</option>
-        {% endfor %}
-        <!-- Add more options as needed -->
-      </select>
-    </div>
-    <br/>
   </div>
-  </div>
-  <br/>
+  <br />
   <button type="submit" class="btn btn-primary">Search</button>
 </form>
-<br/>
-{% if results %}
+<br />
+{% if search %}
+{% if search_results %}
+<hr />
+<br />
+<ol>
+  {% for unit in search_results %}
+  <li>
+    <a href="">{{ unit['unit_name'] }} ({{ unit['email'] }})
+    </a>
+  </li>
+  {% endfor %}
+</ol>
+<br />
+<hr />
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <p><em>End of results.</em></p>
+</div>
+{% else %}
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <p><em>No matching results were found.</em></p>
+</div>
+{% endif %}
+<br />
 {% endif %}
 {% endblock %}
-

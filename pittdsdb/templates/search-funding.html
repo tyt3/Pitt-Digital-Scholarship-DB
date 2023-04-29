@@ -96,4 +96,28 @@
       <button type="submit" class="btn btn-primary">Search</button>
     </form>
     <br/>
+    {% if search %}
+    {% if search_results %}
+    <hr />
+    <br />
+    <ol>
+      {% for funding in search_results %}
+      <li>
+        <a href="">{{ funding['funding_name'] }}
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+    <br />
+    <hr />
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+      <p><em>End of results.</em></p>
+    </div>
+    {% else %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+      <p><em>No matching results were found.</em></p>
+    </div>
+    {% endif %}
+    <br />
+    {% endif %}
 {% endblock %}

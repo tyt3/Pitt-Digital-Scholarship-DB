@@ -11,8 +11,8 @@ from .schemas import *
 
 
 
-def search_person(first_name, last_name, title, support_type, campus, area, method, tool)
-    sql = f'SELECT DISTINCT public_id, first_name, last_name FROM person '
+def search_person(first_name, last_name, title, support_type, campus, area, method, tool):
+    sql = f'SELECT DISTINCT public_id, first_name, last_name, title, email FROM person '
     empty = True
 
     if campus:
@@ -83,9 +83,34 @@ def search_person(first_name, last_name, title, support_type, campus, area, meth
                 id, first_name, last_name, support_type, campus"
 
     else:
+        # API results
         results = db_session.execute(text(sql + ';')).fetchall()
+        
+        # Frontend results
+        search_results = []
 
-        return results
+        if results:
+            # Frontend results
+            results_df = pd.DataFrame(results)
+            results_df.columns = ['public_id', 'first_name', 'last_name', 'title', 'email']
+
+            for index, row in results_df.iterrows():
+                public_id = row['public_id']
+                first_name = row['first_name']
+                last_name = row['last_name']
+                email = row['email']
+                title = row['title']
+
+                search_result = {'public_id': public_id,
+                                 'first_name': first_name,
+                                 'last_name': last_name,
+                                 'email': email,
+                                 'title:': title}
+
+                search_results.append(search_result)
+
+
+        return results, search_results
 
 
 def get_person_relations(person_id=int, column=str, entity=str, entity_id=0):
