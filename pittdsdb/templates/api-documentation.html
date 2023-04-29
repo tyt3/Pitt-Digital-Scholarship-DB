@@ -24,25 +24,25 @@
     <td></td>
 </tr>
 <tr>
-<td>add_person*</td>
+<td>add_person**</td>
 <td>first_name*<br/> last_name* <br/> title <br/> pronouns <br/> email* <br/>
                  web_address <br/> phone*<br/> scheduler_address<br/> preferred_contact* <br/>
                  support_type* <br/> bio <br/> notes</td>
 </tr>
 <tr>
-<td>delete_person**</td>
+<td>delete_person***</td>
 <td>email*</td>
 </tr>
 <tr>
-<td>add_area*</td>
+<td>add_area**</td>
 <td>name* </td>
 </tr>
 <tr>
-<td>update_area*</td>
+<td>update_area**</td>
 <td>name* <br/> new_name</td>
 </tr>
 <tr>
-<td>delete_area**</td>
+<td>delete_area***</td>
 <td>name*</td>
 </tr>
 <tr>
@@ -54,15 +54,15 @@
     <td></td>
 </tr>
 <tr>
-<td>add_method*</td>
+<td>add_method**</td>
 <td>name* </td>
 </tr>
 <tr>
-<td>update_method*</td>
+<td>update_method**</td>
 <td>name*, new_name*</td>
 </tr>
 <tr>
-<td>delete_method**</td>
+<td>delete_method***</td>
 <td>name*</td>
 </tr>
 <tr>
@@ -74,15 +74,15 @@
 <td></td>
 </tr>
 <tr>
-<td>add_tool*</td>
+<td>add_tool**</td>
 <td>name* <br/> type* <br/> web_address</td>
 </tr>
 <tr>
-<td>update_tool*</td>
+<td>update_tool**</td>
 <td>name* <br/> new_name <br/> new_type <br/> web_address</td>
 </tr>
 <tr>
-<td>delete_tool**</td>
+<td>delete_tool***</td>
 <td>area_name*</td>
 </tr>
 <tr>
@@ -94,15 +94,15 @@
     <td></td>
 </tr>
 <tr>
-<td>add_resource*</td>
+<td>add_resource**</td>
 <td>name* <br/> type* <br/> web_address</td>
 </tr>
 <tr>
-<td>update_resource*</td>
+<td>update_resource**</td>
 <td>name* <br/> new_name <br/> new_type <br/> web_address</td>
 </tr>
 <tr>
-<td>delete_resource**</td>
+<td>delete_resource***</td>
 <td>name*</td>
 </tr>
 <tr>
@@ -115,6 +115,9 @@
 </tr>
 </tbody>
 </table>
-
-<p>*in  column means it requires authorization, ** in column means it requires special permission</p>
-<p>required parameters are marked by asterisk(*)</p>
+<br/>
+<p><em>
+    *   Required parameter <br/>
+    **  Requires authorization <br/>
+    *** Requires special permission
+</em></p>

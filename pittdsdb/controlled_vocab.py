@@ -95,6 +95,7 @@ vocab = {
         'Collaborative',
         'Department',
         'Group',
+        'Institute',
         'Lab',
         'Library',
         'Museum',
@@ -110,6 +111,7 @@ vocab = {
         'Programming Language',
         'Mobile Application',
         'Web Application',
+        'Web Browser Application',
         'Web Browser Plugin',
         'Other'
     ],
