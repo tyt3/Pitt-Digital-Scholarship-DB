@@ -20,8 +20,7 @@
     <select class="form-control"
       id="method"
       name="method" 
-      multiple
-      required>
+      multiple>
       <option value="" disabled><span style="font-weight: 500">Select an Area</span></option>
       {% for method in existing['methods'] %}
       {% if method in person_support['methods'] %}
@@ -51,7 +50,7 @@
   <div class="collapse" id="newToolCollapse">
     <br/>
     <div class="form-group">
-      <label for="new_tool"><span style="font-weight: 500">New Tool</span></label>
+      <label for="new_tool"><span style="font-weight: 500">New Tool Name</span></label>
       <input 
       type="text" 
       class="form-control" 
@@ -60,19 +59,29 @@
       value="{{ request.form['new_tool'] }}">
       <small>If this field is filled, the dropdown selection above will be ignored.</small>
     </div>
-  </div>
-  <br/>
-  <div class="form-group">
-    <label for="tool_type"><span style="font-weight: 500">Tool Proficiency Level</span></label>
-    <select class="form-select form-select-md" aria-label=".form-select-md example"
-    id="tool_type"
-    name="tool_type"
-    value="{{ request.form['tool_type'] }}">
-      <option selected disabled>Select a tool type</option>
+    <br/>
+    <div class="form-group">
+      <label for="area"><span style="font-weight: 500">Tool Type</span></label>
+      <select class="form-select form-select-md" aria-label=".form-select-md example"
+        id="tool_type"
+        name="tool_type">
+      <option value="">Select a tool</option>
       {% for type in vocab['tool_type'] %}
       <option value="{{ type }}">{{ type }}</option>
       {% endfor %}
     </select>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="web_address"><span style="font-weight: 500">Tool Website</span></label>
+      <input 
+      type="url" 
+      class="form-control" 
+      id="web_address" 
+      name="web_address"
+      value="{{ request.form['web_address'] }}">
+      <small>e.g., GitHub</small>
+    </div>
   </div>
   <br/>
   <div class="form-group">
@@ -86,17 +95,6 @@
       <option value="{{ level }}">{{ level }}</option>
       {% endfor %}
     </select>
-  </div>
-  <br/>
-  <div class="form-group">
-    <label for="web_address"><span style="font-weight: 500">Tool Website</span></label>
-    <input 
-    type="url" 
-    class="form-control" 
-    id="web_address" 
-    name="web_address"
-    value="{{ request.form['web_address'] }}">
-    <small>e.g., GitHub</small>
   </div>
   <br/>
   <div class="form-group">
