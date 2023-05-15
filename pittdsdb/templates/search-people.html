@@ -105,4 +105,29 @@
     <button type="submit" class="btn btn-primary">Search</button>
   </form>
   <br/>
+{% if search %}
+{% if search_results %}
+<hr/>
+<br/>
+<ol>
+  {% for person in search_results %}
+    <li>
+      <a href="{{ url_for('views_bp.view_person', public_id=person['public_id']) }}"
+      >{{ person['first_name'] }} {{ person['last_name'] }} ({{ person['email'] }})
+    </a>
+    </li>
+  {% endfor %}
+</ol>
+<br/>
+<hr/>
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <p><em>End of results.</em></p>
+</div>
+{% else %}
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <p><em>No matching results were found.</em></p>
+</div>
+{% endif %}
+<br/>
+{% endif %}
 {% endblock %}

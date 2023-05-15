@@ -86,18 +86,32 @@ def search():
 def search_people():
     if current_user.is_authenticated:
         current_user.set_permissions()
+    
+    search = False
+    search_results = None
 
     if request.method == "POST":
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         title = request.form.get('title')
-        support_type = request.form.getlist('support_type')
-        campus = request.form.getlist('campus')
+        support_types = request.form.getlist('support_type')
+        campuses = request.form.getlist('campus')
+        areas = request.form.getlist('supported_area')
+        methods = request.form.getlist('supported_method')
+        tools = request.form.getlist('supported_tool')
+        tool_types = request.form.getlist('supported_tool_type')
+
+        search_results = search_person(first_name, last_name, title, support_types, 
+        campuses, areas, methods, tools, tool_types)[1]
+
+        search = True
     
     return render_template("search-people.html",
                            title="Search People| Pitt Digital Scholarship Database",
                            user=current_user,
-                           existing=existing)
+                           existing=existing,
+                           search_results=search_results,
+                           search=search)
 
 
 @views_bp.route('/search-units', methods=['GET', 'POST'])
@@ -209,11 +223,6 @@ def add_person(public_id):
                     for a in affiliation:
                         add_person_affiliation(person_id, a)
 
-                    # # Add new person to database
-                    # db_session.add(new_person)
-
-                    # # Commit changes
-                    # db_session.commit()
 
                     # Add Person Node
                     add_person_node(first_name + ' ' + last_name, public_id)
@@ -488,16 +497,15 @@ def add_method(public_id):
         # Make sure the method name being added doesn't already exist
         existing_method = Method.query.filter_by(method_name=new_method_name).first()
         if existing_method:
-            flash("That method already exists!", category='error')
+            method_name = existing_method
         else:
             method_name = new_method_name
     
     # Add person-support relationships
     for area_name in area_names:
-        method = add_method_to_db(new_method_name)
-        # sp_ManagePersonMethod('add', current_user.user_id, person.person_id, 
-        #                       area_name, method_name, None, proficiency_level,
-        #                       notes)
+        sp_ManagePersonMethod('add', current_user.user_id, person.person_id, 
+                              area_name, method_name, None, proficiency_level,
+                              notes)
         
         # Add relations in neo4j
         result = get_relations("Person", "public_id", person.public_id, "Area", "name", area_name)
@@ -542,9 +550,7 @@ def add_tool(public_id):
         # Make sure the tool name being added doesn't already exist
         existing_tool = Tool.query.filter_by(tool_name=new_tool_name).first()
         if existing_tool:
-            flash("That tool already exists!", category='error')
-            return redirect(url_for('views_bp.view_person',
-                                public_id=person.public_id))
+            tool_name = existing_tool.name
         else:
             tool_name = new_tool_name
     
@@ -553,8 +559,8 @@ def add_tool(public_id):
         for method_name in method_names:
             sp_ManagePersonTool('add', current_user.user_id, person.person_id,
                                 area_name, method_name, tool_name, tool_type,
-                                web_address, None,
-                                proficiency_level, notes)
+                                web_address, None, proficiency_level, notes)
+
             result = get_relations("Person", "name", person.public_id, "Area", "name", area_name)
             if len(result) == 0:
                 attach_person_area(person.public_id, area_name)
@@ -757,7 +763,7 @@ def delete_area(area_id, person_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
+        flash("Your account does not have permission to delete from the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
     
@@ -780,7 +786,7 @@ def delete_method(method_id, person_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
+        flash("Your account does not have permission to delete from the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
     
@@ -789,10 +795,8 @@ def delete_method(method_id, person_id):
     
     detach_person_method(person.public_id, method.method_name)
 
-    result = sp_ManagePersonMethod('delete', current_user.user_id, 
-                                     person.person_id, method.method_name)
-    
-    print(result)
+    result = sp_ManagePersonMethod('delete', current_user.user_id, person.person_id, 
+                              None, method.method_name, None, None, None)
     
     return redirect(url_for('views_bp.view_person',
                             public_id=person.public_id))
@@ -804,7 +808,7 @@ def delete_tool(tool_id, person_id):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
+        flash("Your account does not have permission to delete from the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
     
@@ -813,9 +817,9 @@ def delete_tool(tool_id, person_id):
     
     detach_person_tool(person.public_id, tool.tool_name)
 
-    result = sp_ManagePersonMethod('delete', current_user.user_id, 
-                                     person.person_id, tool.tool_name, None,
-                                     None, None, None)
+    result = sp_ManagePersonTool('delete', current_user.user_id, 
+                                person.person_id, None, None, tool.tool_name, 
+                                None, None, None, None, None)
     
     print(result)
     
@@ -829,7 +833,7 @@ def delete_person_unit(person_id, unit_name):
     if current_user.is_authenticated:
         current_user.set_permissions()
     if not current_user.can_add:
-        flash("Your account does not have permission to add to the database.",
+        flash("Your account does not have permission to delete from the database.",
                category="error")
         return redirect(url_for('auth_bp.login'))
     
