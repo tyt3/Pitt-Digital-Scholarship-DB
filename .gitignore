@@ -1,3 +1,5 @@
 __pycache__/
 .bash_profile
 .env
+models_working.py
+templates\convert.py
