@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<br/>
+<!-- Contact Information -->
+<div class="mx-auto col-12 col-md-12 col-lg-11">
+  <h3>{{ funding.funding_name }}</h3>
+  <p class="contact"><strong>Type:</strong> {{ funding.funding_type }}</p>
+  <p class="contact">
+    <strong>Unit:</strong>
+    {% if unit_names|length > 1 or unit_names|length == 0 %}
+    <br/>
+    {% endif %}
+    {% for unit in units %}
+    {% if unit['unit_name'] %}
+    <a href="{{ url_for('views_bp.view_unit', public_id=unit['unit_public_id']) }}">{{ unit['unit_name'] }}</a>
+    {% if user.can_update %}
+    &nbsp;
+    <a role="button" class="btn btn-outline-danger btn-sm"
+      style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin: 2.5px;"
+      href="{{ url_for('views_bp.delete_funding_unit', funding_id=funding.funding_id, unit_public_id=unit['unit_public_id']) }}">
+      <!-- delete unit funding -->
+      Delete Unit
+    </a>
+    {% endif %}
+    <br/>
+    {% endif %}
+    {% endfor %}
+  </p>
+  {% if user.can_update %}
+  <button type="button" class="btn btn-outline-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addUnitModal"
+    style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: .5em">
+  Add a Unit
+  </button>
+  {% endif %}
+  {% if funding.web_address %}
+  <p class="contact"><strong>Website:</strong> 
+    <a href="{{ funding.web_address }}" target="_blank">{{ funding.web_address }}</a>
+  </p>
+  {% endif %}
+  <p class="contact"><strong>Duration:</strong> {{ funding.duration }}</p>
+  <p class="contact"><strong>Offering Frequency:</strong> {{ funding.frequency }}</p>
+  <p class="contact"><strong>Payment Type:</strong> {{ funding.payment_type }}</p>
+  {% if funding.payment_amount %}
+  <p class="contact"><strong>Payment Amount:</strong> {{ "${:,.2f}".format(funding.payment_amount) }}</p>
+  {% endif %}
+  <p class="contact"><strong>Career Level:</strong> {{ funding.career_level }}</p>
+  {% if funding.notes %}  
+  <p class="contact"><strong>Notes:</strong> {{ notes | safe }}</p>
+  {% endif %}
+  <p class="contact"><strong>Campus:</strong> 
+    {% if campuses|length > 1 %}
+    <br/>
+    {% endif %}
+    {% for campus in campuses %}
+    {{ campus }}
+    {% if campus != campuses[-1] %}
+    <br/>
+    {% endif %}
+    {% endfor %}
+  </p>
+  <p class="contact"><strong>Last Updated:</strong> {{ funding.last_modified }}</p>
+  <br/>
+  {% if user.can_update %}
+  <button type="button" class="btn btn-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#updateFundingModal">
+  Update Funding
+  </button>
+  {% endif %}
+  {% if user.can_delete %}
+  <button type="button" class="btn btn-danger btn-sm"
+    data-bs-toggle="modal" data-bs-target="#deleteFundingModal">
+  Delete Funding
+  </button>
+  {% endif %}
+</div>
+<br/>
+
+<!-- Update Funding Form Modal -->
+<div class="modal fade" id="updateFundingModal" name="updateFundingModal" 
+  tabindex="-1" aria-labelledby="updateFundingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="updateFundingModalLabel">Update Funding Record</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Funding Form -->
+        <div id="update_funding_form">
+          <form method="POST" action="{{ url_for('views_bp.add_funding', public_id=funding.public_id) }}" 
+            target="_self">
+            {% include "funding-form.html" %}
+          </form>
+        </div>
+        <br/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Funding Form Modal -->
+<div class="modal fade" id="deleteFundingModal" name="deleteFundingModal" 
+  tabindex="-1" aria-labelledby="deleteFundingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="deleteFundingModal">Delete Funding</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this funding record?
+            <strong>This action cannot be undone</strong>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" target="_parent"
+          action="{{ url_for('views_bp.delete_funding', public_id=funding.public_id) }}">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+      <br/>
+    </div>
+  </div>
+</div>
+
+<!-- Add Unit Form Modal -->
+<div class="modal fade" id="addUnitModal" name="addUnitModal" 
+  tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addUnitModal">Add a Unit</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="add_unit_form">
+          <form method="POST" action="{{ url_for('views_bp.add_funding_unit', public_id=funding.public_id) }}" 
+            target="_self">
+            <div class="form-group">
+              <label for="unit_name"><span style="font-weight: 500">Unit</span></label>
+              <select 
+                class="form-select form-select-md" aria-label=".form-select-md"
+                id="unit_name"
+                name="unit_name"
+                reqired>
+                <option value="" >Select a unit</option>
+                {% for unit in existing['all_units']  %}
+                {% if unit not in unit_names %}
+                <option value="{{ unit }}">{{ unit }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+              <small>Don't see your unit?  
+              <a href="{{ url_for('views_bp.add_unit', public_id='new') }}" target="_blank">
+              Add it to the database</a>!
+              </small>
+            </div>
+            <br/>
+            <div class="form-group">
+              <label for="parent_unit_name"><span style="font-weight: 500">Parent Unit </span><small>(if any)</small></label>
+              <select 
+                class="form-control"
+                id="parent_unit_name"
+                name="parent_unit_name"
+                multiple
+                required>
+                <option value="" disabled>Select a parent unit</option>
+                <option value="None">No parent unit</option>
+                {% for unit in existing['units'] %}
+                <option value="{{ unit }}">{{ unit }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <br/>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,20 +5,20 @@
 {% endblock %}
 {% block content %}
 <br />
-<form action="/search" method="POST">
-  <h3 align="center">Search Units [COMING SOON]</h3>
+<form action="/search-units" method="POST">
+  <h3 align="center">Search Units</h3>
   <br />
   <div class="row">
     <div class="col">
       <div class="form-group">
-        <label for="name"><span style="font-weight: 500">Unit Name</span></label>
-        <input type="text" class="form-control" id="name" name="name">
+        <label for="unit_name"><span style="font-weight: 500">Unit Name</span></label>
+        <input type="text" class="form-control" id="unit_name" name="unit_name">
       </div>
       <br />
       <div class="form-group">
         <label for="unit_type"><span style="font-weight: 500">Unit Type</span></label>
-        <select class="form-select form-select-md" aria-label=".form-select-md example">
-          <option value="">Select a unit type</option>
+        <select class="form-select form-select-md" id="type" name="type" multiple>
+          <option value="" disabled>Select a unit type</option>
           {% for type in vocab['unit_type'] %}
           <option value="{{ type }}">{{ type }}</option>
           {% endfor %}
@@ -28,42 +28,50 @@
       <div class="form-group">
         <label for="campus"><span style="font-weight: 500">Campus</span></label>
         <select class="form-control" id="campus" name="campus" multiple>
-          <option value="" disabled>Select Campus</option>
+          <option value="" disabled>Select a campus</option>
           {% for campus in existing['campuses'] %}
           <option value="{{ campus }}">{{ campus }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
         </select>
-      </div>
-      <br />
-      <div class="form-group form-check">
-        <input type="checkbox" class="form-check-input" id="is_lab" name="is_lab">
-        <label class="form-check-label" for="is_lab">Is a Lab</label>
       </div>
     </div>
     <div class="col">
       <div class="form-group">
         <label for="supported_area"><span style="font-weight: 500">Supported Area</span></label>
         <select class="form-control" id="supported_area" name="supported_area" multiple>
-          <option value="" disabled>Select Supported Area</option>
+          <option value="" disabled>Select a supported area</option>
           {% for area in existing['areas'] %}
           <option value="{{ area }}">{{ area }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
         </select>
       </div>
       <br />
-      <div class="form-group">
-        <label for="supported_resource"><span style="font-weight: 500">Resource</span style="font-weight: 500"></label>
+      <!-- <div class="form-group">
+        <label for="supported_resource"><span style="font-weight: 500">Supported Resource</span style="font-weight: 500"></label>
         <select class="form-control" id="supported_resource" name="supported_resource" multiple>
-          <option value="" disabled>Select Supported Resource</option>
+          <option value="" disabled>Select a supported resource</option>
           {% for resource in existing['resources'] %}
           <option value="{{ resource }}">{{ resource }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br/> -->
+      <div class="form-group">
+        <label for="supported_resource_type"><span style="font-weight: 500">Supported Resource Type</span style="font-weight: 500"></label>
+        <select class="form-control" id="supported_resource_type" name="supported_resource_type" multiple>
+          <option value="" disabled>Select a supported resource type</option>
+          {% for type in existing['resource_types'] %}
+          <option value="{{ type }}">{{ type }}</option>
           {% endfor %}
           <!-- Add more options as needed -->
         </select>
       </div>
-      <br />
+      <br/>
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="offers_funding" name="offers_funding">
+        <label class="form-check-label" for="offers_funding">Offers funding</label>
+        <br />
+      </div>
     </div>
   </div>
   <br />
@@ -74,24 +82,43 @@
 {% if search_results %}
 <hr />
 <br />
-<ol>
-  {% for unit in search_results %}
-  <li>
-    <a href="">{{ unit['unit_name'] }} ({{ unit['email'] }})
-    </a>
-  </li>
-  {% endfor %}
-</ol>
-<br />
-<hr />
-<div class="d-grid gap-2 d-md-flex justify-content-md-center">
-  <p><em>End of results.</em></p>
+<div id="results">
+  <div class="row">
+    {% for unit in search_results %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: .5em;">
+        <div class="card-body">
+          <h5 class="card-title">{{ unit['unit_name'] }}</h5>
+          <p class="card-text">
+            <strong>Type</strong>: {{ unit['unit_type'] }}<br/>
+            <!-- {% if unit['campus'] %}
+            <strong>Campus</strong>: {{ unit['campus'] }}
+            {% endif %} -->
+          </p>
+          <a href="{{ url_for('views_bp.view_unit', public_id=unit['public_id']) }}" 
+            class="btn btn-primary btn-sm">View Page</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <br />
+  <hr />
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>End of results.</em></p>
+  </div>
+  {% else %}
+  <hr />
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>No matching results were found.</em></p>
+  </div>
+  {% endif %}
 </div>
-{% else %}
-<div class="d-grid gap-2 d-md-flex justify-content-md-center">
-  <p><em>No matching results were found.</em></p>
-</div>
-{% endif %}
 <br />
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      document.location.hash = '#results';
+  });
+</script>
 {% endif %}
 {% endblock %}

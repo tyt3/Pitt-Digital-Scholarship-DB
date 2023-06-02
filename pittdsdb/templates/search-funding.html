@@ -1,123 +1,153 @@
 {% extends 'base.html' %}
-  {% block title %}Search Funding Opportunities | Pitt Digital Scholarship Databse{% endblock %}
-  {% block navbar_search_active %}
-    <span style="color: black;">Search</span>
-  {% endblock %}
-  {% block content %}
+{% block title %}Search Funding Opportunities | Pitt Digital Scholarship Databse{% endblock %}
+{% block navbar_search_active %}
+<span style="color: black;">Search</span>
+{% endblock %}
+{% block content %}
+<br/>
+<form action="/search-funding" method="POST">
+  <h3 align="center">Search Funding</h3>
   <br/>
-  <form action="/search-funding" method="POST">
-    <h3 align="center">Search Funding [COMING SOONG]</h3>
-    <br/>
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          <label for="funding_name"><span style="font-weight: 500">Funding Name</span></label>
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="funding_name"><span style="font-weight: 500">Funding Name</span></label>
         <input type="text" class="form-control" id="funding_name" name="funding_name">
-        </div>
-        <br/>
-        <div class="form-group">
-          <label for="type"><span style="font-weight: 500">Funding Type</span></label>
-          <select class="form-control" id="funding_type" name="funding_type" multiple>
-            <option value="" >Select Funding Type</option>
-            {% for funding_type in existing['funding_type'] %}
-            <option value="{{ funding_type }}">{{ funding_type }}</option>
-            {% endfor %}
-            <!-- Add more options as needed -->
-            </select>
-        </div>
-        <br>
-
-     <div class="form-group">
-      <label for="type"><span style="font-weight: 500">Payment Type</span></label>
-      <select class="form-control" id="payment_type" name="payment_type" multiple>
-          <option value="" >Select Payment Type</option>
-          {% for payment_type in existing['payment_type'] %}
-          <option value="{{ payment_type }}">{{ payment_type }}</option>
-          {% endfor %}
-          <!-- Add more options as needed -->
-          </select>
-    </div>
-    <br/>
-    <div>
-      <label for="type"><span style="font-weight: 500">Amount</span></label>
-      <div class="row">
-        <div class="col">
-          <label for="min_amount">Min:</label>
-          <input type="number" class="form-control" id="min_amount" name="min_amount">
-       </div>
-      
-      <div class="col">
-        <label for="max_amount">Max:</label>
-        <input type="number" class="form-control" id="max_amount" name="max_amount">
       </div>
-
-    </div>
-    </div>
-    </div>
-      <div class="col">
+      <br/>
       <div class="form-group">
-      <label for="type"><span style="font-weight: 500">Career Level</span></label>
-      <select class="form-control" id="career_level" name="career_level" multiple>
-          <option value="" >Select Career Level</option>
-          {% for career_level in existing['career_level'] %}
-          <option value="{{ career_level }}">{{ career_level }}</option>
+        <label for="type"><span style="font-weight: 500">Funding Type</span></label>
+        <select class="form-control" id="funding_type" name="funding_type" multiple>
+          <option value="" disabled>Select a funding type</option>
+          {% for funding_type in existing['funding_types'] %}
+          <option value="{{ funding_type }}">{{ funding_type }}</option>
           {% endfor %}
           <!-- Add more options as needed -->
-          </select>
+        </select>
+      </div>
       <br>
-
       <div class="form-group">
-      <label for="type"><span style="font-weight: 500">Duration</span></label>
-      <select class="form-control" id="duration" name="duration" multiple>
-          <option value="" >Select Duration</option>
-          {% for duration in existing['duration'] %}
+        <label for="type"><span style="font-weight: 500">Funding Duration</span></label>
+        <select class="form-control" id="duration" name="duration" multiple>
+          <option value="" disabled>Select a funding duration</option>
+          {% for duration in existing['durations'] %}
           <option value="{{ duration }}">{{ duration }}</option>
           {% endfor %}
           <!-- Add more options as needed -->
-          </select>
+        </select>
+      </div>
       <br>
-
       <div class="form-group">
-      <label for="type"><span style="font-weight: 500">Frequency</span></label>
-      <select class="form-control" id="frequency" name="frequency" multiple>
-          <option value="" >Select Frequency</option>
-          {% for frequency in existing['frequency'] %}
+        <label for="type"><span style="font-weight: 500">Offering Frequency</span></label>
+        <select class="form-control" id="frequency" name="frequency" multiple>
+          <option value="" disabled>Select an offering frequency</option>
+          {% for frequency in existing['frequencies'] %}
           <option value="{{ frequency }}">{{ frequency }}</option>
           {% endfor %}
           <!-- Add more options as needed -->
-          </select>
-      <br>
+        </select>
       </div>
-      </div>
-      </div>
-      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="type"><span style="font-weight: 500">Payment Type</span></label>
+        <select class="form-control" id="payment_type" name="payment_type" multiple>
+          <option value="" disabled>Select a payment type</option>
+          {% for payment_type in existing['payment_types'] %}
+          <option value="{{ payment_type }}">{{ payment_type }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
       </div>
       <br/>
-      <button type="submit" class="btn btn-primary">Search</button>
-    </form>
-    <br/>
-    {% if search %}
-    {% if search_results %}
-    <hr />
-    <br />
-    <ol>
-      {% for funding in search_results %}
-      <li>
-        <a href="">{{ funding['funding_name'] }}
-        </a>
-      </li>
-      {% endfor %}
-    </ol>
-    <br />
-    <hr />
-    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-      <p><em>End of results.</em></p>
+      <div class="row">
+        <div class="col">
+          <label for="min_amount"><span style="font-weight: 500">Min Amount</span></label>
+          <input 
+            type="number" 
+            class="form-control" 
+            id="min_amount" 
+            name="min_amount"
+            placeholder="$">
+        </div>
+        <div class="col">
+          <label for="max_amount"><span style="font-weight: 500">Max Amount</span></label>
+          <input 
+            type="number" 
+            class="form-control" 
+            id="max_amount" 
+            name="max_amount"
+            placeholder="$">
+        </div>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="type"><span style="font-weight: 500">Career Level</span></label>
+        <select class="form-control" id="career_level" name="career_level" multiple>
+          <option value="" disabled>Select a career level</option>
+          {% for career_level in existing['career_levels'] %}
+          <option value="{{ career_level }}">{{ career_level }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+      <br>
+      <div class="form-group">
+        <label for="campus"><span style="font-weight: 500">Campus</span></label>
+        <select class="form-control" id="campus" name="campus" multiple>
+          <option value="" disabled>Select a campus</option>
+          {% for campus in existing['campuses'] %}
+          <option value="{{ campus }}">{{ campus }}</option>
+          {% endfor %}
+          <!-- Add more options as needed -->
+        </select>
+      </div>
     </div>
-    {% else %}
-    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-      <p><em>No matching results were found.</em></p>
+  </div>
+  <br/>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<br/>
+{% if search %}
+{% if search_results %}
+<hr />
+<br />
+<div id="results">
+  <div class="row">
+    {% for funding in search_results %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: .5em;">
+        <div class="card-body">
+          <h5 class="card-title">{{ funding['funding_name'] }}</h5>
+          <p class="card-text">
+            <strong>Type</strong>: {{ funding['funding_type'] }}</p>
+            <a role="button" class="btn btn-primary btn-sm"
+              href="{{ url_for('views_bp.view_funding', public_id=funding['funding_public_id']) }}">
+              View Page
+            </a>
+        </div>
+      </div>
     </div>
-    {% endif %}
-    <br />
-    {% endif %}
+    {% endfor %}
+  </div>
+  <br />
+  <hr />
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>End of results.</em></p>
+  </div>
+  {% else %}
+  <hr />
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>No matching results were found.</em></p>
+  </div>
+  {% endif %}
+</div>
+<br />
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      document.location.hash = '#results';
+      history.replaceState(null,null,url);
+  });
+</script>
+{% endif %}
 {% endblock %}

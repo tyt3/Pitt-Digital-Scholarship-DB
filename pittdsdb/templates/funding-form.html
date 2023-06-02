@@ -1,0 +1,158 @@
+
+<div class="form-group">
+  <label for="funding_name"><span style="font-weight: 500">Funding Name</span></label>
+  <input type="text" 
+    class="form-control" 
+    id="funding_name" 
+    name="funding_name"
+    {% if funding %}
+    value="{{ funding.funding_name }}"
+    readonly
+    {% endif %}
+    >
+</div>
+<br/>
+<div class="form-group">
+  <label for="funding_type"><span style="font-weight: 500">Funding Type</span></label>
+  <select class="form-select form-select-md" aria-label=".form-select-md example"
+    name="funding_type"
+    id="funding_type"
+    required>
+    <option value="">Select a funding type</option>
+    {% for type in vocab['funding_type'] %}
+    <option value="{{ type }}"
+    {% if funding and type == funding.funding_type %}
+    selected
+    {% endif %}
+    >{{ type }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="duration"><span style="font-weight: 500">Funding Duration</span></label>
+  <select class="form-select form-select-md" id="duration" name="duration" 
+    required>
+    <option value="">Select a funding duration</option>
+    {% for duration in vocab['duration'] %}
+    <option 
+      value="{{ duration }}"
+      {% if funding and duration == funding.duration %}
+      selected
+      {% endif %}
+      >{{ duration }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="frequency"><span style="font-weight: 500">Offering Frequency</span></label>
+  <select class="form-select form-select-md" id="frequency" name="frequency" 
+    required>
+    <option value="">Select an offering frequency</option>
+    {% for frequency in vocab['frequency'] %}
+    <option 
+      value="{{ frequency }}"
+      {% if funding and frequency == funding.frequency %}
+      selected
+      {% endif %}
+    >{{ frequency }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="payment_type"><span style="font-weight: 500">Payment Type</span></label>
+  <select class="form-select form-select-md" id="payment_type" name="payment_type" 
+    required>
+    <option value="">Select a payment type</option>
+    {% for type in vocab['payment_type'] %}
+    <option 
+      value="{{ type }}"
+      {% if funding and type == funding.payment_type %}
+      selected
+      {% endif %}
+    >{{ type }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="payment_amount"><span style="font-weight: 500">Payment Amount</span></label>
+  <input 
+    type="number" 
+    step="0.01"
+    class="form-control" 
+    id="payment_amount" 
+    name="payment_amount"
+    {% if funding and funding.payment_amount %}
+    value="{{ funding.payment_amount|round(2) }}"
+    {% endif %}
+    placeholder="$">
+</div>
+<br/>
+<div class="form-group">
+  <label for="career_level"><span style="font-weight: 500">Career Level</span></label>
+  <select class="form-select form-select-md" id="career_level" name="career_level" required>
+    <option value="">Select a career level</option>
+    {% for career_level in vocab['career_level'] %}
+    <option 
+      value="{{ career_level }}"
+      {% if funding and career_level == funding.career_level %}
+      selected
+      {% endif %}
+    >{{ career_level }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="campus"><span style="font-weight: 500">Campus</span></label>
+  <select 
+  class="form-select form-select-md" aria-label=".form-select-md" 
+  id="campus" 
+  name="campus"
+  value="{{ request.form['campus'] }}"
+  required>
+    <option value="">Select a campus</option>
+    {% for campus in vocab['campus'] %}
+    <option value="{{ campus }}"
+    {% if funding and campus in campuses %}
+      selected
+    {% endif %}
+    >{{ campus }}</option>
+    {% endfor %}
+    <option value="Multiple">Multiple</option>
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="website"><span style="font-weight: 500">Website</span></label>
+  <input 
+    type="url"
+    class="form-control"
+    id="website"
+    name="website"
+    {% if funding and funding.web_address %}
+    value="{{ funding.web_address }}"
+    {% endif %}
+  >
+</div>
+<br/>
+<div class="form-group">
+  <label for="notes"><span style="font-weight: 500">Notes</span></label>
+  <textarea 
+    class="form-control"
+    id="notes"
+    name="notes"
+    rows="3"
+    placeholder="Markdown-enabled field"
+    >{% if funding and funding.notes %}{{ funding.notes }}{% endif %}</textarea>
+</div>
+<br/>
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  {% if funding or unit %}
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">Submit</button>
+</div>

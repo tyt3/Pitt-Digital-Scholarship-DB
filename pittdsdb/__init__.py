@@ -6,6 +6,8 @@ from flask_marshmallow import Marshmallow
 from flask_login import LoginManager
 from flask_mail import Mail, Message
 from datetime import datetime
+from flaskext.markdown import Markdown
+from jinja2 import Environment
 
 
 def init_app():
@@ -21,6 +23,10 @@ def init_app():
 
     # Configure app
     app.config.from_pyfile('config.py')
+
+    # Enable Jinja's expression statement
+    app.jinja_env.add_extension('jinja2.ext.do')
+    #jinja_env = Environment(extensions=['jinja2.ext.do'])
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth_bp.login'

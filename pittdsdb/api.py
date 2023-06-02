@@ -12,6 +12,7 @@ from .schemas import *
 from .token_auth import *
 from .config import SECRET_KEY
 from .get import *
+from .search import *
 from .networkdb import *
 
 
@@ -51,9 +52,10 @@ def get_person():
     area = args.get('area')
     method = args.get('method')
     tool = args.get('tool')
+    tool_type = args.get('tool_type')
     
     results = search_person(first_name, last_name, title, support_type, campus,
-    area, method, tool)[0]
+                            area, method, tool, tool_type)[0]
 
     if len(results) > 1:
         return people_schema.jsonify(results)
@@ -65,17 +67,41 @@ def get_person():
 def get_unit():
     args = request.args
     unit_name = args.get('unit_name')
-    campus = args.get('campus')
-    area = args.get('area')
-    resource = args.get('resource')
-    is_lab = args.get('is_lab')
+    unit_type = args.getlist('unit_type')
+    campus = args.getlist('campus')
+    area = args.getlist('area')
+    resource = args.getlist('resource')
+    offers_funding = args.get('offers_funding')
     
-    results = search_unit(unit_name, campus, area, resource, is_lab)[0]
+    results = search_unit(unit_name, unit_type, campus, 
+                          area, resource, offers_funding)[0]
 
     if len(results) > 1:
-        return people_schema.jsonify(results)
+        return unit_schema.jsonify(results)
     else:
-        return person_schema.jsonify(results)
+        return units_schema.jsonify(results)
+    
+@api_bp.route('/get_funding', methods=['GET'])
+def get_funding():
+    args = request.args
+    funding_name = args.get('funding_name')
+    funding_type = args.getlist('funding_types')
+    duration = args.getlist('duration')
+    frequency = args.getlist('frequency')
+    payment_type = args.getlist('payment_type')
+    min_amount = args.get('min_amount')
+    max_amount = args.get('max_amount')
+    career_level = args.getlist('career_level')
+    campus = args.getlist('campus')
+    
+    results = search_unit(funding_name, funding_type, duration, 
+                   frequency, payment_type, min_amount, 
+                   max_amount, career_level, campus)[0]
+
+    if len(results) > 1:
+        return funding_schema.jsonify(results)
+    else:
+        return fundings_schema.jsonify(results)
 
 
 @api_bp.route('/get_area', methods=['GET'])

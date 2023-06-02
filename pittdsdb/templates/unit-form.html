@@ -1,54 +1,149 @@
-<!-- Unit Information -->
-<br/>
 <div class="form-group">
-    <label for="unit_parent">Parent Unit <small>(if any)</small></label>
-    <select class="form-select form-select-md" aria-label=".form-select-md example">
-        <option value="">Select a parent unit</option>
-        {% for unit in existing['units'] %}
-        <option value="{{ unit }}">{{ unit }}</option>
-        {% endfor %}
-    </select>
-    <small>Parent unit must be added before subunit can be added. 
-        <a href="{{ url_for('views_bp.add_unit') }}">Add the parent unit in a separate window.</a></small>
+  <label for="unit_name"><span style="font-weight: 500">Unit Name</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="unit_name" 
+  name="unit_name" 
+  {% if unit %}
+  value="{{ unit.unit_name }}"
+  {% else %}
+  value="{{ request.form['unit_name'] }}"
+  {% endif %}
+  required>
 </div>
 <br/>
 <div class="form-group">
-    <label for="unit_type">Type</label>
-    <select class="form-select form-select-md" aria-label=".form-select-md example">
-        <option value="">Select a unit type</option>
-        {% for type in vocab['unit_type'] %}
-        <option value="{{ type }}">{{ type }}</option>
-        {% endfor %}
-    </select>
+  <label for="parent_unit"><span style="font-weight: 500">Parent Unit</span> <small>(if any)</small></label>
+  <select 
+    class="form-control" 
+    name="parent_unit" 
+    id="parent_unit"
+    multiple>
+    <option value="" disabled>Select a parent unit</option>
+    {% for cur_unit in existing['units'] %}
+      {% if unit %}
+        {% if cur_unit != unit.unit_name %}
+          <option value="{{ cur_unit }}"
+          {% if unit and cur_unit in parent_unit_names %}
+          selected
+          {% endif %}>{{ cur_unit }}</option>
+        {% endif %}
+      {% else %}
+        <option value="{{ cur_unit }}">{{ cur_unit }}</option>
+      {% endif %}
+    {% endfor %}
+  </select>
+  <small>Parent unit must be added before subunit can be added. 
+  <a href="{{ url_for('views_bp.add_unit', public_id='new') }}">Add the parent unit in a separate window.</a></small>
 </div>
 <br/>
 <div class="form-group">
-    <label for="email">Email</label>
-    <input type="email" class="form-control" id="email" name="email" placeholder="@pitt.edu">
+  <label for="unit_type"><span style="font-weight: 500">Unit Type</span></label>
+  <select 
+    class="form-select form-select-md" 
+    aria-label=".form-select-md example" 
+    name="unit_type" 
+    id="unit_type">
+    <option value="">Select a unit type</option>
+    {% for type in vocab['unit_type'] %}
+    <option value="{{ type }}"
+    {% if unit and unit.unit_type == type %}
+    selected
+    {% endif %}
+    >{{ type }}</option>
+    {% endfor %}
+  </select>
 </div>
 <br/>
 <div class="form-group">
-    <label for="unit_website">Website</label>
-    <input type="url" class="form-control" id="unit_website" name="unit_website">
+  <label for="email"><span style="font-weight: 500">Email</span></label>
+  <input 
+  type="email" 
+  class="form-control" 
+  id="email" 
+  name="email" 
+  {% if unit.email %}
+  value="{{ unit.email }}"
+  {% else %}
+  value="{{ request.form['email'] }}"
+  {% endif %}
+  placeholder="@pitt.edu">
 </div>
 <br/>
 <div class="form-group">
-    <label for="unit_contact_method">Preferred Contact Method</label>
-    <select class="form-control" id="unit_contact_method" name="unit_contact_method" required>
-        <option value="">Select a preferred contact method</option>
-        <option value="Email">Email</option>
-        <option value="Phone">Phone</option>
-        <option value="In-person">In-person</option>
-    </select>
+  <label for="phone"><span style="font-weight: 500">Phone</span></label>
+  <input 
+  type="tel" 
+  class="form-control" 
+  id="phone" 
+  name="phone"
+  {% if unit.phone %}
+  value="{{ unit.phone }}"
+  {% else %}
+  value="{{ request.form['phone'] }}"
+  {% endif %}
+  pattern="^\d{10}$">
+  <small class="text-muted">e.g., 123456789</small>
 </div>
 <br/>
 <div class="form-group">
-    <label for="unit_description">Description</label>
-    <textarea class="form-control" id="unit_description" name="unit_description" rows="3"></textarea>
+  <label for="other_contact"><span style="font-weight: 500">Other Contact Method</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="other_contact" 
+  name="other_contact"
+  placeholder="Markdown-enabled field"
+  {% if unit.other_contact %}
+  value="{{ unit.other_contact }}"
+  {% else %}
+  value="{{ request.form['other_contact'] }}"
+  {% endif %}>
 </div>
 <br/>
-{% include "address-form.html" %}
+<div class="form-group">
+  <label for="preferred_contact"><span style="font-weight: 500">Preferred Contact Method</span></label>
+  <select 
+    class="form-select form-select-md" aria-label=".form-select-md"
+    id="preferred_contact"
+    name="preferred_contact"
+    reqired>
+    <option value="">Select a preferred contact method</option>
+    {% for method in vocab['preferred_contact'] %}
+    <option value="{{ method }}" 
+    {% if unit and unit.preferred_contact == method %}
+    selected
+    {% endif %}>{{ method }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="web_address"><span style="font-weight: 500">Website</span></label>
+  <input 
+  type="url" 
+  class="form-control" 
+  id="web_address" 
+  name="web_address"
+  {% if unit.web_address %}
+  value="{{ unit.web_address }}"
+  {% endif %}>
+</div>
+<br/>
+<div class="form-group">
+  <label for="description"><span style="font-weight: 500">Description</span></label>
+  <textarea class="form-control"
+    id="description"
+    name="description"
+    rows="3"
+    placeholder="Markdown-enabled field"
+    >{% if unit.description %}{{ unit.description | safe }}{% endif %}</textarea>
+</div>
 <br/>
 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-    <button type="submit" class="btn btn-primary">Submit</button>
+  {% if unit %}
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">Submit</button>
 </div>

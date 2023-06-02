@@ -1,0 +1,165 @@
+<div class="row">
+  <div class="col">
+    <label for="building"><span style="font-weight: 500">Building</span></label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="building" 
+    name="building"
+    {% if address and address.building_name %}
+    value="{{ address.building_name }}">
+    {% else %}
+    value="{{ request.form['building'] }}">
+    {% endif %}
+  </div>
+  <div class="col">
+    <label for="office"><span style="font-weight: 500">Office Room #</span></label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="office" 
+    name="office"
+    {% if address and address.room_number %}
+    value="{{ address.room_number }}">
+    {% else %}
+    value="{{ request.form['office'] }}">
+    {% endif %}
+  </div>
+</div>
+<br/>
+<div class="form-group">
+  <label for="street_address"><span style="font-weight: 500">Street Address</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="street_address" 
+  name="street_address"
+  placeholder="1234 Main St"
+  {% if address and address.street_address %}
+  value="{{ address.street_address }}"
+  {% else %}
+  value="{{ request.form['street_address'] }}"
+  {% endif %}
+  required>
+</div>
+<br/>
+<div class="form-group">
+  <label for="address_2"><span style="font-weight: 500">Address 2</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="address_2" 
+  name="address_2"
+  {% if address and address.address_2 %}
+  value="{{ address.address_2 }}"
+  {% else %}
+  value="{{ request.form['address_2'] }}"
+  {% endif %}
+  placeholder="1234 Main St">
+</div>
+<br/>
+<div class="row">
+  <div class="col">
+    <label for="city"><span style="font-weight: 500">City</span></label>
+    <input 
+      type="text" 
+      class="form-control" 
+      name ="city"
+      id="city"
+      {% if address and address.city %}
+      value="{{ address.city }}"
+      {% else %}
+      value="{{ request.form['city'] }}"
+      {% endif %}
+      required>
+  </div>
+  <div class="col">
+    <label for="state"><span style="font-weight: 500">State</span></label>
+    <select
+      class="form-control" 
+      id="state"
+      name="state"
+      value="{{ request.form['state'] }}"
+      required>
+      <option value="">Choose...</option>
+      <option value="PA" 
+      {% if address and address.state == 'PA' %}
+      selected
+      {% endif %}
+      >PA</option>
+    </select>
+  </div>
+  <div class="col">
+    <label for="zipcode"><span style="font-weight: 500">Zipcode</span></label>
+    <input 
+      type="text" 
+      class="form-control" 
+      id="zipcode"
+      name="zipcode"
+      {% if address and address.zipcode %}
+      value="{{ address.zipcode }}"
+      {% else %}
+      value="{{ request.form['zipcode'] }}"
+      {% endif %}
+      required>
+  </div>
+</div>
+<br/>
+<div class="form-group">
+  <label for="campus"><span style="font-weight: 500">Campus</span></label>
+  <select 
+    class="form-select form-select-md" aria-label=".form-select-md" 
+    id="campus" 
+    name="campus"
+    value="{{ request.form['campus'] }}"
+    required>
+    <option value="">Select a campus</option>
+    {% for campus in vocab['campus'] %}
+    <option value="{{ campus }}"
+    {% if address and campus == address.campus %}
+    selected
+    {% endif %}
+    >{{ campus }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+{% if not address %}
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <button type="submit" class="btn btn-primary">Submit</button>
+</div>
+{% else %}
+<div class="row">
+  <div class="col">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      {% if entity_type == 'person' %}
+      <a href="{{ url_for('views_bp.view_person', public_id=entity.public_id) }}"
+        role="button" type="button" class="btn btn-secondary">Cancel</a>
+      {% else %}
+      <a href="{{ url_for('views_bp.view_unit', public_id=entity.public_id) }}"
+        role="button" type="button" class="btn btn-secondary">Cancel</a>
+      {% endif %}
+    </div>
+  </div>
+  {% if user.can_delete %}
+  <div class="col">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </div>
+  <div class="col">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+      <button type="button" class="btn btn-danger"
+        data-bs-toggle="modal" data-bs-target="#deleteAddressModal"
+        >Delete</button>
+    </div>
+  </div>
+  {% else %}
+  <div class="col">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}

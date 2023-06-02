@@ -1,12 +1,21 @@
 <form method="POST" action="{{ url_for('views_bp.add_method', public_id=person.public_id) }}">
   <div class="form-group">
     <label for="area"><span style="font-weight: 500">Area</span></label>
+    {% if method %}
+    <input 
+      type="text" 
+      class="form-control" 
+      id="name" 
+      name="name"
+      value="{{ method.method_name }}"
+      readonly>
+    {% else %}
     <select class="form-control"
       id="area"
       name="area" 
       multiple
       required>
-      <option value="" disabled><span style="font-weight: 500">Select an Area</span></option>
+      <option value="" disabled><span style="font-weight: 500">Select an area</span></option>
       {% for area in existing['areas'] %}
       {% if area in person_support['areas'] %}
       <option value="{{ area }}">{{ area }}</option>
@@ -16,7 +25,7 @@
   </div>
   <br/>
   <div class="form-group">
-    <label for="method">Method</label>
+    <label for="method"><span style="font-weight: 500">Method</span></label>
     <select class="form-select form-select-md" aria-label=".form-select-md example"
       id="method"
       name="method">
@@ -27,27 +36,30 @@
     </select>
   </div>
   <br/>
+    {% endif %}
   <button class="btn btn-outline-primary btn-sm" type="button" 
   data-bs-toggle="collapse" data-bs-target="#newMethodCollapse" 
-  aria-expanded="false" aria-controls="newMethodButton">Add a New method
+  aria-expanded="false" aria-controls="newMethodButton">Add a New Method
   </button>
   <br/>
   <br/>
   <div class="collapse" id="newMethodCollapse">
     <div class="form-group">
-      <label for="new_method">New Method</label>
+      <label for="new_method"><span style="font-weight: 500">New Method</span></label>
       <input 
       type="text" 
       class="form-control" 
       id="new_method" 
       name="new_method"
-      value="{{ request.form['new_method'] }}">
+      value="{{ request.form['new_method'] }}"
+      pattern="[^.\/\\]*$"
+      title="Name cannot include slashes or periods.">
       <small>If this field is filled, the dropdown selection above will be ignored.</small>
     </div>
     <br/>
   </div>
   <div class="form-group">
-    <label for="proficiency">Method Proficiency Level</label>
+    <label for="proficiency"><span style="font-weight: 500">Method Proficiency Level</span></label>
     <select class="form-select form-select-md" aria-label=".form-select-md example"
       id="proficiency"
       name="proficiency">
@@ -59,12 +71,13 @@
   </div>
   <br/>
   <div class="form-group">
-    <label for="notes">Notes</label>
+    <label for="notes"><span style="font-weight: 500">Notes</span></label>
     <textarea class="form-control"
     id="notes"
     name="notes"
     value="{{ request.form['notes'] }}"
     rows="3"
+    placeholder="Markdown-enabled field"
     ></textarea>
   </div>
   <br/>
@@ -72,4 +85,4 @@
     <button type="submit" class="btn btn-primary">Submit</button>
   </div>
 </form>
-</br>
+<br/>

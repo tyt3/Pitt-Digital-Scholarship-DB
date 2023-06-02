@@ -1,60 +1,87 @@
-<form method="POST" action="{{ url_for('views_bp.add_area', public_id=person.public_id) }}">
-    <div class="form-group">
-        <label for="area">Area</label>
-        <select 
-          class="form-select form-select-md" aria-label=".form-select-md example"
-          id="area"
-          name="area"
-          value="{{ request.form['area'] }}">
-          <option value="">Select an area</option>
-          {% for area in existing['areas'] %}
-            <option value="{{ area }}">{{ area }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    <br/>
-    <button class="btn btn-outline-primary btn-sm" type="button" 
+<div class="form-group">
+    <label for="area"><span style="font-weight: 500">Area</span></label>
+    {% if area %}
+    <input 
+        type="text" 
+        class="form-control" 
+        id="name" 
+        name="name"
+        value="{{ area.area_name }}"
+        readonly>
+    {% else %}
+    <select 
+       class="form-select form-select-md" aria-label=".form-select-md example"
+       id="area"
+       name="area"
+       value="{{ request.form['area'] }}">
+       <option value="">Select an area</option>
+       {% for area in existing['areas'] %}
+       <option value="{{ area }}">{{ area }}</option>
+       {% endfor %}
+    </select>
+    {% endif %}
+</div>
+<br/>
+{% if area and user.can_update %}
+<button class="btn btn-outline-primary btn-sm" type="button" 
     data-bs-toggle="collapse" data-bs-target="#newAreaCollapse" 
     aria-expanded="false" aria-controls="newAreaButton">Add a New Area
-    </button>
-    <br/>
-    <div class="collapse" id="newAreaCollapse">
-        <br/>
-        <div class="form-group">
-            <label for="new_area">New Area</label>
-            <input 
-                type="text" 
-                class="form-control" 
-                id="new_area" 
-                name="new_area"
-                value="{{ request.form['new_area'] }}">
-            <small>If this field is filled, the dropdown selection above will be ignored.</small>
-        </div>
-    </div>
+</button>
+<br/>
+{% else %}
+<button class="btn btn-outline-primary btn-sm" type="button" 
+    data-bs-toggle="collapse" data-bs-target="#newAreaCollapse" 
+    aria-expanded="false" aria-controls="newAreaButton">Add a New Area
+</button>
+<br/>
+{% endif %}
+<div class="collapse" id="newAreaCollapse">
     <br/>
     <div class="form-group">
-        <label for="proficiency">Area Proficiency Level</label>
-        <select class="form-select form-select-md" aria-label=".form-select-md example"
-          id="proficiency"
-          name="proficiency">
-          <option>Select a proficiency level</option>
-          {% for level in vocab['proficiency_level'] %}
-          <option value="{{ level }}">{{ level }}</option>
-          {% endfor %}
-        </select>
+        {% if area %}
+        <label for="new_area"><span style="font-weight: 500">New Area Name</span></label>
+        {% else %}
+        <label for="new_area"><span style="font-weight: 500">New Area</span></label>
+        {% endif %}
+        <input 
+          type="text" 
+          class="form-control" 
+          id="new_area" 
+          name="new_area"
+          value="{{ request.form['new_area'] }}"
+          pattern="[^.\/\\]*$"
+          title="Name cannot include slashes or periods.">
+        {% if not area %}
+        <small>If this field is filled, the dropdown selection above will be ignored.</small>
+        {% endif %}
     </div>
-    <br/>
-    <div class="form-group">
-        <label for="notes">Notes</label>
-        <textarea class="form-control"
-            id="notes"
-            name="notes"
-            value="{{ request.form['notes'] }}"
-            rows="3"
-        ></textarea>
-    </div>
-    <br/>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
+</div>
+<br/>
+<div class="form-group">
+    <label for="proficiency"><span style="font-weight: 500">Area Proficiency Level</span></label>
+    <select class="form-select form-select-md" aria-label=".form-select-md example"
+       id="proficiency"
+       name="proficiency"
+       placeholder="Markdown-enabled field"
+       required>
+       <option value="">Select a proficiency level</option>
+       {% for level in vocab['proficiency_level'] %}
+       <option value="{{ level }}"
+           {% if proficiency and level == proficiency.proficiency_level %}
+           selected
+           {% endif %}
+        >{{ level }}</option>
+       {% endfor %}
+    </select>
+</div>
+<br/>
+<div class="form-group">
+    <label for="notes"><span style="font-weight: 500">Notes</span></label>
+    <textarea class="form-control"
+       id="notes"
+       name="notes"
+       value="{{ request.form['notes'] }}"
+       placeholder="Markdown-enabled field"
+       rows="3"
+       >{% if notes %}{{ notes | safe }}{% endif %}</textarea>
+</div>

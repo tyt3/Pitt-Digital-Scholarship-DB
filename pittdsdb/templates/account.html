@@ -5,13 +5,98 @@
       <a class="nav-link active" href="/account">Account</a>
     </li>
   {% endblock %}
+  {% block head %}
+  <!-- <script src="https://cdn.jsdelivr.net/npm/clipboard-js@0.3.6/clipboard.min.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <style>
+    .copy-button{
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative
+    }
+    .tip{
+        background-color: #263646;
+        padding: 0 14px;
+        line-height: 27px;
+        position: absolute;
+        border-radius: 4px;
+        z-index: 100;
+        color: #fff;
+        font-size: 12px;
+        animation-name: tip;
+        animation-duration: .6s;
+        animation-fill-mode: both
+    }
+    .tip:before{
+        content: "";
+        background-color: #263646;
+        height: 10px;
+        width: 10px;
+        display: block;
+        position: absolute;
+        transform: rotate(45deg);
+        top: -4px;
+        left: 17px
+    }
+    #copied_tip{
+        animation-name: come_and_leave;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        bottom: -35px;
+        left:2px
+    }
+    .text-line{
+        font-size: 14px
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 140px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 150%;
+      left: 50%;
+      margin-left: -75px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+  {% endblock %}
   {% block content %}
   <br/>
   <div class="mx-auto col-6 col-md-6 col-lg-4">
     <form method="POST">
       <h3 align="center">Account</h3>
       <div class="form-group">
-        <label for="first_name">First Name</label>
+        <label for="first_name"><span style="font-weight: 500">First Name</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -21,7 +106,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="last_name">Last Name</label>
+        <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -31,7 +116,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="user_name">User Name</label>
+        <label for="user_name"><span style="font-weight: 500">User Name</span></label>
         <input 
         type="text" 
         class="form-control" 
@@ -41,7 +126,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="email">Email Address</label>
+        <label for="email"><span style="font-weight: 500">Email Address</span></label>
         <input 
         type="email" 
         class="form-control" 
@@ -52,7 +137,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="cur_password">Current Password</label>
+        <label for="cur_password"><span style="font-weight: 500">Current Password</span></label>
         <input 
         type="password" 
         class="form-control" 
@@ -62,7 +147,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="password">New Password</label>
+        <label for="password"><span style="font-weight: 500">New Password</span></label>
         <input 
         type="password" 
         class="form-control" 
@@ -72,7 +157,7 @@
       </div>
       <br/>
       <div class="form-group">
-        <label for="password">Confirm New Password</label>
+        <label for="password"><span style="font-weight: 500">Confirm New Password</span></label>
         <input 
         type="password" 
         class="form-control" 
@@ -81,8 +166,34 @@
         placeholder="">
       </div>
       <br/>
+      <div class="col">
+        <label for="api_key"><span style="font-weight: 500">API Key</span></label>
+        <div class="input-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            id="api_key" 
+            name="api_key"
+            value="{{ user.api_key }}"
+            readonly>
+          <button 
+            type="button" 
+            class="btn btn-outline-secondary btn-copy js-tooltip js-copy d-inline-flex justify-content-center align-items-center"
+            id="copy-button"
+            name="copy-button"
+            data-toggle="tooltip" data-placement="button"
+            title="Copy to Clipboard"
+            data-copy="{{ user.api_key }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+              </svg> 
+          </button>
+          </div>
+      </div>
+      <br/>
       <div class="form-group">
-        <label for="password">Administrative Code</label>
+        <label for="password"><span style="font-weight: 500">Administrative Code</span></label>
         <input 
         type="password" 
         class="form-control" 
@@ -97,5 +208,51 @@
     </form>
     <br/>
   </div>
+  
+  <script>
+    /// COPY TO CLIPBOARD
+    // Attempts to use .execCommand('copy') on a created text field
+    // Falls back to a selectable alert if not supported
+    // Attempts to display status in Bootstrap tooltip
 
+    function copyToClipboard(text, el) {
+      var copyTest = document.queryCommandSupported('copy');
+      var elOriginalText = el.attr('data-original-title');
+
+      if (copyTest === true) {
+        var copyTextArea = document.createElement("textarea");
+        copyTextArea.value = text;
+        document.body.appendChild(copyTextArea);
+        copyTextArea.select();
+        try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+          el.attr('data-original-title', msg).tooltip('fixTitle').tooltip('show');
+        } catch (err) {
+          console.log('Oops, unable to copy');
+        }
+        document.body.removeChild(copyTextArea);
+        el.attr('data-original-title', elOriginalText);
+      } else {
+        // Fallback if browser doesn't support .execCommand('copy')
+        window.prompt("Copy to clipboard: Ctrl + C or Command + C, Enter", text);
+      }
+    }
+
+    $(document).ready(function() {
+      /// Initialize
+      // Tooltips
+      // Requires Bootstrap for functionality
+      $('.js-tooltip').tooltip();
+
+      // Copy to clipboard
+      // Grab any text in the attribute 'data-copy' and pass it to the 
+      // copy function
+      $('.js-copy').click(function() {
+        var text = $(this).attr('data-copy');
+        var el = $(this);
+        copyToClipboard(text, el);
+      });
+    });;
+  </script>
   {% endblock %}

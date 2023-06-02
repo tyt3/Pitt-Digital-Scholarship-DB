@@ -7,110 +7,12 @@
   <br/>
   <div class="row">
     <div class="mx-auto col-6 col-md-6 col-lg-4">
-      <form method="POST" >
+      <form method="POST" action="{{ url_for('views_bp.add_funding', public_id='None') }}">
         <h3 align="center">Add a Funding Opportunity</h3>
         <br/>
-        <div class="form-group">
-          <label for="funding_name"><span style="font-weight: 500">Funding Name</span></label>
-          <input type="text" 
-              class="form-control" 
-              id="funding_name" 
-              name="funding_name" required>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="funding_type"><span style="font-weight: 500">Funding Type</span></label>
-            <select class="form-select form-select-md" aria-label=".form-select-md example" required>
-                <option value="">Select a funding type</option>
-                {% for type in vocab['funding_type'] %}
-                <option value="{{ type }}">{{ type }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="duration"><span style="font-weight: 500">Funding Duration</span></label>
-            <select class="form-select form-select-md" id="duration" name="duration" required>
-            <option value="">Select a funding duration</option>
-                {% for duration in vocab['duration'] %}
-            <option value="{{ duration }}">{{ duration }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="frequency"><span style="font-weight: 500">Offering Frequency</span></label>
-            <select class="form-select form-select-md" id="frequency" name="frequency" required>
-            <option value="">Select an offering frequency</option>
-                {% for frequency in vocab['frequency'] %}
-            <option value="{{ frequency }}">{{ frequency }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="payment_type"><span style="font-weight: 500">Payment Type</span></label>
-            <select class="form-select form-select-md" id="payment_type" name="payment_type" required>
-            <option value="">Select a payment type</option>
-                {% for type in vocab['payment_type'] %}
-            <option value="{{ type }}">{{ type }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="payment_amount"><span style="font-weight: 500">Payment Amount</span></label>
-            <input 
-            type="number" 
-            step="0.01"
-            class="form-control" 
-            id="payment_amount" 
-            name="payment_amount"
-            placeholder="$">
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="career_level"><span style="font-weight: 500">Career Level</span></label>
-            <select class="form-select form-select-md" id="career_level" name="career_level" required>
-            <option value="">Select a career level</option>
-                {% for career_level in vocab['career_level'] %}
-            <option value="{{ career_level }}">{{ career_level }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="funding_website"><span style="font-weight: 500">Website</span></label>
-            <input type="url" class="form-control" id="funding_website" name="funding_website">
-        </div>
-        <br/>
-
-        <div class="form-group">
-            <label for="description"><span style="font-weight: 500">Description</span></label>
-            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-        </div>
-        <br/>
-
-        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-
+        {% include 'funding-form.html' %}
       </form>
     </div>
   </div>
   <br/>
   {% endblock %}
-
-
-
-
-
-
-

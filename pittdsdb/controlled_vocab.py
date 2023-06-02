@@ -58,13 +58,13 @@ vocab = {
         ],
     'funding_type': [
         'Fellowship',
-        'Graduate Student Assistant',
+        'Graduate Student Assistantship',
         'Grant',
         'Internship',
-        'Graduate Research Assistant',
+        'Graduate Research Assistantship',
         'Scholarship',
-        'Undergraduate Research Assistant',
-        'Undergraduate Student Assistant',
+        'Undergraduate Research Assistantship',
+        'Undergraduate Student Assistantship',
         'Other'
         ],
     'payment_type': [
@@ -118,7 +118,7 @@ vocab = {
 }
 
 # Get entity values
-area = None
+areas = None
 try:
     areas = list(zip(*db_session.query(Area.area_name).distinct()))[0]
 except:
@@ -148,6 +148,18 @@ try:
 except:
     pass
 
+durations = None
+try:
+    durations= list(zip(*db_session.query(Funding.duration).distinct()))[0]
+except:
+    pass
+
+frequencies = None
+try:
+    frequencies = list(zip(*db_session.query(Funding.frequency).distinct()))[0]
+except:
+    pass
+
 methods = None
 try:
     methods = list(zip(*db_session.query(Method.method_name).distinct()))[0]
@@ -156,7 +168,13 @@ except:
 
 resources = None
 try:
-    resources = list(zip(*db_session.query(Resource.resource_type).distinct()))[0]
+    resources = list(zip(*db_session.query(Resource.resource_name).distinct()))[0]
+except:
+    pass
+
+resource_types = None
+try:
+    resource_types = list(zip(*db_session.query(Resource.resource_type).distinct()))[0]
 except:
     pass
 
@@ -191,7 +209,8 @@ except:
     pass
 
 entities = [areas, campuses, career_levels, funding_types, payment_types, 
-            methods, resources, support_types, tools, tool_types, units, subunits]
+            durations, frequencies, methods, resources, resource_types,
+            support_types, tools, tool_types, units, subunits]
 
 existing = {
     'areas': [],
@@ -199,15 +218,17 @@ existing = {
     'career_levels': [],
     'funding_types': [],
     'payment_types': [],
+    'durations': [],
+    'frequencies': [],
     'methods': [],
     'resources': [],
+    'resource_types': [],
     'support_types': [],
     'tools': [],
     'tool_types': [],
     'units': [],
     'subunits': []
 }
-
 
 i = 0
 for entity in existing:

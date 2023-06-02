@@ -6,7 +6,7 @@
       name="area" 
       multiple
       required>
-      <option value="" disabled><span style="font-weight: 500">Select an Area</span></option>
+      <option value="" disabled><span style="font-weight: 500">Select an area</span></option>
       {% for area in existing['areas'] %}
       {% if area in person_support['areas'] %}
       <option value="{{ area }}">{{ area }}</option>
@@ -21,7 +21,7 @@
       id="method"
       name="method" 
       multiple>
-      <option value="" disabled><span style="font-weight: 500">Select an Area</span></option>
+      <option value="" disabled><span style="font-weight: 500">Select a method</span></option>
       {% for method in existing['methods'] %}
       {% if method in person_support['methods'] %}
       <option value="{{ method }}">{{ method }}</option>
@@ -50,13 +50,15 @@
   <div class="collapse" id="newToolCollapse">
     <br/>
     <div class="form-group">
-      <label for="new_tool"><span style="font-weight: 500">New Tool Name</span></label>
+      <label for="new_tool"><span style="font-weight: 500">New Tool</span></label>
       <input 
       type="text" 
       class="form-control" 
       id="new_tool" 
       name="new_tool"
-      value="{{ request.form['new_tool'] }}">
+      value="{{ request.form['new_tool'] }}"
+      pattern="[^.\/\\]*$"
+      title="Name cannot include slashes or periods.">
       <small>If this field is filled, the dropdown selection above will be ignored.</small>
     </div>
     <br/>
@@ -104,11 +106,12 @@
     name="notes"
     value="{{ request.form['notes'] }}"
     rows="3"
-    ></textarea>
+    placeholder="Markdown-enabled field"
+    >{% if notes %}{{ notes | safe }}{% endif %}</textarea>
   </div>
   <br/>
     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
-</br>
+<br/>

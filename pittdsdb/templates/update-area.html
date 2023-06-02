@@ -1,50 +1,23 @@
 {% extends 'base.html' %}
   {% block title %}Update Area | Pitt Digital Scholarship Database{% endblock %}
   {% block content %}
+  <br/>
   <div class="row">
     <div class="mx-auto col-6 col-md-6 col-lg-4">
       <form method="POST"
         action="{{ url_for('views_bp.update_area', area_name=area.area_name, public_id=person.public_id) }}">
-        <div class="form-group">
-          <label for="name"><span style="font-weight: 500">Area Name</span></label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="name" 
-            name="name"
-            value="{{ area.area_name }}"
-            readonly>
-        </div>
-        <br/>
-        <div class="form-group">
-          <label for="proficiency">Area Proficiency Level</label>
-          <select class="form-select form-select-md" aria-label=".form-select-md example"
-            id="proficiency"
-            name="proficiency">
-            <option>Select a proficiency level</option>
-            {% for level in vocab['proficiency_level'] %}
-            <option value="{{ level }}"
-            {% if level == proficiency.proficiency_level %}
-            selected
-            {% endif %}
-            >{{ level }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <br/>
-        <div class="form-group">
-            <label for="notes">Notes</label>
-            <textarea class="form-control"
-            id="notes"
-            name="notes"
-            value="{{ request.form['notes'] }}"
-            rows="3"
-            >{{ notes }}</textarea>
-        </div>
+        {% include 'add-area.html' %}
         <br/>
         <div class="row">
           <div class="col">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a href="{{ url_for('views_bp.view_person', public_id=person.public_id) }}"
+                role="button" type="button" class="btn btn-secondary">Cancel</a>
+            </div>
+          </div>
+          {% if user.can_delete %}
+          <div class="col">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
               <button type="submit" class="btn btn-primary">Update</button>
             </div>
           </div>
@@ -55,12 +28,18 @@
               >Delete</button>
             </div>
           </div>
+        {% else %}
+        <div class="col">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
         </div>
-        
+        {% endif %}
+        </div>
       </form>
     </div>
   </div>
-  </br>
+  <br/>
 
   <!-- Delete Area Form Modal -->
 <div class="modal fade" id="deleteAreaModal" name="deleteAreaModal" 

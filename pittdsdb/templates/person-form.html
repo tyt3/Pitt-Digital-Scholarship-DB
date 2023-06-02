@@ -1,203 +1,231 @@
 <div class="row">
-    <div class="col">
-    <label for="first_name">First Name</label>
-    <input 
-        type="text" 
-        class="form-control" 
-        id="first_name" 
-        name="first_name"
-        value="{{ person.first_name }}"
-        required>
-    </div>
-    <div class="col">
-    <label for="last_name">Last Name</label>
-    <input 
-        type="text" 
-        class="form-control" 
-        id="last_name" 
-        name="last_name"
-        value="{{ person.last_name }}"
-        required>
-    </div>
-</div>
-<br/>
-<div class="form-group">
-    <label for="pronouns">Pronouns</label>
-    <input 
-        type="text" 
-        class="form-control" 
-        id="pronouns" 
-        name="pronouns"
-        {% if person.pronouns %}
-        value="{{ person.pronouns }}"
-        {% endif %}
-        >
-</div>
-<br/>
-<div class="form-group">
-    <label for="title">Title</label>
+  <div class="col">
+    <label for="first_name"><span style="font-weight: 500">First Name</span></label>
     <input 
     type="text" 
     class="form-control" 
-    id="title" 
-    name="title"
-    {% if person.title %}
-    value="{{ person.title }}"
+    id="first_name" 
+    name="first_name"
+    {% if person %}
+    value="{{ person.first_name }}"
+    {% else %}
+    value="{{ request.form['first_name'] }}"
     {% endif %}
-    >
+    required>
+  </div>
+  <div class="col">
+    <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
+    <input 
+    type="text" 
+    class="form-control" 
+    id="last_name" 
+    name="last_name"
+    {% if person %}
+    value="{{ person.last_name }}"
+    {% else %}
+    value="{{ request.form['last_name'] }}"
+    {% endif %}
+    required>
+  </div>
 </div>
-
 <br/>
 <div class="form-group">
-    <label for="affiliation">Affiliation</label>
-    <select class="form-control"
-        id="affiliation"
-        name="affiliation" 
-        multiple
-        required>
-    <option value="" disabled>Select an Affiliation</option>
+  <label for="pronouns"><span style="font-weight: 500">Pronouns</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="pronouns" 
+  name="pronouns"
+  {% if person and person.pronouns %}
+  value="{{ person.pronouns }}"
+  {% else %}
+  value="{{ request.form['pronouns'] }}"
+  {% endif %}
+  >
+</div>
+<br/>
+<div class="form-group">
+  <label for="title"><span style="font-weight: 500">Title</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="title" 
+  name="title"
+  {% if person and person.title %}
+  value="{{ person.title }}"
+  {% else %}
+  value="{{ request.form['title'] }}"
+  {% endif %}
+  >
+</div>
+<br/>
+<div class="form-group">
+  <label for="affiliation"><span style="font-weight: 500">Affiliation</span></label>
+  <select class="form-control"
+    id="affiliation"
+    name="affiliation" 
+    multiple
+    required>
+    <option value="" disabled>Select an affiliation</option>
     {% for affiliation in vocab['affiliation_type'] %}
     <option value="{{ affiliation }}"
-    {% if affiliation in person_affiliation %}
-        selected
+    {% if affiliations and affiliation in affiliations %}
+    selected
     {% endif %}>{{ affiliation }}</option>
     {% endfor %}
-    </select>
+  </select>
 </div>
 <br/>
 <div class="form-group">
-    <label for="email">Email</label>
-    <input 
-    type="email" 
-    class="form-control" 
-    id="email" 
-    name="email" 
-    value="{{ person.email }}"
-    placeholder="@pitt.edu"
+  <label for="email"><span style="font-weight: 500">Email</span></label>
+  <input 
+  type="email" 
+  class="form-control" 
+  id="email" 
+  name="email" 
+  {% if person %}
+  value="{{ person.email }}"
+  {% else %}
+  value="{{ request.form['email'] }}"
+  {% endif %}
+  placeholder="@pitt.edu"
+  required>
+</div>
+<br/>
+<div class="form-group">
+  <label for="phone"><span style="font-weight: 500">Phone</span></label>
+  <input 
+  type="tel" 
+  class="form-control" 
+  id="phone" 
+  name="phone"
+  {% if person and person.phone %}
+  value="{{ person.phone }}"
+  {% else %}
+  value="{{ request.form['phone'] }}"
+  {% endif %}
+  pattern="^\d{10}$">
+  <small class="text-muted">e.g., 123456789</small>
+</div>
+<br/>
+<div class="form-group">
+  <label for="scheduler"><span style="font-weight: 500">Appointment Scheduler URL</span></label>
+  <input 
+  type="url" 
+  class="form-control" 
+  id="scheduler" 
+  name="scheduler"
+  {% if person and person.scheduler_address %}
+  value="{{ person.scheduler_address }}"
+  {% else %}
+  value="{{ request.form['scheduler_address'] }}"
+  {% endif %}
+  >
+  <small class="text-muted">e.g., LibCal, Outlook calendar</small>
+</div>
+<br/>
+<div class="form-group">
+  <label for="other_contact"><span style="font-weight: 500">Other Contact Method</span></label>
+  <input 
+  type="text" 
+  class="form-control" 
+  id="other_contact" 
+  name="other_contact"
+  placeholder="Markdown-enabled field"
+  {% if person and person.other_contact %}
+  value="{{ person.other_contact }}"
+  {% else %}
+  value="{{ request.form['other_contact'] }}"
+  {% endif %}
+  >
+</div>
+<br/>
+<div class="form-group">
+  <label for="preferred_contact"><span style="font-weight: 500">Preferred Contact</span></label>
+  <select 
+    class="form-select form-select-md" aria-label=".form-select-md"
+    id="preferred_contact"
+    name="preferred_contact"
+    reqired>
+    <option value="">Select a preferred contact method</option>
+    {% for method in vocab['preferred_contact'] %}
+    <option value="{{ method }}" 
+    {% if person and person.preferred_contact == method %}
+    selected
+    {% endif %}>{{ method }}</option>
+    {% endfor %}
+  </select>
+</div>
+<br/>
+<div class="form-group">
+  <label for="web_address"><span style="font-weight: 500">Website</span></label>
+  <input 
+  type="url" 
+  class="form-control" 
+  id="web_address" 
+  name="web_address"
+  {% if person and person.web_address %}
+  value="{{ person.web_address }}"
+  {% else %}
+  value="{{ request.form['web_address'] }}"
+  {% endif %}
+  >
+</div>
+<br/>
+<div class="form-group">
+  <label for="support_type"><span style="font-weight: 500">Support Type</span></label>
+  <select 
+    class="form-select form-select-md" aria-label=".form-select-md"
+    id="support_type"
+    name="support_type"
     required>
+    <option value="">Select a support type</option>
+    {% for type in vocab['support_type'] %}
+    <option value="{{ type }}" 
+    {% if person and person.support_type == type %}
+    selected
+    {% endif %}>{{ type }}</option>
+    {% endfor %}
+  </select>
 </div>
 <br/>
 <div class="form-group">
-    <label for="web_address">Website</label>
-    <input 
-    type="url" 
-    class="form-control" 
-    id="web_address" 
-    name="web_address"
-    {% if person.web_address %}
-    value="{{ person.web_address }}"
-    {% endif %}
-    >
-</div>
-<br/>
-<div class="form-group">
-    <label for="phone">Phone</label>
-    <input 
-    type="tel" 
-    class="form-control" 
-    id="phone" 
-    name="phone"
-    {% if person.phone %}
-    value="{{ person.phone }}"
-    {% endif %}
-    pattern="^\d{10}$">
-    <small class="text-muted">e.g., 123456789</small>
-</div>
-<br/>
-<div class="form-group">
-    <label for="scheduler">Appointment Scheduler</label>
-    <input 
-    type="url" 
-    class="form-control" 
-    id="scheduler" 
-    name="scheduler"
-    {% if person.scheduler_address %}
-    value="{{ person.scheduler_address }}"
-    {% endif %}
-    >
-    <small class="text-muted">e.g., LibCal, Outlook calendar</small>
-</div>
-<br/>
-<div class="form-group">
-    <label for="other_contact">Other Contact Method</label>
-    <input 
-    type="text" 
-    class="form-control" 
-    id="other_contact" 
-    name="other_contact"
-    {% if person.other_contact %}
-    value="{{ person.other_contact }}"
-    {% endif %}
-    >
-</div>
-<br/>
-<div class="form-group">
-    <label for="preferred_contact">Preferred Contact</label>
-    <select 
-        class="form-select form-select-md" aria-label=".form-select-md"
-        id="preferred_contact"
-        name="preferred_contact"
-        reqired>
-        <option value="">Select a preferred contact method</option>
-        {% for method in vocab['preferred_contact'] %}
-        <option value="{{ method }}" 
-            {% if person.preferred_contact == method %}
-                selected
-            {% endif %}>{{ method }}</option>
-        {% endfor %}
-    </select>
-</div>
-<br/>
-<div class="form-group">
-    <label for="support_type">Support Type</label>
-    <select 
-        class="form-select form-select-md" aria-label=".form-select-md"
-        id="support_type"
-        name="support_type"
-        value="{{ person.support_type }}"
-        required>
-        <option value="">Select a support type</option>
-        {% for type in vocab['support_type'] %}
-        <option value="{{ type }}" 
-            {% if person.support_type == type %}
-                selected
-            {% endif %}>{{ type }}</option>
-        {% endfor %}
-    </select>
-</div>
-<br/>
-<div class="form-group">
-    <label for="bio">Bio</label>
-    <textarea class="form-control"
+  <label for="bio"><span style="font-weight: 500">Bio</span></label>
+  <textarea class="form-control"
     id="bio"
     name="bio"
     rows="3"
-    >{% if person.bio %}{{ person.bio }}{% endif %}</textarea>
+    placeholder="Markdown-enabled field"
+    >{% if person and person.bio %}{{ person.bio }}{% endif %}</textarea>
 </div>
 <br/>
 <div class="form-group">
-    <label for="notes">Notes</label>
-    <textarea class="form-control"
+  <label for="notes"><span style="font-weight: 500">Notes</span></label>
+  <textarea class="form-control"
     id="notes"
     name="notes"
     rows="3"
-    >{% if person.notes %}{{ person.notes }}{% endif %}</textarea>
+    placeholder="Markdown-enabled field"
+    >{% if person and person.notes %}{{ person.notes }}{% endif %}</textarea>
 </div>
 <br/>
 <div class="form-group">
-    <label for="photo_url">Profile Photo URL</label>
-    <input 
-    type="url" 
-    class="form-control" 
-    id="photo_url" 
-    name="photo_url"
-    {% if person.photo_url %}
-    value="{{ person.photo_url }}"
-    {% endif %}
-    >
-    <small class="text-muted">e.g., LibCal, Outlook calendar</small>
+  <label for="photo_url"><span style="font-weight: 500">Profile Photo URL</span></label>
+  <input 
+  type="url" 
+  class="form-control" 
+  id="photo_url" 
+  name="photo_url"
+  {% if person and person.photo_url %}
+  value="{{ person.photo_url }}"
+  {% else %}
+  value="{{ request.form['photo_url'] }}"
+  {% endif %}>
 </div>
 <br/>
 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-    <button type="submit" class="btn btn-primary">Submit</button>
+  {% if person %}
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">Submit</button>
 </div>

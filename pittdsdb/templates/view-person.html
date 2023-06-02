@@ -1,454 +1,489 @@
 {% extends 'base.html' %}
-  {% block title %}{{ title }}{% endblock %}
-  {% block content %}
+{% block title %}{{ title }}{% endblock %}
+{% block head %}
+<style>
+  p.contact {
+    display: block;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    margin-left: 0;
+    margin-right: 0;
+    line-height: 1.3em;
+  }
+  </style>
+{% endblock %}
+{% block content %}
+<br/>
+<div class="mx-auto col-12 col-md-12 col-lg-11">
+  <!-- Contact Information -->
+  <h3>{{ person.first_name }} {{ person.last_name }}</h3>
+  {% if person.photo_url %}
+  <img style="margin: 10px 0 10px 0; max-width: 25%;" 
+    src="{{ person.photo_url }}">
+  {% else %}
+  <img style="margin: 10px 0 10px 0; max-width: 10em;" 
+    src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png">
+  {% endif %}
+  <br/>
+  <p class="contact"><strong>Pronouns:</strong> {{ person.pronouns }}</p>
+  <p class="contact"><strong>Unit:</strong>
+    {% if units|length > 1 or units|length == 0 %}
     <br/>
-    <div class="mx-auto col-12 col-md-12 col-lg-11">
-        <h3>{{ person.first_name }} {{ person.last_name }}</h3>
-        {% if person.photo_url %}
-        <img style="margin: 10px 0 10px 0" 
-        src="{{ person.photo_url }}">
-        {% endif %}
-        <br/>
-        <strong>Pronouns:</strong> {{ person.pronouns }}<br/>
-        <strong>Title:</strong> {{ person.title }}<br/>
-        <strong>Unit:</strong>
-        {% if person_unit|length > 1 %}
-            <ul>
-                {% for unit in person_unit %}
-                <li>{{ unit }}
-                    {% if user_can_update %}
-                    &nbsp;
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        {% elif person_unit|length == 1 %}
-            {{ person_unit[0] }}
-            {% if user_can_update %}
-            &nbsp;
-            <a role="button" class="btn btn-outline-danger btn-sm"
-            style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 2.5px;"
-            href="{{ url_for('views_bp.delete_person_unit', person_id=person.person_id, unit_name=person_unit[0])}}">Delete Unit</a>
-            {% endif %}
-        {% endif %}
-        {% if user_can_update %}
-            <br/>
-            <button type="button" class="btn btn-outline-primary btn-sm"
-                data-bs-toggle="modal" data-bs-target="#addUnitModal"
-                style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 5px 0 10px 0">
-                Add a Unit
-            </button>
-        </form>
-        {% endif %}
-        <br/>
-        <strong>Email:</strong> <a href="mailto:{{ person.email }}">{{ person.email }}</a><br/>
-        {% if person.web_address %}
-        <strong>Website:</strong> 
-        <a href="{{ person.web_address }}" target="_blank">{{ person.web_address }}</a><br/>
-        {% endif %}
-        {% if person.phone %}
-        <strong>Phone:</strong> 
-        <a href="tel:{{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}">
-            {{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}
-        </a><br/>
-        {% endif %}
-        {% if person.scheduler_address %}
-        <strong>Scheduler Address:</strong>
-        <a href='{{ person.scheduler_address }}' target="_blank">
-            {{ person.scheduler_address }}
-        </a><br/>
-        <strong>Preferred Contact Method:</strong> {{ person.preferred_contact }}<br/>
-        <strong>Support Type:</strong> {{ person.support_type }}<br/>
-        {% endif %}
-        <strong>Affiliation:</strong> 
-        {% if person_affiliation|length > 1 %}
-            <ul>
-                {% for a in person_affiliation %}
-                <li>{{ a }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            {{ person_affiliation[0] }}
-        {% endif %}
-        {% if person_address|length > 0 %}
-        <strong>Address:</strong> <br/>
-        {{ person_address['room_number'] }} {{ person_address['building_name']}}<br/>
-        {{ person_address['street_address']}}<br/>
-        {% if person_support['address_2'] %}
-        {{ person_address['address_2']}}<br/>
-        {% endif %}
-        {{ person_address['city'] }}, {{ person_address['state'] }}, 
-        {{ person_address['zipcode'] }}<br/>
-        {{ person_address['campus'] }} Campus<br/>
-        <br/>
-        {% endif %}
-        {% if not person_address|length > 0 %}
-            <button type="button" class="btn btn-outline-primary btn-sm"
-                data-bs-toggle="modal" data-bs-target="#addAddressModal"
-                style="-bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 5px 0 10px 0">
-                Add an Address
-            </button>
-            <br/>
-        {% endif %}
-        {% if person.bio %}
-        <strong>Bio:</strong> {{ person.bio }}<br/>
-        {% endif %}
-        {% if person.notes %}
-        <strong>Notes:</strong> {{ person.notes }}<br/>
-        {% endif %}
-        {% if user_can_update %}
-        <br/>
-        <button type="button" class="btn btn-primary btn-sm"
-        data-bs-toggle="modal" data-bs-target="#updatePersonModal">
-        Update Person Information
-        </button>
-        {% endif %}
-        <br/>
-        <hr/>
-        <h4>Areas of Support/Practice</h4>
-        {% if person_support['areas']|length > 0 %}
-        {% for area in person_support['areas'] %}
-        <span style="font-size: 18px; font-weight: 500">{{ area }}</span>
-        {% if user_can_update %}
-        &nbsp;
-        <a role="button" class="btn btn-outline-primary btn-sm"
-        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-        href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">Update Area</a>
-        {% endif %}
-        <ul>
-            <li><strong>Proficiency:</strong> {{ person_support['areas'][area]['proficiency'] }}</li>
+    {% endif %}
+    {% for unit in units %}
+    <a href="{{ url_for('views_bp.view_unit', public_id=unit['unit_public_id']) }}">{{ unit['unit_name'] }}</a>
+    {% if user.can_update %}
+    &nbsp;
+    <a role="button" class="btn btn-outline-danger btn-sm"
+      style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 2.5px;"
+      href="{{ url_for('views_bp.delete_person_unit', person_id=person.person_id, unit_public_id=unit['unit_public_id']) }}">
+    Delete Unit
+    </a>
+    {% endif %}
+    <br/>
+  {% endfor %}
+  </p>
+  {% if user.can_update %}
+  <button type="button" class="btn btn-outline-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addUnitModal"
+    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 0 0 .2em 0">
+  Add a Unit
+  </button>
+  <br/>
+  {% endif %}
+  <p class="contact"><strong>Email:</strong> <a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
+  {% if person.phone %}
+  <p class="contact"><strong>Phone:</strong> 
+    <a href="tel:{{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}">
+    {{ person.phone[0:3] }}-{{ person.phone[3:6] }}-{{ person.phone[6:10] }}
+    </a>
+  </p>
+  {% endif %}
+  {% if person.scheduler_address %}
+  <p class="contact"><strong>Scheduler Address:</strong> 
+    <a href='{{ person.scheduler_address }}' target="_blank">
+     {{ person.scheduler_address }}
+    </a>
+  </p>
+  {% endif %}
+  {% if person.other_contact %}
+  <p class="contact"><strong>Other Contact Method:</strong> {{ other_contact | safe }}</p>
+  {% endif%}
+  <p class="contact"><strong>Preferred Contact Method:</strong> {{ person.preferred_contact }}</p>
+  {% if person.web_address %}
+  <p class="contact"><strong>Website:</strong> 
+    <a href="{{ person.web_address }}" target="_blank">{{ person.web_address }}</a></p>
+  {% endif %}
+  <p class="contact"><strong>Support Type:</strong> {{ person.support_type }}</p>
+  <p class="contact">
+    <strong>Affiliation:</strong> 
+    {% if affiliations|length > 1 %}
+    <br/>
+    {% endif %}
+    {% for affiliation in affiliations %}
+      {{ affiliation }}<br/>
+    {% endfor %}
+  </p>
+  <p class="contact"><strong>Address:</strong> <br/>
+  {% for address in addresses %}
+  {% if address['room_number'] %}
+    {{ address['room_number'] }} 
+  {% endif %}
+  {{ address['building_name']}}
+  {% if user.can_update %}&nbsp;
+  <a role="button" class="btn btn-outline-primary btn-sm"
+    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;"
+    href="{{ url_for('views_bp.update_entity_address', entity_type='person', public_id=person.public_id, address_id=address['address_id']) }}">
+    Update Address
+  </a>
+  {% endif %}
+  <br/>
+  {{ address['street_address']}}<br/>
+  {% if address['address_2'] %}
+    {{ address['address_2']}}<br/>
+  {% endif %}
+  {{ address['city'] }}, {{ address['state'] }}, 
+  {{ address['zipcode'] }}<br/>
+  {{ address['campus'] }} Campus
+  {% if address != addresses[-1] %}
+    <div style="height: 0.25em; display: block; margin-bottom: 0em;"></div>
+  {% endif %}
+  {% endfor %}
+  </p>
+  {% if user.can_update %}
+  <button type="button" class="btn btn-outline-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addAddressModal"
+    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;margin: 0 0 .25em 0">
+  Add an Address
+  </button>
+  {% endif %}
+  {% if person.bio %}
+  <p class="contact"><strong>Bio:</strong> {{ bio | safe }}</p>
+  {% endif %}
+  {% if person.notes %}
+  <p class="contact"><strong>Notes:</strong> {{ notes | safe }}</p>
+  {% endif %}
+  {% if user.can_update %}
+  {% if not person.bio and not person.notes %}
+  <br/>
+  {% endif %}
+  <br/>
+  <button type="button" class="btn btn-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#updatePersonModal">
+  Update Person
+  </button>
+  {% endif %}
+  {% if user.can_delete %}
+  <button type="button" class="btn btn-danger btn-sm"
+    data-bs-toggle="modal" data-bs-target="#deletePersonModal">
+  Delete Person
+  </button>
+  {% endif %}
+
+  <!-- Areas -->
+  {% if person_support['areas']|length > 0 or user.can_update %}
+  <hr style="margin-top: 1.75em;"/>
+  <h4>Areas of Support/Practice</h4>
+  <div class="row">
+    {% for area in person_support['areas'] %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-body">
+          <h5 class="card-title">
+            <!--style="margin-bottom: 0.07em;"-->
+            {{ area }}
+          </h5>
+          <p class="card-text">
+            <strong>Proficiency:</strong> {{ person_support['areas'][area]['proficiency'] }}
             {% if person_support['areas'][area]['notes'] %}
-            <li><strong>Notes:</strong> {{ person_support['areas'][area]['notes'] }}</li>
+            <br/>
+            <strong>Notes:</strong><br/>{{ person_support['areas'][area]['notes'] | safe }}
             {% endif %}
-        </ul>
-        {% endfor %}
-        {% endif %}
-        <br/>
-        {% if user_can_update %}
-        <button type="button" class="btn btn-primary btn-sm"
-            data-bs-toggle="modal" data-bs-target="#addAreaModal">
-            Add an Area
-        </button>
-        {% endif %}
-        <br/>
-        <hr/>
-        <h4>Supported Methods</h4>
-        {% if person_support['methods']|length > 0 %}
-        {% for method in person_support['methods'] %}
-        <span style="font-size: 18px; font-weight: 500">{{ method }}</span>
-        {% if user_can_update %}
-        &nbsp;
-        <a role="button" class="btn btn-outline-primary btn-sm"
-        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-        href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">Update Method</a>
-        {% endif %}
-        <ul>
-            <li><strong>Proficiency:</strong> {{ person_support['methods'][method]['proficiency'] }}</li>
+          </p>
+          {% if user.can_update %}
+          <a role="button" class="btn btn-outline-primary btn-sm"
+            href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">
+          Update Area
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if user.can_update %}
+  <br/>
+  <button type="button" class="btn btn-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addAreaModal">
+  Add an Area
+  </button>
+  {% endif %}
+
+  <!-- Methods -->
+  {% if person_support['methods']|length > 0 or user.can_update %}
+  <hr style="margin-top: 1.75em;"/>
+  <h4>Supported Methods</h4>
+  <div class="row">
+    {% for method in person_support['methods'] %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-body">
+          <h5 class="card-title">
+            <!--style="margin-bottom: 0.07em;"-->
+            {{ method }}
+          </h5>
+          <p class="card-text">
+            <strong>Proficiency:</strong> {{ person_support['methods'][method]['proficiency'] }}
             {% if person_support['methods'][method]['notes'] %}
-            <li><strong>Notes:</strong><br/> {{ person_support['methods'][method]['notes'] }}</li>
+            <br/>
+            <strong>Notes:</strong> {{ person_support['methods'][method]['notes'] | safe }}
             {% endif %}
-        </ul>
-        {% endfor %}
-        {% endif %}
-        <br/>
-        {% if user_can_update %}
-        <button type="button" class="btn btn-primary btn-sm"
-            data-bs-toggle="modal" data-bs-target="#addMethodModal">
-            Add a Method
-        </button>
-        {% endif %}
-        <br/>
-        <hr/>
-        <h4>Supported Tools</h4>
-        {% if person_support['tools']|length > 0 %}
-        {% for tool in person_support['tools'] %}
-        <span style="font-size: 18px; font-weight: 500">{{ tool }}</span>
-        {% if user_can_update %}
-        &nbsp;
-        <a role="button" class="btn btn-outline-primary btn-sm"
-        style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem; margin-bottom: 5px;"
-        href="{{ url_for('views_bp.update_tool', tool_name=tool, public_id=person.public_id) }}">Update Tool</a>
-        {% endif %}
-        <ul>
-            <li><strong>Proficiency:</strong> {{ person_support['tools'][tool]['proficiency'] }}</li>
+          </p>
+          {% if user.can_update %}
+          <a role="button" class="btn btn-outline-primary btn-sm"
+            href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">
+          Update Method
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if user.can_update %}
+  <br/>
+  <button type="button" class="btn btn-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addMethodModal">
+  Add a Method
+  </button>
+  {% endif %}
+
+  {% if person_support['tools']|length > 0 or user.can_update %}
+  <hr style="margin-top: 1.75em;"/>
+  <h4>Supported Tools</h4>
+  <div class="row">
+    {% for tool in person_support['tools'] %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-body">
+          <h5 class="card-title">
+            <!--style="margin-bottom: 0.07em;"-->
+            {{ tool }}
+          </h5>
+          <p class="card-text">
+            <strong>Tool Type:</strong> {{ person_support['tools'][tool]['tool_type'] }}
+            <br/>
             {% if person_support['tools'][tool]['website'] %}
-            <li><strong>Tool Website:</strong> 
-                <a href="{{ person_support['tools'][tool]['website'] }}" 
-                target="_blank">{{ person_support['tools'][tool]['website'] }}</a></li>
+            <strong>Tool Website:</strong> 
+            <a href="{{ person_support['tools'][tool]['website'] }}" 
+              target="_blank">{{ person_support['tools'][tool]['website'] }}
+            </a>
+            <br/>
             {% endif %}
+            <strong>Proficiency:</strong> {{ person_support['tools'][tool]['proficiency'] }}
+            <br/>
             {% if person_support['tools'][tool]['notes'] %}
-            <li><strong>Notes:</strong> {{ person_support['tools'][tool]['notes'] }}</li>
+            <strong>Notes:</strong> {{ person_support['tools'][tool]['notes'] | safe }}
+            <br/>
             {% endif %}
-        </ul>
-        {% endfor %}
-        {% endif %}
-        {% if user_can_update %}
-        <br/>
-        <button type="button" class="btn btn-primary btn-sm"
-            data-bs-toggle="modal" data-bs-target="#addToolModal">
-            Add a Tool
-        </button>
-        {% endif %}
-        <br/>
+          </p>
+          {% if user.can_update %}
+          <a role="button" class="btn btn-outline-primary btn-sm"
+            href="{{ url_for('views_bp.update_tool', tool_name=tool, public_id=person.public_id) }}">
+          Update Tool
+          </a>
+          {% endif %}
         </div>
-        <br/>
-        <!-- {% if user_can_update %}
-        <div class="row">
-            <div class="col">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="button" class="btn btn-primary btn-sm"
-                    data-bs-toggle="modal" data-bs-target="#addAreaModal">
-                    Add an Area
-                    </button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button type="button" class="btn btn-primary btn-sm"
-                    data-bs-toggle="modal" data-bs-target="#addMethodModal">
-                    Add a Method
-                    </button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button type="button" class="btn btn-primary btn-sm"
-                    data-bs-toggle="modal" data-bs-target="#addToolModal">
-                    Add a Tool
-                    </button>
-                </div>
-            </div>
-        </div>
-        <br/>
-        {% endif %} -->
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if user.can_update %}
+  <br/>
+  <button type="button" class="btn btn-primary btn-sm"
+    data-bs-toggle="modal" data-bs-target="#addToolModal">
+  Add a Tool
+  </button>
+  {% endif %}
+  <br/>
+</div>
+<br/>
 
 <!-- Update Person Form Modal -->
 <div class="modal fade" id="updatePersonModal" name="updatePersonModal" 
-tabindex="-1" aria-labelledby="updatePersonModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="updatePersonModalLabel">Update Person Record</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+  tabindex="-1" aria-labelledby="updatePersonModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="updatePersonModalLabel">Update Person Record</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
           aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Person Form -->
-          <div id="update_person_form">
-            <form method="POST" action="{{ url_for('views_bp.add_person', public_id=person.public_id) }}" 
+      </div>
+      <div class="modal-body">
+        <!-- Person Form -->
+        <div id="update_person_form">
+          <form method="POST" action="{{ url_for('views_bp.add_person', public_id=person.public_id) }}" 
             target="_self">
-              {% include "person-form.html" %}
-            </form>
-          </div>
-          <br/>
+            {% include "person-form.html" %}
+          </form>
         </div>
+        <br/>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Delete Person Form Modal -->
+<div class="modal fade" id="deletePersonModal" name="deletePersonModal" 
+  tabindex="-1" aria-labelledby="deletePersonModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="deletePersonModal">Delete Person</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete from {{ person.first_name }} {{ person.last_name }}'s record?
+          <strong>This action cannot be undone</strong>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" target="_parent"
+          action="{{ url_for('views_bp.delete_person', public_id=person.public_id) }}">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+      <br/>
+    </div>
+  </div>
+</div>
 
 <!-- Add Unit Form Modal -->
 <div class="modal fade" id="addUnitModal" name="addUnitModal" 
-tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="addUnitModal">Add a Unit</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+  tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addUnitModal">Add a Unit</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
           aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="add_unit_form">
-            <form method="POST" action="{{ url_for('views_bp.add_person_unit', public_id=person.public_id) }}" 
-                target="_self">
-                <div class="form-group">
-                    <label for="unit_name">Unit</label>
-                    <select 
-                        class="form-select form-select-md" aria-label=".form-select-md"
-                        id="unit_name"
-                        name="unit_name"
-                        reqired>
-                        <option value="" >Select a unit</option>
-                        {% for unit in existing['all_units']  %}
-                        <option value="{{ unit }}">{{ unit }}</option>
-                        {% endfor %}
-                    </select>
-                    <small>Don't see your unit?  
-                        <a href="{{ url_for('views_bp.add_unit', public_id='new') }}" target="_blank">
-                            Add it to the database</a>!
-                    </small>
-                </div>
-                <br/>
-                <div class="form-group">
-                    <label for="parent_unit_name">Parent Unit <small>(if any)</small></label>
-                    <select 
-                        class="form-select form-select-md" aria-label=".form-select-md"
-                        id="parent_unit_name"
-                        name="parent_unit_name"
-                        required>
-                        <option value="">Select a parent unit</option>
-                        {% for unit in existing['units'] %}
-                        <option value="{{ unit }}">{{ unit }}</option>
-                        {% endfor %}
-                        <option value="None">No parent unit</option>
-                    </select>
-                </div>
-                <br/>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
+      </div>
+      <div class="modal-body">
+        <div id="add_unit_form">
+          <form method="POST" action="{{ url_for('views_bp.add_person_unit', public_id=person.public_id) }}" 
+            target="_self">
+            <div class="form-group">
+              <label for="unit_name"><span style="font-weight: 500">Unit</span></label>
+              <select 
+                class="form-select form-select-md" aria-label=".form-select-md"
+                id="unit_name"
+                name="unit_name"
+                reqired>
+                <option value="" >Select a unit</option>
+                {% for unit in existing['all_units']  %}
+                <option value="{{ unit }}">{{ unit }}</option>
+                {% endfor %}
+              </select>
+              <small>Don't see your unit?  
+              <a href="{{ url_for('views_bp.add_unit', public_id='new') }}" target="_blank">
+              Add it to the database</a>!
+              </small>
+            </div>
             <br/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Address Form Modal -->
-<div class="modal fade" id="addAddressModal" name="addAddressModal" 
-tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="addAddressModal">Add a Address</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="add_unit_form">
-            <form method="POST" action="{{ url_for('views_bp.add_address', entity_type='person', public_id=person.public_id) }}" 
-                target="_self">
-                {% include 'address-form.html' %}
-            </form>
+            <div class="form-group">
+              <label for="parent_unit_name"><span style="font-weight: 500">Parent Unit </span><small>(if any)</small></label>
+              <select 
+                class="form-control"
+                id="parent_unit_name"
+                name="parent_unit_name"
+                multiple
+                required>
+                <option value="" disabled>Select a parent unit</option>
+                {% for unit in existing['units'] %}
+                <option value="{{ unit }}">{{ unit }}</option>
+                {% endfor %}
+                <option value="None">No parent unit</option>
+              </select>
+            </div>
             <br/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- Add Area Form Modal -->
-<div class="modal fade" id="addAreaModal" name="addAreaModal" 
-tabindex="-1" aria-labelledby="addAreaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="addAreaModal">Add Area</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Person Form -->
-          <div id="add_area_form">
-            <form method="POST" action="{{ url_for('views_bp.add_area', public_id=person.public_id) }}" 
-            target="_parent">
-              {% include "add-area.html" %}
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- Add Method Form Modal -->
-<div class="modal fade" id="addMethodModal" name="addMethodModal" 
-tabindex="-1" aria-labelledby="addMethodModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="addMethodModal">Add Method</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Person Form -->
-          <div id="add_method_form">
-            <form method="POST" action="{{ url_for('views_bp.add_method', public_id=person.public_id) }}" 
-            target="_parent">
-              {% include "add-method.html" %}
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- Add Tool Form Modal -->
-<div class="modal fade" id="addToolModal" name="addToolModal" 
-tabindex="-1" aria-labelledby="addToolModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="addToolModal">Add Tool</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Person Form -->
-          <div id="add_tool_form">
-            <form method="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}" 
-            target="_parent">
-              {% include "add-tool.html" %}
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-
-
-  <!-- Update Tool Form Modal -->
-<div class="modal fade" id="updateToolModal" name="updateToolModal" 
-tabindex="-1" aria-labelledby="updateToolModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="updateToolModal">Update Tool</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Person Form -->
-          <div id="update_tool_form">
-            <form metod="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}" 
-                target="updateToolModal">
-              {% include "add-tool.html" %}
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Tool Form Modal -->
-<div class="modal fade" id="deleteToolModal" name="deleteToolModal" 
-tabindex="-1" aria-labelledby="deleteToolModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="deleteToolModal">Delete Tool</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete this tool?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger">Delete</button>
-        </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
           <br/>
         </div>
       </div>
     </div>
   </div>
-  {% endblock %}
+</div>
+
+<!-- Add Address Form Modal -->
+<div class="modal fade" id="addAddressModal" name="addAddressModal" 
+  tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addAddressModal">Add a Address</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="add_unit_form">
+          <form method="POST" action="{{ url_for('views_bp.add_address', entity_type='person', public_id=person.public_id) }}" 
+            target="_self">
+            {% include 'add-address.html' %}
+          </form>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Area Form Modal -->
+<div class="modal fade" id="addAreaModal" name="addAreaModal" 
+  tabindex="-1" aria-labelledby="addAreaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addAreaModal">Add Area</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Person Form -->
+        <div id="add_area_form">
+          <form method="POST" action="{{ url_for('views_bp.add_area', public_id=person.public_id) }}" 
+            target="_parent">
+            {% include "add-area.html" %}
+            <br/>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              {% if not area %}
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              {% endif %}
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Method Form Modal -->
+<div class="modal fade" id="addMethodModal" name="addMethodModal" 
+  tabindex="-1" aria-labelledby="addMethodModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addMethodModal">Add Method</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Person Form -->
+        <div id="add_method_form">
+          <form method="POST" action="{{ url_for('views_bp.add_method', public_id=person.public_id) }}" 
+            target="_parent">
+            {% include "add-method.html" %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Tool Form Modal -->
+<div class="modal fade" id="addToolModal" name="addToolModal" 
+  tabindex="-1" aria-labelledby="addToolModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="addToolModal">Add Tool</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Person Form -->
+        <div id="add_tool_form">
+          <form method="POST" action="{{ url_for('views_bp.add_tool', public_id=person.public_id) }}" 
+            target="_parent">
+            {% include "add-tool.html" %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

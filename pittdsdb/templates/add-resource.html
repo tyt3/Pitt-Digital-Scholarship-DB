@@ -1,8 +1,133 @@
-{% extends 'base.html' %}
-  {% block title %}Add a Resource | Pitt Digital Scholarship Database{% endblock %}
-  {% block navbar_add_active %}
-    <span style="color: black;">Add Info</span>
-  {% endblock %}
-  {% block content %}
-    <h1>Add a Supported Resource</h1>
-  {% endblock %}
+<form method="POST" action="{{ url_for('views_bp.add_resource', public_id=unit.public_id) }}"
+  target="_parent">
+  <div class="form-group">
+    <label for="area"><span style="font-weight: 500">Area</span></label>
+    <select class="form-control"
+      id="area"
+      name="area" 
+      multiple>
+      <option value="" disabled><span style="font-weight: 500">Select an area</span></option>
+      {% for area in existing['areas'] %}
+        <option value="{{ area }}">{{ area }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <br/>
+  <button class="btn btn-outline-primary btn-sm" type="button" 
+    data-bs-toggle="collapse" data-bs-target="#newAreaCollapse" 
+    aria-expanded="false" aria-controls="newAreaButton">Add a New Area
+  </button>
+  <br/>
+  <div class="collapse" id="newAreaCollapse">
+      <br/>
+      <div class="form-group">
+          {% if area %}
+          <label for="new_area"><span style="font-weight: 500">New Area Name</span></label>
+          {% else %}
+          <label for="new_area"><span style="font-weight: 500">New Area</span></label>
+          {% endif %}
+          <input 
+            type="text" 
+            class="form-control" 
+            id="new_area" 
+            name="new_area"
+            value="{{ request.form['new_area'] }}"
+            pattern="[^.\/\\]*$"
+            title="Name cannot include slashes or periods.">
+          {% if not area %}
+          <small>Make sure to select "New Area" above. To add multiple areas, separate each by a comma.</small>
+          {% endif %}
+      </div>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="resource"><span style="font-weight: 500">Resource</span></label>
+    <select class="form-select form-select-md" aria-label=".form-select-md example"
+      id="resource"
+      name="resource">
+      <option value="">Select a resource</option>
+      {% for resource in existing['resources'] %}
+        {% if resource not in resource_names %}
+          <option value="{{ resource }}"
+          {% if 'resource_form' in session and session['resource_form']['resource_name'] == resource %}
+          selected
+          {% endif %}
+          >{{ resource }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+  <br/>
+  <button class="btn btn-outline-primary btn-sm" type="button" 
+  data-bs-toggle="collapse" data-bs-target="#newResourceCollapse" 
+  aria-expanded="false" aria-controls="newResourceButton">Add a New Resource
+  </button>
+  <br/>
+  <div class="collapse" id="newResourceCollapse">
+    <br/>
+    <div class="form-group">
+      <label for="new_resource"><span style="font-weight: 500">New Resource</span></label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="new_resource" 
+      name="new_resource"
+      {% if 'resource_form' in session %}
+      value="{{ session['resource_form']['new_resource'] }}"
+      {% else %}
+      value="{{ request.form['new_resource'] }}"
+      {% endif %}
+      pattern="[^.\/\\]*$"
+      title="Name cannot include slashes or periods.">
+      <small>If this field is filled, the dropdown selection above will be ignored.</small>
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="resource_type"><span style="font-weight: 500">Resource Type</span></label>
+      <input 
+      type="text" 
+      class="form-control" 
+      id="resource_type" 
+      name="resource_type"
+      {% if 'resource_form' in session %}
+      value="{{ session['resource_form']['resource_type'] }}">
+      {% else %}
+      value="{{ request.form['resource_type'] }}">
+      {% endif %}
+    </div>
+    <br/>
+    <div class="form-group">
+      <label for="web_address"><span style="font-weight: 500">Resource Website</span></label>
+      <input 
+      type="url" 
+      class="form-control" 
+      id="web_address" 
+      name="web_address"
+      {% if 'resource_form' in session %}
+      value="{{ session['resource_form']['web_address'] }}">
+      {% else %}
+      value="{{ request.form['web_address'] }}">
+      {% endif %}
+    </div>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="notes"><span style="font-weight: 500">Notes</span></label>
+    <textarea class="form-control"
+    id="notes"
+    name="notes"
+    placeholder="Markdown-enabled field"
+    rows="3"
+    {% if 'resource_form' in session %}
+    >{{ session['resource_form']['notes'] }}</textarea>
+    {% else %}
+    >{{ request.form['notes'] }}</textarea>
+    {% endif %}
+  </div>
+  <br/>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+<br/>
+

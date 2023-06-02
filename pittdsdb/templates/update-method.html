@@ -1,106 +1,143 @@
 {% extends 'base.html' %}
-  {% block title %}Update Method | Pitt Digital Scholarship Database{% endblock %}
-  {% block content %}
-  <div class="row">
-    <div class="mx-auto col-6 col-md-6 col-lg-4">
-      <form metod="POST" 
-        action="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">
-        <div class="form-group">
-            <label for="name"><span style="font-weight: 500">Method Name</span></label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="name" 
-              name="name"
-              value="{{ method.method_name }}"
-              readonly>
-        </div>
-        <br/>
-  <button class="btn btn-outline-primary btn-sm" type="button" 
-    data-bs-toggle="collapse" data-bs-target="#newMethodCollapse" 
-    aria-expanded="false" aria-controls="newMethodButton">Update Method Name
-  </button>
-  <br/>
-  <br/>
-  <div class="collapse" id="newMethodCollapse">
-    <div class="form-group">
-      <label for="new_name">Updated Method Name</label>
-      <input 
-      type="text" 
-      class="form-control" 
-      id="new_name" 
-      name="new_name"
-      value="{{ request.form['new_name'] }}">
-    </div>
-    <br/>
-  </div>
-        <div class="form-group">
-            <label for="proficiency">Method Proficiency Level</label>
-            <select class="form-select form-select-md" aria-label=".form-select-md example">
-              <option selected disabled>Select a proficiency level</option>
-              {% for level in vocab['proficiency_level'] %}
-              <option value="{{ level }}"
-              {% if level == proficiency.proficiency_level %}
-              selected
-              {% endif %}
-              >{{ level }}</option>
-              {% endfor %}
-            </select>
-          </div>
+{% block title %}Update Method | Pitt Digital Scholarship Database{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="mx-auto col-6 col-md-6 col-lg-4">
+    <form method="POST" 
+      action="{{ url_for('views_bp.update_method', method_name=method.method_name, public_id=person.public_id) }}">
+      <div class="form-group">
+        <label for="name"><span style="font-weight: 500">Method Name</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="name" 
+          name="name"
+          value="{{ method.method_name }}"
+          readonly>
+      </div>
+      <br/>
+      {% if user.can_update %}
+      <button class="btn btn-outline-primary btn-sm" type="button" 
+        data-bs-toggle="collapse" data-bs-target="#newMethodCollapse" 
+        aria-expanded="false" aria-controls="newMethodButton">Update Method
+      </button>
+      <br/>
+      <div class="collapse" id="newMethodCollapse">
         <br/>
         <div class="form-group">
-            <label for="notes">Notes</label>
-            <textarea class="form-control"
-            id="notes"
-            name="notes"
-            rows="3"
-            >{{ notes }}</textarea>
+          <label for="area"><span style="font-weight: 500">Area</span></label>
+          <select class="form-control"
+            id="area"
+            name="area" 
+            multiple
+            required>
+            <option value="" disabled><span style="font-weight: 500">Select an area</span></option>
+            {% for area in existing['areas'] %}
+            <option value="{{ area }}"
+            {% if area in areas %} 
+            selected
+            {% endif %}>{{ area }}</option>
+            {% endfor %}
+          </select>
         </div>
         <br/>
-        <div class="row">
-          <div class="col">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="submit" class="btn btn-primary">Update</button>
-            </div>
-          </div>
-          <div class="col">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-              <button type="button" class="btn btn-danger"
-              data-bs-toggle="modal" data-bs-target="#deleteMethodModal"
-              >Delete</button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  </br>
-
-  <!-- Delete Method Form Modal -->
-<div class="modal fade" id="deleteMethodModal" name="deleteMethodModal" 
-tabindex="-1" aria-labelledby="deleteMethodModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"
-           id="deleteMethodModal">Delete Method</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" 
-          aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete this method and all related tools from {{ person.first_name }} {{ person.last_name }}'s record?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <form metod="POST" target="_parent"
-          action="{{ url_for('views_bp.delete_method', method_id=method.method_id, person_id=person.person_id) }}">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
-        </div>
-          <br/>
+        <div class="form-group">
+          <label for="new_name"><span style="font-weight: 500">Updated Method Name</span></label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="new_name" 
+            name="new_name"
+            value="{{ request.form['new_name'] }}"pattern="[^.\/\\]*$"
+            title="Name cannot include slashes or periods.">
         </div>
       </div>
+      <br/>
+      {% endif %}
+      <div class="form-group">
+        <label for="proficiency"><span style="font-weight: 500">Method Proficiency Level</span></label>
+        <select class="form-select form-select-md" aria-label=".form-select-md example"
+            id="proficiency"
+            name="proficiency"
+            required>
+          <option value="">Select a proficiency level</option>
+          {% for level in vocab['proficiency_level'] %}
+          <option value="{{ level }}"
+          {% if level == proficiency.proficiency_level %}
+          selected
+          {% endif %}
+          >{{ level }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="notes"><span style="font-weight: 500">Notes</span></label>
+        <textarea class="form-control"
+          id="notes"
+          name="notes"
+          rows="3"
+          placeholder="Markdown-enabled field"
+          >{% if notes %}{{ notes | safe }}{% endif %}</textarea>
+      </div>
+      <br/>
+      <div class="row">
+        <div class="col">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('views_bp.view_person', public_id=person.public_id) }}"
+            role="button" type="button" class="btn btn-secondary">Cancel</a>
+          </div>
+        </div>
+        {% if user.can_delete %}
+        <div class="col">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </div>
+        <div class="col">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <button type="button" class="btn btn-danger"
+              data-bs-toggle="modal" data-bs-target="#deleteMethodModal"
+              >Delete</button>
+          </div>
+        </div>
+        {% else %}
+        <div class="col">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+<br/>
+
+<!-- Delete Method Form Modal -->
+<div class="modal fade" id="deleteMethodModal" name="deleteMethodModal" 
+  tabindex="-1" aria-labelledby="deleteMethodModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="deleteMethodModal">Delete Method</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this method and all related tools from {{ person.first_name }} {{ person.last_name }}'s record?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form metod="POST" target="_parent"
+          action="{{ url_for('views_bp.delete_method', method_id=method.method_id, person_id=person.person_id) }}">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+      <br/>
     </div>
   </div>
-
-  {% endblock %}
+</div>
+</div>
+{% endblock %}

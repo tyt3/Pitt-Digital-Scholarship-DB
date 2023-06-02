@@ -8,70 +8,14 @@ from functools import wraps
 from .database import db_session, engine
 from .models import *
 from .schemas import *
+from .get import *
+from .delete import delete_entity_area
+from .utilities import *
 
 
-def sp_ManagePersonArea(method=str, user_id=int, person_id=int, area_name=str,
-                        new_name='', area_proficiency=str, area_notes=''):
-    input_list = [method, user_id, person_id, area_name, new_name, 
-                  area_proficiency, area_notes, False, None]
-    results = None
+""" Modifcation Function """
 
-    connection = engine.raw_connection()
-    try:
-        cursor_obj = connection.cursor()
-        cursor_obj.callproc("sp_ManagePersonArea", input_list)
-        results = list(cursor_obj.fetchall())
-        cursor_obj.close()
-        connection.commit()
-    finally:
-        connection.close()
-
-    return results
-
-
-def sp_ManagePersonMethod(method=str, user_id=int, person_id=int, area_name=str,
-                          method_name=str, new_name=str, proficiency=str, 
-                          notes=str):
-    input_list = [method, user_id, person_id, area_name, method_name, new_name, 
-                  proficiency, notes, False, None]
-    results = None
-
-    connection = engine.raw_connection()
-    try:
-        cursor_obj = connection.cursor()
-        cursor_obj.callproc("sp_ManagePersonMethod", input_list)
-        results = list(cursor_obj.fetchall())
-        cursor_obj.close()
-        connection.commit()
-    finally:
-        connection.close()
-
-    return results
-
-
-def sp_ManagePersonTool(method=str, user_id=int, person_id=int, area_name=str,
-                        method_name=str, tool_name=str, tool_type=str,
-                        web_address=str, new_name=str,  proficiency=str, 
-                        notes=str):
-    input_list = [method, user_id, person_id, area_name, method_name, tool_name,
-                  tool_type, web_address, new_name, proficiency, notes, False, 
-                  None]
-    results = None
-
-    connection = engine.raw_connection()
-    try:
-        cursor_obj = connection.cursor()
-        cursor_obj.callproc("sp_ManagePersonTool", input_list)
-        results = list(cursor_obj.fetchall())
-        cursor_obj.close()
-        connection.commit()
-    finally:
-        connection.close()
-
-    return results
-
-
-def add_modification(timestamp, description):
+def log_modification(description, timestamp):
     modification = Modification(modification=description,
                                 modified_by=current_user.user_id,
                                 modification_date=timestamp)
@@ -81,10 +25,11 @@ def add_modification(timestamp, description):
     db_session.commit()
 
 
-def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
-                     phone, scheduler_address, other_contact, preferred_contact,
-                     support_type, bio, added_by, notes, photo_url):
+""" Person Functions """
 
+def add_person_to_db(first_name, last_name, title, pronouns, email, phone, 
+                     scheduler_address, other_contact, preferred_contact,
+                     web_address, support_type, bio, notes, photo_url, added_by):
     # Create new person object
     new_person = Person(first_name = first_name,
                         last_name = last_name,
@@ -110,39 +55,43 @@ def add_person_to_db(first_name, last_name, title, pronouns, email, web_address,
     person = Person.query.filter_by(email=email).first()
 
     if person:
-        # Add modification to database
-        add_modification(new_person.date_added, f"add {repr(person)}")
+        description = f"add person {new_person.person_id}:{person.first_name} {person.last_name}"   
         
-        print("person added")
+        # Add modification to database
+        log_modification(description, new_person.date_added)
+
         return True, new_person
     else:
         return False, None
     
 
-
-def add_person_affiliation(person_id=int, affiliation_type=str):
+def add_person_affiliation(person_id=int, affiliation_type=''):
+    person = Person.query.filter_by(person_id=person_id).first()
     affiliation = Affiliation.query.filter_by(affiliation_type=affiliation_type).first()
- 
-    session = Session(engine)
-    session.begin()
-    try:
-        session.execute(f'INSERT INTO person_affiliation \
-                        (fk_person_id, fk_affiliation_id) \
-                        VALUES \
-                        ({ person_id }, { affiliation.affiliation_id })')
-        session.commit()
+    description = f"add person-affiliation relation between \
+          {person_id}:{person.first_name} {person.last_name} and \
+            {affiliation.affiliation_id}:{affiliation.affiliation_type}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
-        return True
+    try: 
+        # Add person affiliations
+        db_session.execute(f'INSERT INTO person_affiliation \
+                            (fk_person_id, fk_affiliation_id) \
+                            VALUES \
+                            ({ person_id }, { affiliation.affiliation_id })')
+        
+        # Log modification 
+        log_modification(description, timestamp)
+
     except:
-        session.rollback()
-        flash("Person affiliation(s) could not be added", category="error")
-        return False
+        flash("Person affiliations could not be added.", category="error")
     
     
-def add_person_support(person_id=int, entity_type=str, entity_id=int, 
-                       proficiency_id=int, notes=str, notify=False):
+def add_person_support(person_id=int, entity_type='', entity_id=int, 
+                       proficiency_id=int, notes='', notify=False):
     new_person_support = None
     description = f"add ({ person_id }, { entity_id }) "
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     session = Session(engine)
     session.begin()
@@ -162,7 +111,7 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
     except:
         session.rollback()
         if notify:
-            print("Person support record(s) could not be added")
+            flash("Person support record(s) could not be added", category="error")
         return False
     
     # Add person support addition to modification log
@@ -176,124 +125,16 @@ def add_person_support(person_id=int, entity_type=str, entity_id=int,
 
     if person_support:
         # Add modification to database
-        add_modification(datetime.now().strftime("%Y/%m/%d %H:%M:%S"), description)
+        log_modification(description, timestamp)
 
     return True
 
 
-def add_person_support_combos(person_id=int, area_id=int, method_id=0, tool_id=0):
-    session = Session(engine)
-
-    session.begin()
-    # Add method area relationship
-    try:
-        session.execute(f"INSERT INTO method_area \
-                        (fk_method_id, fk_area_id) \
-                        VALUES \
-                        ({ method_id }, { area_id });")
-        session.commit()
-    except:
-        session.rollback()
-        print("Method/area relationship could not be added")
-        return False
-
-    # Build query
-    if method_id > 0 and tool_id > 0:
-        # Add tool area relationship
-        session.begin()
-        try:
-            session.execute(f"INSERT INTO tool_area \
-                            (fk_tool_id, fk_area_id) \
-                            VALUES \
-                            ({ tool_id }, { area_id });")
-            session.commit()
-        except:
-            print("Tool/area relationship could not be added.")
-
-        # Add method tool relationship
-        with session.begin():
-            session.execute(f"INSERT INTO method_area \
-                            (fk_method_id, fk_area_id) \
-                            VALUES \
-                            ({ method_id }, { tool_id });")
-            session.commit()
-            
-        # Query for existing person support relations
-        person_support = db_session.execute(f'SELECT * FROM person_support \
-                                            WHERE fk_person_id = { person_id } \
-                                            AND fk_area_id = { area_id } \
-                                            AND fk_method_id = { method_id } \
-                                            AND fk_tool_id IS NULL;')
-        
-        # Check if person-area-method relationship already in person_support
-        if person_support.rowcount > 0:
-            # Update existing record
-            session.begin()
-            try:
-                session.execute(f'UPDATE person_support \
-                                SET \
-                                fk_tool_id = { tool_id } \
-                                WHERE fk_person_id = { person_id } \
-                                AND fk_area_id = { area_id } \
-                                AND fk_method_id = { method_id };')
-                session.commit()
-            except:
-                session.rollback()
-                print("Person support record could not be added")
-                return False
-        else:
-            # Add new record
-            session.begin()
-            try:
-                session.execute(f'INSERT INTO person_support \
-                                (fk_person_id, fk_area_id, fk_method_id, fk_tool) \
-                                VALUES \
-                                ({ person_id }, { area_id }, \
-                                { method_id }, { tool_id });')
-                session.commit()
-            except:
-                session.rollback()
-                print("Person support record could not be added")
-                return False
-    elif method_id > 0:
-        # Add person support relations
-        person_support = db_session.execute(f'SELECT * FROM person_support \
-                                            WHERE fk_person_id = { person_id } \
-                                            AND fk_area_id = { area_id } \
-                                            AND fk_method_id IS NULL;')
-        
-        # Check if person-area-method relationship already in person_support
-        if person_support.rowcount > 0:
-            # Update existing record
-            session.begin()
-            try:
-                session.execute(f'UPDATE person_support \
-                                SET \
-                                fk_method_id = { method_id } \
-                                WHERE fk_person_id = { person_id } \
-                                AND fk_area_id = { area_id };')
-                session.commit()
-            except:
-                session.rollback()
-                print("Person support record could not be added")
-                return False
-        else:
-            # Add new record
-            session.begin()
-            try:
-                session.execute(f'INSERT INTO person_support \
-                                (fk_person_id, fk_area_id, fk_method_id) \
-                                VALUES \
-                                ({ person_id }, { area_id }, { method_id });')
-                session.commit()
-            except:
-                session.rollback()
-                print("Person support record could not be added")
-                return False
-
-    
-def add_person_unit_to_db(person_id=int, unit_name=str):
+def add_person_unit_to_db(person_id=int, person_name='', unit_name=''):
     unit = Unit.query.filter_by(unit_name=unit_name).first()
+    description = f"add person-unit relationship \
+        between {person_id}:{person_name} and {unit.unit_id}:{unit.unit_name}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     try:
         db_session.execute(f'INSERT INTO person_unit \
@@ -301,25 +142,16 @@ def add_person_unit_to_db(person_id=int, unit_name=str):
                         VALUES \
                         ({ person_id }, { unit.unit_id })')
         db_session.commit()
+
+        # Add modification to database
+        log_modification(description, timestamp)
+
         return True
     except:
         return False
 
 
-def add_person_subunit_to_db(person_id=int, subunit_name=str):
-    subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
-
-    try:
-        db_session.execute(f'INSERT INTO person_subunit \
-                        (fk_person_id, fk_subunit_id) \
-                        VALUES \
-                        ({ person_id }, { subunit.subunit_id })')
-        db_session.commit()
-        return True
-    except:
-        return False
-    
-
+"""" Unit Functions """
 def add_unit_to_db(unit_name, unit_type, email, web_address, phone, 
                    other_contact, preferred_contact, description, added_by):
      new_unit = Unit(unit_name = unit_name,
@@ -339,47 +171,155 @@ def add_unit_to_db(unit_name, unit_type, email, web_address, phone,
      unit = Unit.query.filter_by(unit_name=unit_name).first()
 
      if unit:
+        mod_description = f"add unit {unit.unit_id}:{unit_name}" 
+
         # Add modification to database
-        add_modification(new_unit.date_added, 
-                         f"add {repr(new_unit)}")
+        log_modification(mod_description, new_unit.date_added)
 
         return True, new_unit
      else:
          return False, None
 
+    
 
-def add_subunit_to_db(subunit_name, subunit_type, email, web_address, phone, 
-                      other_contact, preferred_contact, description, 
-                      parent_unit_name, added_by):
-    # Get parent unit name
-    parent_unit = Unit.query.filter_by(unit_name=parent_unit_name).first()
-    parent_unit_id = parent_unit.get_id()
+def add_unit_subunit(subunit=Unit, parent_unit=Unit):
+    description = f"add unit-subunit relationship \
+        between {parent_unit.unit_id}:{parent_unit.unit_name} and \
+        {subunit.unit_id}:{subunit.unit_name}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
-    new_subunit = Subunit(subunit_name = subunit_name,
-                              subunit_type = subunit_type,
-                              email = email,
-                              web_address = web_address,
-                              phone = phone,
-                              other_contact = other_contact,
-                              preferred_contact = preferred_contact,
-                              description = description,
-                              fk_unit_id=parent_unit_id,
-                              added_by = added_by)
+    # Delete unit-subunit relation
+    try:
+        db_session.execute(f'INSERT INTO unit_subunit \
+                        (fk_unit_id, subunit_id) \
+                        VALUES \
+                        ({ parent_unit.unit_id }, { subunit.unit_id });')
+            
+        db_session.commit()
 
-    # Add new department to database
-    db_session.add(new_subunit)
-    db_session.commit()
+        # Log modificaiton
+        log_modification(description, timestamp)
+    except:
+        pass
+    
 
-    subunit = Subunit.query.filter_by(subunit_name=subunit_name).first()
+def add_funding_unit_to_db(funding_id=int, funding_name='', unit_name=''):
+    unit = Unit.query.filter_by(unit_name=unit_name).first()
+    description = f"add unit-funding relationship \
+        between {unit.unit_id}:{unit.unit_name} and \
+        {funding_id}:{funding_name}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
-    if subunit:
+    try:
+        db_session.execute(f'INSERT INTO unit_funding \
+                           (fk_unit_id, fk_funding_id) \
+                           VALUES \
+                           ({ unit.unit_id }, { funding_id })')
+        db_session.commit()
+
+        # Log modificaiton
+        log_modification(description, timestamp)
+
+        return True
+    except:
+        return False
+    
+
+def add_unit_resource(unit_id, unit_name, resource_id, resource_name, notes):
+    description = f"add unit-resource relationship \
+        between {unit_id}:{unit_name} and \
+        {resource_id}:{resource_name}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+    if not check_relation("unit_resource", "unit", unit_id, 
+                          "resource", resource_id):
+
+        db_session.execute(f"INSERT INTO unit_resource \
+                            (fk_unit_id, fk_resource_id, notes) \
+                            VALUES \
+                            ({unit_id}, {resource_id},'{notes}');")
+        
+        # log modification
+        log_modification(description, timestamp)
+
+
+"""" Funding Functions """
+
+def add_funding_to_db(funding_name, funding_type, duration, frequency, 
+                      payment_type, payment_amount, career_level, web_address, 
+                      notes, added_by):
+    # Create new funding object
+    new_funding = Funding(funding_name = funding_name,
+                          funding_type = funding_type,
+                          duration = duration,
+                          frequency = frequency,
+                          payment_type = payment_type,
+                          payment_amount = payment_amount,
+                          career_level = career_level,
+                          web_address = web_address,
+                          notes = notes,
+                          added_by = added_by)
+
+    # Add new Funding to database
+    try:
+        db_session.add(new_funding)
+        db_session.commit()
+    except:
+        flash("The funding record could not be added", category="error")
+
+    new_funding = Funding.query.filter_by(funding_name=funding_name).first()
+
+    if new_funding:
+        mod_description = f"add {new_funding.funding_id}:{new_funding.funding_name}"
+
         # Add modification to database
-        add_modification(new_subunit.date_added,
-                         f"add {repr(new_subunit)}")
+        log_modification(mod_description, new_funding.date_added)
 
-        return True, new_subunit
+        return True, new_funding
     else:
         return False, None
+
+
+"""" Secondary Entity Functions """
+
+def add_address_to_db(building_name=str, room_number=str, street_address=str, 
+                address_2=str, city=str, state=str, zipcode=str, campus=str):
+    new_address = Address(building_name=building_name, room_number=room_number,
+                      street_address=street_address, address_2=address_2, 
+                      city=city, state=state, zipcode=zipcode, campus=campus,
+                      added_by=current_user.user_id)
+        
+    db_session.add(new_address)
+    db_session.commit()
+
+    success, address = get_address(building_name=building_name, room_number=room_number,
+                          street_address=street_address, address_2=address_2, 
+                          city=city, state=state, zipcode=zipcode, campus=campus)
+
+    # Log modification
+    description = f"add address {address.address_id}:{str(address)}"
+    timestamp = address.date_added
+
+    log_modification(description, timestamp)
+
+    return success, address
+
+
+def add_entity_address(entity_id=int, entity_name=str, entity_type=str, address_id=int):
+
+    description = f"add {entity_type}-address relationship \
+        between {entity_id}:{entity_name} and address {address_id}"
+    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+    # Add new address, if any, and entity-address relation to db
+    db_session.execute(f"INSERT INTO { entity_type }_address\
+                        (fk_{ entity_type }_id, fk_address_id) \
+                        VALUES \
+                        ({ entity_id }, { address_id });")
+    db_session.commit()
+
+    # Log modification
+    log_modification(description, timestamp)
 
 
 def add_area_to_db(area_name):
@@ -398,10 +338,11 @@ def add_area_to_db(area_name):
     area = Area.query.filter_by(area_name=area_name).first()
 
     if area:
+        description = f"add area {area.area_id}:{area_name}"
         # Add modification to database
-        add_modification(new_area.date_added, f"add {repr(new_area)}")
+        log_modification(description, area.date_added)
 
-        return True, new_area
+        return True, area
     else:
         return False, None
 
@@ -422,9 +363,11 @@ def add_method_to_db(method_name):
     method = Method.query.filter_by(method_name=method_name).first()
 
     if method:    
+        description = f"add method {method.method_id}:{method_name}"
         # Add modification to database
-        add_modification(new_method.date_added, f"add {repr(new_method)}")
-        return True, new_method
+        log_modification(description, method.date_added)
+
+        return True, method
     else:
         return False, None
 
@@ -447,10 +390,11 @@ def add_tool_to_db(tool_name, tool_type, web_address):
     tool = Tool.query.filter_by(tool_name=tool_name).first()
 
     if tool:    
+        description = f"add tool {tool.area_id}:{tool_name}"
         # Add modification to database
-        add_modification(new_tool.date_added, f"add {repr(new_tool)}")
+        log_modification(description, tool.date_added)
 
-        return True, new_tool
+        return True, tool
     else:
         return False, None
 
@@ -473,10 +417,45 @@ def add_resource_to_db(resource_name, resource_type, web_address):
     resource = Resource.query.filter_by(resource_name=resource_name).first()
     
     if resource:
+        description = f"add resource {resource.area_id}:{resource_name}"
         # Add modification to database
-        add_modification(new_resource.date_added, f"add {repr(new_resource)}")
+        log_modification(description, resource.date_added)
 
-        return True, new_resource
+        return True, resource
     else:
         return False, None
+
+
+def add_resource_area(resource_id, resource_name, areas):
+    # List for IDs and names of given areas 
+    area_ids = []
+    area_names = []
+
+    # Add resource-area relations     
+    for area_name in areas:
+        area = Area.query.filter_by(area_name=area_name).first()
+        if area:
+            area_ids.append(area.area_id)
+            area_names.append(area.area_name)
+
+            # Set metadata for log
+            description = f"update resource-area relation between \
+                {resource_id}:{resource_name} and \
+                {area.area_id}:{area.area_name}"
+            timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S") 
+
+            try:
+                db_session.execute(f"INSERT INTO resource_area \
+                                (fk_resource_id, fk_area_id) \
+                                VALUES \
+                                ({resource_id}, {area.area_id});")
+                
+                # Log modification
+                log_modification(description, timestamp)
+            except:
+                # Resource-area relationship already exists
+                pass
+    
+    # Delete resource-area relations not in given list
+    delete_entity_area("resource", resource_id, resource_name, area_names)
 

@@ -1,133 +1,209 @@
 {% extends 'base.html' %}
-  {% block title %}Search People | Pitt Digital Scholarship Databse{% endblock %}
-  {% block navbar_search_active %}
-    <span style="color: black;">Search</span>
+{% block title %}Search People | Pitt Digital Scholarship Databse{% endblock %}
+{% block navbar_search_active %}
+<span style="color: black;">Search</span>
+{% endblock %}
+{% block head %}
+  <style>
+    .card {
+      flex-direction: row;
+      align-items: center;
+    }
+    .card-title {
+      font-weight: bold;
+    }
+    .card img {
+      width: 9em;
+      min-width: 9em;
+      max-width: 9em;
+      max-height: 9em;
+      object-fit: cover;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: calc(0.25rem - 1px);
+    }
+    @media only screen and (max-width: 768px) {
+      a {
+        display: none;
+      }
+      .card-body {
+        padding: 0.5em 1.2em;
+      }
+      .card-body .card-text {
+        margin: 0;
+      }
+      .card img {
+        width: 9em;
+        min-width: 9em;
+        max-width: 9em;
+        min-height: 9em;
+        max-height: 9em;
+      }
+    }
+    @media only screen and (max-width: 1200px) {
+      .card img {
+        width: 9em;
+        min-width: 9em;
+        max-width: 9em;
+        max-height: 9em;
+      }
+    }
+  </style>
   {% endblock %}
-  {% block content %}
+{% block content %}
+<br/>
+<form action="/search-people" method="POST">
+  <h3 align="center">Search People</h3>
   <br/>
-    <form action="/search-people" method="POST">
-    <h3 align="center">Search People</h3>
-  <br/>
-
   <div class="row">
     <div class="col">
+      <div class="row">
+        <div class="col">
+          <label for="first_name"><span style="font-weight: 500">First Name</span></label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="first_name" 
+            name="first_name"
+            value="{{ request.form['first_name'] }}">
+        </div>
+        <div class="col">
+          <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="last_name" 
+            name="last_name"
+            value="{{ request.form['last_name'] }}">
+        </div>
+      </div>
+      <br/>
+      <!-- <hr style="margin-bottom: 27.5px"/> -->
       <div class="form-group">
-        <label for="first_name"><span style="font-weight: 500">First Name</span></label>
-      <input type="text" class="form-control" id="first_name" name="first_name">
-    </div>
-    <br/>
-
-    <div class="form-group">
-      <label for="last_name"><span style="font-weight: 500">Last Name</span></label>
-      <input type="text" class="form-control" id="last_name" name="last_name">
-    </div>
-    <br/>
-
-    <div class="form-group">
-      <label for="title"><span style="font-weight: 500">Title</span></label>
-      <input type="text" class="form-control" id="title" name="title">
-    </div>
-    <br/>
-    <hr style="margin-bottom: 27.5px"/>
-    <div class="form-group">
-      <label for="support_type"><span style="font-weight: 500">Support Type</span></label>
-      <select class="form-control" id="support_type" name="support_type" multiple>
-          <option value="">Select Support Type</option>
+        <label for="support_type"><span style="font-weight: 500">Support Type</span></label>
+        <select class="form-control" id="support_type" name="support_type" multiple>
+          <option value="" disabled>Select a support type</option>
           {% for support_type in existing['support_types'] %}
           <option value="{{ support_type }}">{{ support_type }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
-          </select>
-    </div>
-    <br/>
-
-    <div class="form-group">
-      <label for="campus"><span style="font-weight: 500">Campus</span></label>
-      <select class="form-control" id="campus" name="campus" multiple>
-          <option value="">Select Campus</option>
-          {% for campus in existing['campuses'] %}
-          <option value="{{ campus }}">{{ campus }}</option>
-          {% endfor %}
-          <!-- Add more options as needed -->
-          </select>
-    </div>
-    <br/>
-    </div>
-
-    <div class="col">
-    <div class="form-group">
-      <label for="supported-area"><span style="font-weight: 500">Supported Area</span></label>
-      <select class="form-control" id="supported_area" name="supported_area" multiple>
-          <option value="">Select Supported Area</option>
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="supported-area"><span style="font-weight: 500">Supported Area</span></label>
+        <select class="form-control" id="supported_area" name="supported_area" multiple>
+          <option value="" disabled>Select a supported area</option>
           {% for area in existing['areas'] %}
           <option value="{{ area }}">{{ area }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
         </select>
-    </div>
-    <br/>
-
-    <div class="form-group">
-      <label for="supported-method"><span style="font-weight: 500">Supported Method</span></label>
-      <select class="form-control" id="supported_method" name="supported_method" multiple>
-          <option value="">Select Supported Method</option>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="supported-method"><span style="font-weight: 500">Supported Method</span></label>
+        <select class="form-control" id="supported_method" name="supported_method" multiple>
+          <option value="" disabled>Select a supported method</option>
           {% for method in existing['methods'] %}
           <option value="{{ method }}">{{ method }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
         </select>
+      </div>
     </div>
-    <br/>
-    
-    <div class="form-group">
-          <label for="supported_tool"><span style="font-weight: 500">Supported Tool</span></label>
-          <select class="form-control" id="supported_tool" name="supported_tool" multiple>
-          <option value="">Select Supported Tool</option>
+    <div class="col">
+      <div class="form-group">
+        <label for="title"><span style="font-weight: 500">Title</span></label>
+        <input type="text" class="form-control" id="title" name="title">
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="supported_tool"><span style="font-weight: 500">Supported Tool</span></label>
+        <select class="form-control" id="supported_tool" name="supported_tool" multiple>
+          <option value="" disabled>Select a supported tool</option>
           {% for tool in existing['tools'] %}
           <option value="{{ tool }}">{{ tool }}</option>
           {% endfor %}
-          <!-- Add more options as needed -->
         </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="supported_tool_type"><span style="font-weight: 500">Supported Tool Type</span></label>
+        <select class="form-control" id="supported_tool_type" name="supported_tool_type" multiple>
+          <option value="" disabled>Select a supported tool type</option>
+          {% for tool_type in existing['tool_types'] %}
+          <option value="{{ tool_type }}">{{ tool_type }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br/>
+      <div class="form-group">
+        <label for="campus"><span style="font-weight: 500">Campus</span></label>
+        <select class="form-control" id="campus" name="campus" multiple>
+          <option value="" disabled>Select a campus</option>
+          {% for campus in existing['campuses'] %}
+          <option value="{{ campus }}">{{ campus }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
-    <br/>
-    <div class="form-group">
-      <label for="supported_tool_type"><span style="font-weight: 500">Supported Tool Type</span></label>
-      <select class="form-control" id="supported_tool_type" name="supported_tool_type" multiple>
-      <option value="">Select Supported Tool</option>
-      {% for tool_type in existing['tool_types'] %}
-      <option value="{{ tool_type }}">{{ tool_type }}</option>
-      {% endfor %}
-      <!-- Add more options as needed -->
-    </select>
-</div>
   </div>
-  </div>
-    <button type="submit" class="btn btn-primary">Search</button>
-  </form>
   <br/>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<br/>
 {% if search %}
 {% if search_results %}
 <hr/>
 <br/>
-<ol>
-  {% for person in search_results %}
-    <li>
-      <a href="{{ url_for('views_bp.view_person', public_id=person['public_id']) }}"
-      >{{ person['first_name'] }} {{ person['last_name'] }} ({{ person['email'] }})
-    </a>
-    </li>
-  {% endfor %}
-</ol>
-<br/>
-<hr/>
-<div class="d-grid gap-2 d-md-flex justify-content-md-center">
-  <p><em>End of results.</em></p>
+<div id="results">
+  <div class="row">
+    {% for person in search_results %}
+    <div class="col-sm-6">
+      <div class="card" style="margin-top: 1em;">
+        {% if person['photo_url'] %}
+        <img src="{{ person['photo_url'] }}" class="card-img-top" />
+        {% else %}
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="card-img-top" />
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ person['first_name'] }} {{ person['last_name'] }}</h5>
+          <p class="card-text">
+            <a href="mailto:{{ person['email'] }}">{{ person['email'] }}</a>
+          </p>
+          <a href="{{ url_for('views_bp.view_person', public_id=person['public_id']) }}" class="btn btn-primary">View Page</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <!-- <div class="col-sm-6">
+      <div class="card" style="margin-top: 1em;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">Chrysanthemum Lovelace</h5>
+          <p class="card-text">
+            <a href="mailto:chl310@pitt.edu">chl310@pitt.edu</a>
+          </p>
+          <a href="" class="btn btn-primary">View Page</a>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <br/>
+  <hr/>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>End of results.</em></p>
+  </div>
+  {% else %}
+  <hr />
+  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <p><em>No matching results were found.</em></p>
+  </div>
+  {% endif %}
 </div>
-{% else %}
-<div class="d-grid gap-2 d-md-flex justify-content-md-center">
-  <p><em>No matching results were found.</em></p>
-</div>
-{% endif %}
 <br/>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      document.location.hash = '#results';
+  });
+</script>
 {% endif %}
 {% endblock %}
