@@ -2,6 +2,7 @@ from neo4j import GraphDatabase
 from .config import NEO4J_URI
 from .config import NEO4J_USER
 from .config import NEO4J_PASSWORD
+from neo4j.exceptions import ServiceUnavailable
 
 class Neo4jConnection:
     
