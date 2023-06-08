@@ -1212,7 +1212,7 @@ def update_resource(resource_name, public_id):
         areas = list(zip(*db_session.execute(
             f"SELECT DISTINCT area_name FROM vw_unit_support \
                 WHERE resource_name = '{resource_name}'\
-                AND public_id = {public_id}").fetchall()))[0]
+                AND fk_public_id = '{public_id}'").fetchall()))[0]
         notes = db_session.execute(f"SELECT resource_notes FROM vw_unit_support\
                                    WHERE resource_name = '{resource_name}'\
                                    AND fk_public_id = '{public_id}'").first()[0]

@@ -458,4 +458,3 @@ def add_resource_area(resource_id, resource_name, areas):
     
     # Delete resource-area relations not in given list
     delete_entity_area("resource", resource_id, resource_name, area_names)
-

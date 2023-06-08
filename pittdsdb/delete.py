@@ -168,7 +168,7 @@ def delete_unit_resource(unit_id=int, unit_name='',
     # Check if the resource is still supported by any other unit(s)
     resource_supported = db_session.execute(
         f"SELECT * FROM vw_unit_support \
-        WHERE resource_id = {resource_id};")
+        WHERE resource_id = { resource_id };")
     
     # Delete resource if it is no longer supported
     if not resource_supported:
@@ -176,7 +176,7 @@ def delete_unit_resource(unit_id=int, unit_name='',
         timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         db_session.execute(f"DELETE FROM resource \
-                           WHERE resource_id = {resource_id};")
+                           WHERE resource_id = { resource_id };")
         
         # Log modification
         log_modification(description, timestamp)
@@ -204,32 +204,28 @@ def delete_entity_area(entity_type, entity_id, entity_name, area_names):
     for name in area_names:
         area = Area.query.filter_by(area_name=name).first()
         area_ids.append(area.area_id)
-    
-    print(area_ids)
 
     # Convert list to string for SQL query
     area_ids_str = ", ".join(map(str, area_ids))
-
-    print(area_ids_str)
 
     # Get IDs for areas that may need to be deleted
     results = db_session.execute(f"SELECT fk_area_id FROM { entity_type }_area \
                                  WHERE fk_{ entity_type }_id = { entity_id } \
                                  AND fk_area_id NOT IN ({ area_ids_str});").fetchall()
     
-    print(results)
+    # Delete current entities relationships1
+    
     
     # Queue areas to check if a relation with given entity still exists
     areas_to_check = []
     for res in results:
         area = Area.query.filter_by(area_id=res[0]).first()
         areas_to_check.append(area)
-
-    print(areas_to_check)
     
     # Check if area(s) is/are associated with entity in support table 
     # and queue for deletion if not
     areas_to_delete = []
+    areas_to_delete_ids = []
     for area in areas_to_check:
         if entity_type == "resource":
             still_exists = check_relation("vw_unit_support", entity_type, entity_id,
@@ -239,27 +235,32 @@ def delete_entity_area(entity_type, entity_id, entity_name, area_names):
                                         "area", area.area_id)
         if not still_exists:
             areas_to_delete.append(f"{ area.area_id }:{ area.area_name }")
-
-    print(areas_to_delete)
+            areas_to_delete_ids.append(area.area_id)
 
     # Set log metadata
     areas_to_delete_str = ", ".join(areas_to_delete)
-    print(areas_to_delete_str)
+    
     description = f"delete { entity_type }_area relationship between \
         {entity_id}:{entity_name} and { areas_to_delete_str }"
     timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     # Delete from area 
-    # if entity_type in ["method", "tool"]:
-    #     db_session.execute(f"DELETE FROM person_support \
-    #                     WHERE { entity_id } = { entity_id } \
-    #                     AND fk_area_id IN ({ areas_to_delete_str});")
-    #probably need to do this differently for tools, need to know the method as well
+    for area_id in areas_to_delete_ids:
+        if entity_type in ["method", "tool"]:
+            db_session.execute(f"DELETE FROM person_support \
+                                WHERE { entity_id } = { entity_id } \
+                                AND fk_area_id IN ({ areas_to_delete_str});")
+        if entity_type in ["resource"]:
+            db_session.execute(f"DELETE FROM person_support \
+                                WHERE { entity_id } = { entity_id } \
+                                AND fk_area_id IN ({ areas_to_delete_str});")
     
-    # Delete defunct entity-area relations 
-    # db_session.execute(f"DELETE FROM { entity_type }_area \
-    #                    WHERE fk_{ entity_type }_id = { entity_id } \
-    #                    AND fk_area_id NOT IN ({ area_ids_str});")
+    # probably need to do this differently for tools, need to know the method as well
+    
+        # Delete defunct entity-area relations 
+        db_session.execute(f"DELETE FROM { entity_type }_area \
+                        WHERE fk_{ entity_type }_id = { entity_id } \
+                        AND fk_area_id NOT IN ({ area_ids_str});")
     
     # Log modification
     log_modification(description, timestamp)
