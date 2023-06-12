@@ -76,6 +76,7 @@
   {% endif %}
 </div>
 <br/>
+<br/>
 
 <!-- Update Funding Form Modal -->
 <div class="modal fade" id="updateFundingModal" name="updateFundingModal" 
@@ -90,7 +91,7 @@
       <div class="modal-body">
         <!-- Funding Form -->
         <div id="update_funding_form">
-          <form method="POST" action="{{ url_for('views_bp.add_funding', public_id=funding.public_id) }}" 
+          <form method="POST" action="{{ url_for('views_bp.update_funding', public_id=funding.public_id) }}" 
             target="_self">
             {% include "funding-form.html" %}
           </form>

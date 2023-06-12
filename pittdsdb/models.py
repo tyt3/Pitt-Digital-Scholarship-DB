@@ -662,3 +662,11 @@ t_unit_funding = Table(
     Column('fk_unit_id', ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False),
     Column('fk_funding_id', ForeignKey('funding.funding_id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
 )
+
+t_unit_support = Table(
+    'unit_support', metadata,
+    Column('fk_unit_id', ForeignKey('unit.unit_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_area_id', ForeignKey('area.area_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('fk_resource_id', ForeignKey('resource.resource_id', ondelete='CASCADE', onupdate='CASCADE'), index=True),
+    Column('date_added', DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+)

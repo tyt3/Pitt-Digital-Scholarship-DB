@@ -18,8 +18,8 @@ def update_person(person=Person, first_name='', last_name='', pronouns='',
                   title='', email='', phone='', scheduler_address='', 
                   other_contact='', preferred_contact='', web_address='', 
                   support_type='', bio='', notes='', photo_url=''):
-    description = f"update person {person.person_id}:{person.first_name} {person.first_name}"
-    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  
+    description = f"update person {person.person_id}:{person.first_name} {person.last_name}"
+    timestamp = now()  
 
     # Update person record
     person.first_name = first_name
@@ -52,7 +52,7 @@ def update_unit(unit=Unit, unit_name='', unit_type='', email='', phone='',
                 description=''):
     # Set metadata for log
     mod_description = f"update unit {unit.unit_id}:{unit.unit_name}"
-    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")   
+    timestamp = now()   
 
     # Update unit record
     unit.unit_name = unit_name
@@ -75,12 +75,12 @@ def update_unit(unit=Unit, unit_name='', unit_type='', email='', phone='',
         flash("The person record could not be updated.", category="error")
 
 
-def update_funding(funding=Funding, funding_name='', funding_type='',
-                   duration='', frequency='', payment_type='', 
-                   payment_amount='', career_level='', web_address='', 
-                   notes=''):
+def update_funding_in_db(funding=Funding, funding_name='', funding_type='',
+                         duration='', frequency='', payment_type='', 
+                         payment_amount='', career_level='', web_address='', 
+                         notes='', campus=''):
     description = f"update funding {funding.funding_id}:{funding.funding_name}"
-    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  
+    timestamp = now()  
 
     # Update funding record
     funding.funding_name = funding_name
@@ -92,6 +92,7 @@ def update_funding(funding=Funding, funding_name='', funding_type='',
     funding.career_level = career_level
     funding.web_address = web_address
     funding.notes = notes
+    funding.campus = campus
     funding.last_modified = timestamp
 
     # Commit changes
@@ -109,12 +110,10 @@ def update_address(entity_type=str, entity_id=str, entity_public_id=int,
                    room_number=str, street_address=str, address_2=str, 
                    city=str, state=str, zipcode=str, campus=str):
     # Check if other entities share ddress
-    results = db_session.execute(text(f"SELECT * \
-                                      FROM vw_addresses \
-                                      WHERE address_id = \
-                                      '{ address.address_id }'\
-                                      AND public_id <> '{entity_public_id}';")).\
-                                        fetchall()
+    query = f"SELECT * FROM vw_addresses \
+            WHERE address_id = '{address.address_id}'\
+            AND public_id <> '{entity_public_id}';"
+    results = execute(query, 'fetchall')
     
     if results:
         # Other entities are associated with address, so a new one should be added
@@ -143,7 +142,7 @@ def update_address(entity_type=str, entity_id=str, entity_public_id=int,
         else:
             # Set metadata for log
             description = f"update address {address.address_id}"
-            timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")   
+            timestamp = now()   
 
             address.building_name = building_name
             address.room_number = room_number
@@ -175,10 +174,11 @@ def update_affiliations(person_id, person_name, affiliations):
         if not exists:
             add_person_affiliation(person_id, a)
 
-        affiliation_ids.append(a.affiliation_id)
-        affiliation_types.append(a.affiliation_type)
+        affiliation_ids.append(affiliation.affiliation_id)
+        affiliation_types.append(affiliation.affiliation_type)
 
-    delete_affiliations(person_id, person_name, affiliation_types, affiliation_ids)
+    delete_affiliations(person_id, person_name, 
+                        affiliation_ids, affiliation_types)
 
 
 def update_unit_resource(unit_id=int, unit_name=str, resource=Resource, 
@@ -186,7 +186,7 @@ def update_unit_resource(unit_id=int, unit_name=str, resource=Resource,
                          web_address='', notes=''):
     # Set metadata for log
     description = f"update {resource.resource_id}:{resource.resource_name}"
-    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")        
+    timestamp = now()        
 
     # Update resource record
     if new_resource_name:
@@ -206,13 +206,14 @@ def update_unit_resource(unit_id=int, unit_name=str, resource=Resource,
     # Set metadata for log
     description = f"update unit-resource relation between {unit_id}:{unit_name} \
         and {resource.resource_id}:{resource.resource_name}"
-    timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    timestamp = now()
 
     # Update notes
-    db_session.execute(f"UPDATE unit_resource \
-                       SET notes = '{notes}' \
-                       WHERE fk_unit_id = {unit_id} \
-                       AND fk_resource_id = {resource.resource_id};")
+    query = f"UPDATE unit_resource \
+            SET notes = '{notes}' \
+            WHERE fk_unit_id = {unit_id} \
+            AND fk_resource_id = {resource.resource_id};"
+    execute(query)
     
     try:
         db_session.commit()
@@ -222,4 +223,9 @@ def update_unit_resource(unit_id=int, unit_name=str, resource=Resource,
     except:
         flash("The unit resource record could not be updated.", category="error")
 
-      # add resource-area relation
+    # add resource-area relation for areas in given list
+    add_resource_area(resource.resource_id, resource.resource_name, areas)
+
+    # delete resource-area relation for areas not in given list, if any
+    delete_entity_area(unit_id, "resource", resource.resource_id, 
+                       resource.resource_name, areas)

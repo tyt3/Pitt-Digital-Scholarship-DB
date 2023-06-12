@@ -146,7 +146,7 @@
   <h4>Areas of Support/Practice</h4>
   <div class="row">
     {% for area in person_support['areas'] %}
-    <div class="col-sm-6">
+    <div class="col-sm-4">
       <div class="card" style="margin-top: 20px;">
         <div class="card-body">
           <h5 class="card-title">
@@ -160,10 +160,15 @@
             <strong>Notes:</strong><br/>{{ person_support['areas'][area]['notes'] | safe }}
             {% endif %}
           </p>
+          <!-- <button type="button" class="btn btn-primary btn-sm" 
+            data-bs-toggle="modal" data-bs-target="#viewAreaModal"
+            data-area="{{ person_support['areas'][area] }}">
+            View Area
+          </button> -->
           {% if user.can_update %}
           <a role="button" class="btn btn-outline-primary btn-sm"
             href="{{ url_for('views_bp.update_area', area_name=area, public_id=person.public_id) }}">
-          Update Area
+            Update Area
           </a>
           {% endif %}
         </div>
@@ -186,7 +191,7 @@
   <h4>Supported Methods</h4>
   <div class="row">
     {% for method in person_support['methods'] %}
-    <div class="col-sm-6">
+    <div class="col-sm-4">
       <div class="card" style="margin-top: 20px;">
         <div class="card-body">
           <h5 class="card-title">
@@ -200,6 +205,10 @@
             <strong>Notes:</strong> {{ person_support['methods'][method]['notes'] | safe }}
             {% endif %}
           </p>
+          <!-- <button type="button" class="btn btn-primary btn-sm"
+            data-bs-toggle="modal" data-bs-target="#viewMethodModal">
+            View Method
+          </button> -->
           {% if user.can_update %}
           <a role="button" class="btn btn-outline-primary btn-sm"
             href="{{ url_for('views_bp.update_method', method_name=method, public_id=person.public_id) }}">
@@ -225,7 +234,7 @@
   <h4>Supported Tools</h4>
   <div class="row">
     {% for tool in person_support['tools'] %}
-    <div class="col-sm-6">
+    <div class="col-sm-4">
       <div class="card" style="margin-top: 20px;">
         <div class="card-body">
           <h5 class="card-title">
@@ -249,6 +258,10 @@
             <br/>
             {% endif %}
           </p>
+          <!-- <button type="button" class="btn btn-primary btn-sm"
+            data-bs-toggle="modal" data-bs-target="#viewToolModal">
+            View Tool
+          </button> -->
           {% if user.can_update %}
           <a role="button" class="btn btn-outline-primary btn-sm"
             href="{{ url_for('views_bp.update_tool', tool_name=tool, public_id=person.public_id) }}">
@@ -270,6 +283,7 @@
   {% endif %}
   <br/>
 </div>
+<br/>
 <br/>
 
 <!-- Update Person Form Modal -->
@@ -486,4 +500,26 @@
     </div>
   </div>
 </div>
+
+<!-- View Area Modal -->
+<div class="modal fade" id="viewAreaModal" name="viewAreaModal" 
+  tabindex="-1" aria-labelledby="viewAreaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"
+          id="viewAreaModal">Add Area</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {% endblock %}

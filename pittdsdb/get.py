@@ -10,13 +10,14 @@ from markdown import markdown
 from .database import db_session, engine
 from .models import *
 from .schemas import *
+from .utilities import *
 
 
 """ Person Get Functions """
 
 def get_person_relations(person_id=int, public_id=str, 
                          column=str, entity_type=str, entity_id=0) -> list:
-    results_list = []
+    results = results_list = []
 
     if entity_type == 'unit':
         results = get_person_units('person', public_id) 
@@ -30,16 +31,19 @@ def get_person_relations(person_id=int, public_id=str,
             else:
                 results_list.append(unit)
     else:
-        query = f'SELECT { column } FROM \
-            person_{ entity_type } pe \
-            JOIN { entity_type } AS e \
-            ON pe.fk_{ entity_type }_id = e.{ entity_type }_id \
-            WHERE fk_person_id = { person_id };'
+        query = f'SELECT {column} FROM \
+            person_{entity_type} pe \
+            JOIN {entity_type} AS e \
+            ON pe.fk_{entity_type}_id = e.{entity_type}_id \
+            WHERE fk_person_id = {person_id};'
     
         if entity_id != 0:
-            query = query[:-1] + f' AND fk_{ entity_type }_id = { entity_id };'
-
-        results = db_session.execute(text(query)).fetchall()
+            query = query[:-1] + f' AND fk_{entity_type}_id = {entity_id};'
+        
+        try:
+            results = execute(query, 'fetchall')
+        except:
+            print("Query failed:", query)
 
         for result in results:
             for i in range(len(result)):
@@ -53,9 +57,13 @@ def get_person_relations(person_id=int, public_id=str,
 
 def get_person_units(entity_type=str, public_id=str) -> list:
     query = f'SELECT * FROM vw_person_units \
-        WHERE { entity_type }_public_id = "{ public_id }"'
+            WHERE {entity_type}_public_id = "{public_id}"'
+    results = []
 
-    results = db_session.execute(text(query)).fetchall()
+    try:
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
 
     person_units = []
     if results:
@@ -85,9 +93,13 @@ def get_person_units(entity_type=str, public_id=str) -> list:
 
 def get_person_support(person_id) -> dict:
     person_support = {'areas': {}, 'methods': {}, 'tools': {}}
+    query = f'SELECT * FROM vw_person_support WHERE person_id = {person_id};'
+    results = pd.DataFrame([])
 
-    results = pd.DataFrame(db_session.execute(text(f'SELECT * FROM vw_person_support \
-                                 WHERE person_id = { person_id };')).fetchall())
+    try:
+        results = pd.DataFrame(execute(query, 'fetchall'))
+    except:
+        print("Query failed:", query)
     
     if not results.empty:
         results.columns = ['person_id', 'first_name', 'last_name', 'support_type', 'photo_url'
@@ -132,10 +144,14 @@ def get_person_support(person_id) -> dict:
 
 def get_unit(public_id):
     # Get unit information
-    results = db_session.execute(text(f'SELECT * FROM vw_units \
-                                      WHERE public_id = "{ public_id }";'))\
-                                        .first()
-    
+    query = f'SELECT * FROM vw_units WHERE public_id = "{public_id}";'
+    results = []
+
+    try:
+        results = execute(query, 'first')
+    except:
+        print("Query failed:", query)
+
     unit = None
     is_subunit = False
 
@@ -151,14 +167,18 @@ def get_unit(public_id):
 def get_unit_subunits(entity_type=str, public_id=str) -> list:
     if entity_type == 'unit':
         fields = ['public_id', 'unit_name', 'unit_type']
-        query = f'SELECT DISTINCT { ", ".join(fields) } FROM vw_units \
-            WHERE parent_unit_public_id = "{ public_id }"'
+        query = f'SELECT DISTINCT {", ".join(fields)} FROM vw_units \
+            WHERE parent_unit_public_id = "{public_id}"'
     elif entity_type == 'subunit':
         fields = ['parent_unit_public_id', 'parent_unit_name']
-        query = f'SELECT DISTINCT { ", ".join(fields) } FROM vw_units \
-            WHERE public_id = "{ public_id }"'
-
-    results = db_session.execute(text(query)).fetchall()
+        query = f'SELECT DISTINCT {", ".join(fields)} FROM vw_units \
+                WHERE public_id = "{public_id}"'
+        
+    results = []
+    try:
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
 
     unit_subunits = []
     if results:        
@@ -179,9 +199,13 @@ def get_unit_subunits(entity_type=str, public_id=str) -> list:
 
 def get_unit_by_name(unit_name=str) -> Unit:
     # Get unit information
-    results = db_session.execute(text(f'SELECT * FROM vw_units \
-                                      WHERE unit_name = "{ unit_name }";'))\
-                                        .first()
+    query = f'SELECT * FROM vw_units WHERE unit_name = "{unit_name}";'
+    results = []
+
+    try:
+        results = execute(query, 'first')
+    except:
+        print("Query failed:", query)
     
     # Check if unit or subunit by parent unit value
     unit = None
@@ -194,22 +218,26 @@ def get_unit_by_name(unit_name=str) -> Unit:
 
 
 def get_all_units():
-    results = db_session.execute(text("SELECT DISTINCT unit_name FROM vw_units;"))
+    query = "SELECT DISTINCT unit_name FROM vw_units;"
 
-    return results
+    return execute(query, 'fetchall')
 
 
 def get_unit_support(entity_type=str, public_id=str) -> list:
     query = f'SELECT DISTINCT * FROM vw_unit_support \
-            WHERE fk_public_id = "{ public_id }" \
+            WHERE fk_public_id = "{public_id}" \
             AND {entity_type}_id IS NOT NULL;'
+    results = []
 
-    results = db_session.execute(text(query)).fetchall()
+    try:
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
 
     unit_support = []
     if results:
-        fields = ['fk_public_id', 'unit_name', 'area_id', 'area_name', 
-                  'resource_id', 'resource_name', 'resource_type', 
+        fields = ['fk_public_id', 'unit_id', 'unit_name', 'area_id', 
+                  'area_name', 'resource_id', 'resource_name', 'resource_type', 
                   'resource_website', 'resource_notes']
         
         for result in results: 
@@ -229,9 +257,13 @@ def get_unit_support(entity_type=str, public_id=str) -> list:
 
 def get_unit_funding(entity_type, public_id=str):
     query = f'SELECT * FROM vw_funding \
-        WHERE {entity_type}_public_id = "{ public_id }"'
+        WHERE {entity_type}_public_id = "{public_id}"'
+    results = []
 
-    results = db_session.execute(text(query)).fetchall()
+    try:
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
 
     unit_funding = []
     if results:
@@ -256,10 +288,15 @@ def get_unit_funding(entity_type, public_id=str):
 
 def get_address(building_name=str, room_number=str, street_address=str, 
                 address_2=str, city=str, state=str, zipcode=str, campus=str):
-    address = Address.query.filter_by(building_name=building_name).\
-        filter_by(room_number=room_number).filter_by(street_address=street_address).\
-        filter_by(address_2=address_2).filter_by(city=city).filter_by(state=state).\
-        filter_by(zipcode=zipcode).filter_by(campus=campus).first()
+    address = []
+    
+    try:
+        address = Address.query.filter_by(building_name=building_name).\
+            filter_by(room_number=room_number).filter_by(street_address=street_address).\
+            filter_by(address_2=address_2).filter_by(city=city).filter_by(state=state).\
+            filter_by(zipcode=zipcode).filter_by(campus=campus).first()
+    except:
+        print("Address query failed")
     
     if address:
         return True, address
@@ -268,9 +305,13 @@ def get_address(building_name=str, room_number=str, street_address=str,
 
 
 def get_entity_address(public_id):
-    results = db_session.execute(text(f"SELECT * \
-                                      FROM vw_addresses \
-                                      WHERE public_id = '{ public_id }';")).fetchall()
+    query = f"SELECT * FROM vw_addresses WHERE public_id = '{public_id}';"
+    results = []
+
+    try:
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
 
     addresses = []
     if results:
@@ -288,6 +329,15 @@ def get_entity_address(public_id):
             addresses.append(result_dict)
         
     return addresses
+
+
+def get_field_list(query):
+    results = []
+    try:
+        result = list(zip(*db_session.execute(text(query)).fetchall()))[0]
+    except:
+        print("Query failed:", query)
+    return results
 
 
 def get_markdown(input=str) -> str:

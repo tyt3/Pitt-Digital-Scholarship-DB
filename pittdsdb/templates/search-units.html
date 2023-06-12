@@ -17,7 +17,7 @@
       <br />
       <div class="form-group">
         <label for="unit_type"><span style="font-weight: 500">Unit Type</span></label>
-        <select class="form-select form-select-md" id="type" name="type" multiple>
+        <select class="form-select form-select-md" id="unit_type" name="unit_type" multiple>
           <option value="" disabled>Select a unit type</option>
           {% for type in vocab['unit_type'] %}
           <option value="{{ type }}">{{ type }}</option>
@@ -114,7 +114,9 @@
   </div>
   {% endif %}
 </div>
-<br />
+<br/>
+<br/>
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
       document.location.hash = '#results';

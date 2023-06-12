@@ -130,7 +130,7 @@ def search_units():
 
     if request.method == "POST":
         unit_name = request.form.get('unit_name')
-        unit_types = request.form.getlist('unit_types')
+        unit_types = request.form.getlist('unit_type')
         campuses = request.form.getlist('campus')
         areas = request.form.getlist('supported_area')
         resource_types = request.form.getlist('supported_resource_type')
@@ -204,7 +204,7 @@ def add_person(public_id):
         last_name = request.form.get('last_name')
         pronouns = request.form.get('pronouns')
         title = request.form.get('title')
-        affiliation = request.form.getlist('affiliation')
+        affiliations = request.form.getlist('affiliation')
         email = request.form.get('email')
         web_address = request.form.get('web_address')
         phone = request.form.get('phone')
@@ -235,7 +235,8 @@ def add_person(public_id):
                           notes, photo_url)
 
             # Update affiliations
-            update_affiliations()
+            update_affiliations(person.person_id, person.first_name + ' ' + 
+                                person.last_name, affiliations)
 
             # Commit changes
             db_session.commit()
@@ -268,7 +269,7 @@ def add_person(public_id):
                     public_id = p.public_id
 
                     # Add affiliation
-                    for a in affiliation:
+                    for a in affiliations:
                         add_person_affiliation(person_id, a)
 
 
@@ -326,10 +327,7 @@ def add_person_unit(public_id):
                             unit_name)
         if parent_unit_names:
             for parent_unit in parent_unit_names:
-                query = f'SELECT * FROM vw_units \
-                        WHERE unit_name = "{ unit_name }" \
-                        AND parent_unit_name = "{parent_unit}"'
-                unit_subunit_match = db_session.execute(text(query)).fetchall()
+                unit_subunit_match = check_unit_subunit(unit_name, parent_unit)
                 
                 if not unit_subunit_match:
                     flash("The selected unit is not associated with the selected \
@@ -339,7 +337,7 @@ def add_person_unit(public_id):
                                             public_id=public_id))
 
                 add_person_unit_to_db(person.person_id, person.first_name + " " + 
-                                  person.last_name, unit_name)
+                                  person.last_name, parent_unit)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -360,7 +358,7 @@ def add_unit(public_id):
     # Get all units
     unit = None
     units = get_all_units()
-    unit_names = sorted(set([ res['unit_name'] for res in units]))
+    unit_names = sorted(set([ res[0] for res in units]))
 
     # Get data from form and submit to database
     if request.method == "POST":
@@ -398,6 +396,14 @@ def add_unit(public_id):
             else:
                 update_unit_node(unit_name, public_id)
 
+            # Delete any units not in list
+            unit_parent_units = get_unit_subunits("subunit", public_id)
+
+            for parent_unit in unit_parent_units:
+                if parent_unit['parent_unit_name'] not in parent_units:
+                    cur_unit = get_unit_by_name(parent_unit['parent_unit_name'])
+                    delete_unit_subunit(unit, cur_unit)
+
             return redirect(url_for('views_bp.view_unit',
                                     public_id=unit.public_id))
         
@@ -429,8 +435,6 @@ def add_unit(public_id):
 
                 return redirect(url_for('views_bp.view_unit', public_id=public_id))
             else:
-                flash('The unit record was not added. Please try again.', 
-                      category='error')
                 return redirect(url_for('views_bp.add_unit', public_id=public_id))
         
     return render_template("/add-unit.html",
@@ -467,32 +471,14 @@ def add_funding(public_id): # Change so that it asks for funding public id
         career_level = request.form.get('career_level')
         web_address = request.form.get('website')
         notes = request.form.get('notes')
-        #campuses = request.form.getlist('campus')
+        campus = request.form.get('campus')
 
-        if public_id not in ["None", "new"]:
-            funding = Funding.query.filter_by(funding_name=funding_name).first()
+        funding = Funding.query.filter_by(funding_name=funding_name).first()
 
-                       
-            if funding:
-                if current_user.is_authenticated:
-                    current_user.set_permissions(funding)
-            
-                if not current_user.can_update:
-                    flash("Your account does not have permission to update this funding record.", 
-                        category="error")
-                    return redirect(url_for('auth_bp.login'))
-
-                update_funding(funding, funding_name, funding_type, duration, 
-                               frequency, payment_type, payment_amount, 
-                               career_level, web_address, notes)
-            else:
-                flash("That funding does exist!", category="error")
-                return redirect(url_for('views_bp.add_funding',"new"))
-
-            # Add neo4j
-
-            return redirect(url_for('views_bp.view_funding',
-                                    public_id=public_id))
+        if funding:
+            flash("That funding record already exists!", category="error")
+            return redirect(url_for('views_bp.view_funding', 
+                                    public_id=funding.public_id))
 
         else:
             new_funding = add_funding_to_db(funding_name=funding_name, 
@@ -504,9 +490,30 @@ def add_funding(public_id): # Change so that it asks for funding public id
                                             career_level=career_level,
                                             web_address=web_address, 
                                             notes=notes,
+                                            campus=campus,
                                             added_by=current_user.user_id)[1]
             
             if new_funding:
+                if public_id not in ['None', 'new']:
+                    unit = Unit.query.filter_by(public_id=public_id).first()
+                    if not unit:
+                        flash("404: Not Found. That unit does not exist in the database.",
+                                category="error")
+                        return redirect(url_for('views_bp.index'))
+                    
+                    # Check if user can update record
+                    if current_user.is_authenticated:
+                        current_user.set_permissions(unit)
+                    if not current_user.can_update:
+                        flash("Your account does not have permission to update this unit record.",
+                            category="error")
+                        return redirect(url_for('views_bp.view_unit',
+                                                public_id=unit.public_id))
+                    
+                    add_funding_unit_to_db(new_funding.funding_id,
+                                           new_funding.funding_name,
+                                           unit.unit_name)
+
                 return redirect(url_for('views_bp.view_funding', 
                                         public_id=new_funding.public_id))
             else:
@@ -574,10 +581,7 @@ def add_funding_unit(public_id):
             add_funding_unit_to_db(funding.funding_id, funding.funding_name,
                                    unit_name)
         else:
-            query = f'SELECT * FROM vw_units \
-                    WHERE unit_name = "{ unit_name }" \
-                    AND parent_unit_name = "{parent_unit_name}"'
-            unit_subunit_match = db_session.execute(text(query)).fetchall()
+            unit_subunit_match = check_unit_subunit(unit_name, parent_unit_name)
             
             if not unit_subunit_match:
                 flash("The selected unit is not associated with the selected \
@@ -693,8 +697,7 @@ def add_method(public_id):
     person = Person.query.filter_by(public_id=public_id).first()
 
     # Check if user can update record
-    if current_user.is_authenticated:
-        current_user.set_permissions(person)
+    current_user.set_permissions(person)
     if not current_user.can_update:
         flash("Your account does not have permission to update this person record.",
                category="error")
@@ -814,23 +817,30 @@ def add_tool(public_id):
 @views_bp.route('/add-resource/<public_id>', methods=['POST'])
 @login_required
 def add_resource(public_id):
+    current_user.set_permissions()
+    if not current_user.can_add:
+        flash("Your account does not have permission to add to the database.",
+            category="error")
+        return redirect(url_for('views_bp.index'))
+
      # Get object information
     unit, is_subunit = get_unit(public_id)
     resource = None
 
-    if not unit:
-        flash("404: Not Found. That unit does not exist in the database.",
-                category="error")
-        return redirect(url_for('views_bp.index'))
+    if public_id not in ['new', 'None']:
+        if not unit:
+            flash("404: Not Found. That unit does not exist in the database.",
+                    category="error")
+            return redirect(url_for('views_bp.index'))
     
-    # Check if user can update record
-    if current_user.is_authenticated:
-        current_user.set_permissions(unit)
-    if not current_user.can_update:
-        flash("Your account does not have permission to update this unit record.",
-               category="error")
-        return redirect(url_for('views_bp.view_unit',
-                                public_id=unit.public_id))
+        # Check if user can update record
+        if current_user.is_authenticated:
+            current_user.set_permissions(unit)
+        if not current_user.can_update:
+            flash("Your account does not have permission to update this unit record.",
+                category="error")
+            return redirect(url_for('views_bp.view_unit',
+                                    public_id=unit.public_id))
     
     # Get form values
     areas = request.form.getlist('area')
@@ -871,22 +881,24 @@ def add_resource(public_id):
         existing_resource = Resource.query.filter_by(resource_name=new_resource).first()
         if existing_resource:
             resource = existing_resource
-            print("if existing resource", resource)
         else:
             success, resource = add_resource_to_db(new_resource, resource_type,
                                                    web_address)
-            print("new resource", resource)
     else:
-        print("else", resource)
         resource = Resource.query.filter_by(resource_name=resource_name).first()
-    
-    # Add unit-resource relations
-    add_unit_resource(unit.unit_id, unit.unit_name, resource.resource_id, 
-                      resource.resource_name, notes)
-    
+
     # Add resource-area relations     
     add_resource_area(resource.resource_id, resource.resource_name, 
-                      areas + new_areas)
+                    areas + new_areas)
+    
+    # Add unit-resource relations
+    if unit:
+        add_unit_resource(unit.unit_id, unit.unit_name, resource.resource_id, 
+                        resource.resource_name, areas + new_areas, notes)
+        
+        # Delete resource-area relations not in given list
+        delete_entity_area(unit.unit_id, "resource", resource.resource_id, 
+                        resource_name, areas + new_areas)
     
     return redirect(url_for('views_bp.view_unit',
                                 public_id=public_id))
@@ -1054,8 +1066,8 @@ def update_method(method_name, public_id):
         current_user.set_permissions(method)
     
     if request.method == "GET":
-        areas = list(zip(*db_session.execute(f"SELECT DISTINCT area_name FROM vw_person_support \
-                                WHERE method_name = '{method_name}'").fetchall()))[0]
+        areas = get_field_list(f"SELECT DISTINCT area_name FROM vw_person_support \
+                                WHERE method_name = '{method_name}'")
 
         proficiency_id = get_person_relations(person.person_id, person.public_id, 
                                     "fk_proficiency_id", "method", 
@@ -1080,7 +1092,8 @@ def update_method(method_name, public_id):
         # Add in neo4j code
 
         # Delete any method-area relations that are no longer supported
-        delete_entity_area("method", method.method_id, method.method_name, areas)
+        delete_entity_area(person.person_id, "method", method.method_id, 
+                           method.method_name, areas)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -1127,10 +1140,10 @@ def update_tool(tool_name, public_id):
         current_user.set_permissions(tool)
     
     if request.method == "GET":
-        areas = list(zip(*db_session.execute(f"SELECT DISTINCT area_name FROM vw_person_support \
-                                WHERE tool_name = '{tool_name}'").fetchall()))[0]
-        methods = list(zip(*db_session.execute(f"SELECT DISTINCT method_name FROM vw_person_support \
-                                WHERE tool_name = '{tool_name}'").fetchall()))[0]
+        areas = get_field_list(f"SELECT DISTINCT area_name FROM vw_person_support \
+                                WHERE tool_name = '{tool_name}'")
+        methods = get_field_list(f"SELECT DISTINCT method_name FROM vw_person_support \
+                                WHERE tool_name = '{tool_name}'")
         proficiency_id = get_person_relations(person.person_id, person.public_id, 
                                     "fk_proficiency_id", "tool", 
                                     tool.tool_id)[0]
@@ -1158,7 +1171,12 @@ def update_tool(tool_name, public_id):
         # Add in neo4j code
 
         # Delete any method-area relations that are no longer supported
-        delete_entity_area("tool", tool.tool_id, tool.tool_name, areas)
+        delete_entity_area(person.person_id, "tool", tool.tool_id, 
+                           tool.tool_name, areas)
+        
+        # Delete any method-tool relations that are no longer supported
+        delete_method_tool(person.person_id, tool.tool_id, tool.tool_name,
+                           methods)
 
         return redirect(url_for('views_bp.view_person',
                                 public_id=person.public_id))
@@ -1174,6 +1192,48 @@ def update_tool(tool_name, public_id):
                            tool=tool,
                            proficiency=proficiency,
                            notes=notes)
+
+
+@views_bp.route('/update-unding/<public_id>', methods=['POST'])
+@login_required
+def update_funding(public_id): # Change so that it asks for funding public id
+    funding = Funding.query.filter_by(public_id=public_id).first()
+
+    if not funding:
+        flash("That funding does exist!", category="error")
+        return redirect(url_for('views_bp.add_funding', public_id='new'))
+    
+    # Check if the user is logged in and, if so, set permissions
+    if current_user.is_authenticated:
+        current_user.set_permissions(funding)
+
+    # Check if user can add to the database and, if not, redirect
+    if not current_user.can_update:
+        flash("Your account does not have permission to add to the database.", 
+              category="error")
+        return redirect(url_for('auth_bp.login'))
+    
+    # Get data from form and submit to database
+    funding_name = request.form.get('funding_name')
+    funding_type = request.form.get('funding_type')
+    duration = request.form.get('duration')
+    frequency = request.form.get('frequency')
+    payment_type = request.form.get('payment_type')
+    payment_amount = request.form.get('payment_amount')
+    career_level = request.form.get('career_level')
+    web_address = request.form.get('website')
+    notes = request.form.get('notes')
+    campus = request.form.get('campus')
+
+
+    update_funding_in_db(funding, funding_name, funding_type, duration, 
+                         frequency, payment_type, payment_amount, 
+                         career_level, web_address, notes, campus)
+
+    # Add neo4j
+
+    return redirect(url_for('views_bp.view_funding',
+                            public_id=public_id))
 
 
 @views_bp.route('/update-resource/<resource_name>/<public_id>', methods=['GET', 'POST'])
@@ -1209,13 +1269,12 @@ def update_resource(resource_name, public_id):
     
     # View form
     if request.method == "GET":
-        areas = list(zip(*db_session.execute(
-            f"SELECT DISTINCT area_name FROM vw_unit_support \
-                WHERE resource_name = '{resource_name}'\
-                AND fk_public_id = '{public_id}'").fetchall()))[0]
-        notes = db_session.execute(f"SELECT resource_notes FROM vw_unit_support\
-                                   WHERE resource_name = '{resource_name}'\
-                                   AND fk_public_id = '{public_id}'").first()[0]
+        areas = get_field_list(f"SELECT DISTINCT area_name FROM vw_unit_support \
+                                WHERE resource_name = '{resource_name}'\
+                                AND fk_public_id = '{public_id}'")
+        notes = get_field_list(f"SELECT resource_notes FROM vw_unit_support\
+                                WHERE resource_name = '{resource_name}'\
+                                AND fk_public_id = '{public_id}'")
     
     # Submit form
     if request.method == "POST":

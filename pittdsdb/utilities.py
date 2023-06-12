@@ -1,11 +1,85 @@
+from flask import flash
 from flask_login import current_user
+import re
 from .database import db_session, engine
 from .models import *
 
 
-""" Modifcation Function """
+def check_entity(table, entity_type, entity_id):
+    prefix = ""
+    if table != "vw_person_support" and table != "vw_unit_support":
+        prefix = "fk_"
+
+    query = f"SELECT * FROM { table } \
+            WHERE { prefix }{entity_type}_id = {entity_id};"
+    
+    results = None
+    try:
+        results = db_session.execute(text(query)).first()
+    except:
+        print("Query failed:", query)
+
+    if results:
+        return True
+    return False
+
+
+def check_relation(table, entity_1_type, entity_1_id, entity_2_type, entity_2_id):
+    prefix = ""
+    if table != "vw_person_support" and table != "vw_unit_support":
+        prefix = "fk_"
+
+    query = f"SELECT * FROM { table } \
+            WHERE { prefix }{entity_1_type}_id = {entity_1_id} \
+            AND { prefix }{entity_2_type}_id = {entity_2_id};"
+    
+    results = None
+    try:
+        results = execute(query, 'first')
+    except:
+        print("Query failed:", query)
+
+    if results:
+        return True
+    return False
+
+
+def check_unit_subunit(unit_name, parent_unit_name):
+    query = f'SELECT * FROM vw_units \
+            WHERE unit_name = "{ unit_name }" \
+            AND parent_unit_name = "{parent_unit_name}"'
+    results = None
+    
+    try:   
+        results = execute(query, 'fetchall')
+    except:
+        print("Query failed:", query)
+
+    if results:
+        return True
+    return False
+
+
+def execute(query=str, method=None):
+    query = re.sub(r'[^\S\r\n\t]{2,}', ' ', query)
+
+    if method == 'fetchall':
+        return db_session.execute(text(query)).fetchall()
+    elif method == 'fetchone':
+        return db_session.execute(text(query)).fetchone()
+    elif method == 'first':
+        return db_session.execute(text(query)).first()
+    else:
+        db_session.execute(text(query))
+
+
+def list_intersection(list1=list, list2=list):
+    list3 = [value for value in list1 if value in list2]
+    return list3
+
 
 def log_modification(description, timestamp):
+    description = re.sub(r'[^\S\r\n\t]{2,}', ' ', description)
     modification = Modification(modification=description,
                                 modified_by=current_user.user_id,
                                 modification_date=timestamp)
@@ -15,17 +89,5 @@ def log_modification(description, timestamp):
     db_session.commit()
 
 
-def check_relation(table, entity_1_type, entity_1_id, entity_2_type, entity_2_id):
-    prefix = ""
-    if table != "vw_person_support":
-        prefix = "fk_"
-
-    query = f"SELECT * FROM { table } \
-            WHERE { prefix }{entity_1_type}_id = {entity_1_id} \
-            AND { prefix }{entity_2_type}_id = {entity_2_id};"
-    results = db_session.execute(text(query)).first()
-
-    if results:
-        return True
-    return False
-
+def now():
+    return datetime.now().strftime("%Y/%m/%d %H:%M:%S")
