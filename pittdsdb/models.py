@@ -64,7 +64,7 @@ class Person(Base):
     __tablename__ = 'person'
 
     person_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True, default=uuid4())
+    public_id = Column(String(36), nullable=False, unique=True, default=str(uuid4()))
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     title = Column(String(100))
@@ -117,7 +117,7 @@ class Unit(Base):
     __tablename__ = 'unit'
 
     unit_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True, default=uuid4())
+    public_id = Column(String(36), nullable=False, unique=True, default=str(uuid4()))
     unit_name = Column(String(100), nullable=False, unique=True)
     unit_type = Column(String(50), nullable=False)
     email = Column(String(256), unique=True)
@@ -161,7 +161,7 @@ class Funding(Base):
     __tablename__ = 'funding'
 
     funding_id = Column(Integer, primary_key=True)
-    public_id = Column(String(36), nullable=False, unique=True, default=uuid4())
+    public_id = Column(String(36), nullable=False, unique=True, default=str(uuid4()))
     funding_name = Column(String(100), nullable=False, unique=True)
     funding_type = Column(String(50), nullable=False)
     payment_type = Column(String(50), nullable=False)
