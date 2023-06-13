@@ -86,9 +86,9 @@
        >{% if notes %}{{ notes | safe }}{% endif %}</textarea>
 </div>
 <br/>
+{% if not area %}
 <div class="col-md-12 text-center">
-  {% if not area %}
   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-  {% endif %}
   <button type="submit" class="btn btn-primary">Submit</button>
 </div>
+{% endif %}

@@ -137,11 +137,11 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <form metod="POST" target="_parent"
           action="{{ url_for('views_bp.delete_resource', resource_id=resource.resource_id, public_id=unit.public_id) }}">
           <button type="submit" class="btn btn-danger">Delete</button>
         </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>

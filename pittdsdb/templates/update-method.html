@@ -128,11 +128,11 @@
         <p>Are you sure you want to delete this method and all related tools from {{ person.first_name }} {{ person.last_name }}'s record?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <form metod="POST" target="_parent"
           action="{{ url_for('views_bp.delete_method', method_id=method.method_id, person_id=person.person_id) }}">
           <button type="submit" class="btn btn-danger">Delete</button>
         </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>

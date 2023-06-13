@@ -27,11 +27,11 @@
             </div>
           </div>
         {% else %}
-        <div class="col">
-          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <button type="submit" class="btn btn-primary">Update</button>
+          <div class="col">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
           </div>
-        </div>
         {% endif %}
         </div>
       </form>
@@ -54,11 +54,11 @@ tabindex="-1" aria-labelledby="deleteAreaModalLabel" aria-hidden="true">
             <p>Are you sure you want to delete this area and all related methods and tools from {{ person.first_name }} {{ person.last_name }}'s record?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <form metod="POST" target="_parent"
           action="{{ url_for('views_bp.delete_area', area_id=area.area_id, person_id=person.person_id) }}">
             <button type="submit" class="btn btn-danger">Delete</button>
           </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
