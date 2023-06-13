@@ -20,29 +20,7 @@
       border-top-right-radius: 0;
       border-bottom-left-radius: calc(0.25rem - 1px);
     }
-    @media only screen and (max-width: 768px) {
-      .card-body {
-        padding: 0.5em 1.2em;
-      }
-      .card-body .card-text {
-        margin: 0;
-      }
-      .card img {
-        width: 9em;
-        min-width: 9em;
-        max-width: 9em;
-        min-height: 9em;
-        max-height: 9em;
-      }
-    }
-    @media only screen and (max-width: 1200px) {
-      .card img {
-        width: 9em;
-        min-width: 9em;
-        max-width: 9em;
-        max-height: 9em;
-      }
-    }
+    
   </style>
 {% endblock %}
 {% block content %}
@@ -156,7 +134,7 @@
     <div class="col-md-6">
       <div class="card" style="margin-top: 1em;">
         {% if person['photo_url'] %}
-        <img src="{{ person['photo_url'] }}" class="card-img-top .d-none .d-sm-block" />
+        <img src="{{ person['photo_url'] }}" class=".d-none .d-sm-block card-img-top" />
         {% else %}
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="card-img-top" />
         {% endif %}
