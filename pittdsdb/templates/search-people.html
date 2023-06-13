@@ -153,10 +153,10 @@
 <div id="results">
   <div class="row">
     {% for person in search_results %}
-    <div class="col-sm-6">
+    <div class="col-md-6">
       <div class="card" style="margin-top: 1em;">
         {% if person['photo_url'] %}
-        <img src="{{ person['photo_url'] }}" class="card-img-top" />
+        <img src="{{ person['photo_url'] }}" class="card-img-top .d-none .d-sm-block" />
         {% else %}
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="card-img-top" />
         {% endif %}
