@@ -325,7 +325,7 @@ def add_person_unit(public_id):
         add_person_unit_to_db(person.person_id, 
                             person.first_name + " " + person.last_name,
                             unit_name)
-        if parent_unit_names:
+        if 'No parent unit' not in parent_unit_names:
             for parent_unit in parent_unit_names:
                 unit_subunit_match = check_unit_subunit(unit_name, parent_unit)
                 

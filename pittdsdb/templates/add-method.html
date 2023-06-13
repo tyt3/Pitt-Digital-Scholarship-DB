@@ -81,7 +81,10 @@
     ></textarea>
   </div>
   <br/>
-  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <div class="col-md-12 text-center">
+    {% if not method %}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    {% endif %}
     <button type="submit" class="btn btn-primary">Submit</button>
   </div>
 </form>
