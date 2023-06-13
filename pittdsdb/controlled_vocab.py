@@ -45,7 +45,6 @@ vocab = {
         'person',
         'unit',
         'department',
-        'subunit'
         ],
     'frequency': [
         'Annual',
@@ -202,15 +201,9 @@ try:
 except:
     pass
 
-subunits = None
-try:
-    subunits = list(zip(*db_session.query(Subunit.subunit_name).distinct()))[0]
-except:
-    pass
-
 entities = [areas, campuses, career_levels, funding_types, payment_types, 
             durations, frequencies, methods, resources, resource_types,
-            support_types, tools, tool_types, units, subunits]
+            support_types, tools, tool_types, units]
 
 existing = {
     'areas': [],
@@ -226,8 +219,7 @@ existing = {
     'support_types': [],
     'tools': [],
     'tool_types': [],
-    'units': [],
-    'subunits': []
+    'units': []
 }
 
 i = 0
@@ -239,7 +231,7 @@ for entity in existing:
         existing[entity] = value_list
     i += 1
 
-all_units = existing['units'] + existing['subunits']
+all_units = existing['units']
 all_units.sort()
 existing['all_units'] = all_units
 
