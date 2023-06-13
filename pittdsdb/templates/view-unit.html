@@ -138,7 +138,7 @@
   <h4>People</h4>
   <div class="row">
   {% for person in people %}
-    <div class="col-sm-3">
+    <div class="col-sm-6 col-lg-4 col-xl-3">
       <div class="card" style="margin-top: .5em;">
         <img class="card-img-top" 
           {% if person['photo_url'] %}
@@ -174,7 +174,7 @@
   <h4>Areas of Support/Practice</h4>
   <div class="row">
   {% for area in areas %}
-    <div class="col-sm-3">
+    <div class="col-sm-6 col-lg-4 col-xxl-3">
       <div class="card" style="margin-top: .5em;">
         <div class="card-body">
           <h5 class="card-title" style="margin-bottom: 0.07em;">{{ area }}</h5>
@@ -191,7 +191,7 @@
   <h4>Resources</h4>
   <div class="row">
     {% for resource in resources %}
-      <div class="col-sm-6">
+      <div class="col-lg-6">
         <div class="card" style="margin-top: .5em;">
           <div class="card-body">
             <h5 class="card-title">{{ resource['name'] }}</h5>
@@ -235,7 +235,7 @@
   <h4>Funding Opportunities</h4>
   <div class="row">
   {% for opportunity in funding %}
-    <div class="col-sm-6">
+    <div class="col-lg-6">
       <div class="card" style="margin-top: .5em;">
         <div class="card-body">
           <h5 class="card-title">{{ opportunity['funding_name'] }}</h5>

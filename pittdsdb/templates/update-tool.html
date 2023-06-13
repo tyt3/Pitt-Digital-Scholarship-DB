@@ -2,6 +2,8 @@
 {% block content %}
 <div class="row">
   <div class="mx-auto col-sm-10 col-md-8 col-lg-6 col-xxl-4">
+    <h3 align="center">Update Tool</h3>
+    <br/>
     <form method="POST" 
       action="{{ url_for('views_bp.update_tool', tool_name=tool.tool_name, public_id=person.public_id) }}">
       <div class="form-group">
@@ -128,7 +130,7 @@
           >{% if notes %}{{ notes | safe }}{% endif %}</textarea>
       </div>
       <br/>
-      <div class="row">
+      <div class="row gy">
         <div class="col">
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="{{ url_for('views_bp.view_person', public_id=person.public_id) }}"

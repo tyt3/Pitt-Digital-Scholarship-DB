@@ -21,9 +21,6 @@
       border-bottom-left-radius: calc(0.25rem - 1px);
     }
     @media only screen and (max-width: 768px) {
-      a {
-        display: none;
-      }
       .card-body {
         padding: 0.5em 1.2em;
       }
@@ -47,7 +44,7 @@
       }
     }
   </style>
-  {% endblock %}
+{% endblock %}
 {% block content %}
 <form action="/search-people" method="POST">
   <h3 align="center">Search People</h3>
@@ -165,7 +162,7 @@
         {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{ person['first_name'] }} {{ person['last_name'] }}</h5>
-          <p class="card-text">
+          <p>
             <a href="mailto:{{ person['email'] }}">{{ person['email'] }}</a>
           </p>
           <a href="{{ url_for('views_bp.view_person', public_id=person['public_id']) }}" class="btn btn-primary">View Page</a>
