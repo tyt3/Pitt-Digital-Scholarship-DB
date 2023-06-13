@@ -231,10 +231,6 @@ for entity in existing:
         existing[entity] = value_list
     i += 1
 
-all_units = existing['units']
-all_units.sort()
-existing['all_units'] = all_units
-
 area_name = ['2D Scanning and Digitization',
                  '3D Scanning and Modeling',
                  'Coding and Computation',

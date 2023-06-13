@@ -3,12 +3,9 @@ from flask import Blueprint, render_template, redirect, request, session, \
     flash, url_for, abort
 from flask_login import login_required, current_user
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from operator import itemgetter
 from git import Repo
 import json
-import markdown
 from .config import SECRET_KEY
 from .database import db_session
 from .models import *
