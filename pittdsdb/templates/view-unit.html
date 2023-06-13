@@ -13,8 +13,7 @@
 {% endif %}
 {% endblock %}
 {% block content %}
-<br/>
-<div class="mx-auto col-10 col-md-10 col-lg-11">
+<div class="mx-auto col-lg-10">
   <!-- Unit Contact information -->
   <h3>{{ unit.unit_name }}</h3>
   <p class="contact"><strong>Unit Type:</strong> {{ unit.unit_type }}</p>
@@ -53,7 +52,14 @@
     {% if address['room_number'] %}
     {{ address['room_number'] }} 
     {% endif %}
-    {{ address['building_name']}}
+    {{ address['building_name']}}<br/>
+    {{ address['street_address']}}<br/>
+    {% if address['address_2'] %}
+    {{ address['address_2']}}<br/>
+    {% endif %}
+    {{ address['city'] }}, {{ address['state'] }}, 
+    {{ address['zipcode'] }}<br/>
+    {{ address['campus'] }} Campus
     {% if user.can_update %}
     &nbsp;
     <a role="button" class="btn btn-outline-primary btn-sm"
@@ -63,13 +69,6 @@
     </a>
     {% endif %}
     <br/>
-    {{ address['street_address']}}<br/>
-    {% if address['address_2'] %}
-    {{ address['address_2']}}<br/>
-    {% endif %}
-    {{ address['city'] }}, {{ address['state'] }}, 
-    {{ address['zipcode'] }}<br/>
-    {{ address['campus'] }} Campus
     {% if address != addresses[-1] %}
     <div style="height: 0.25em; display: block; margin-bottom: 0em;"></div>
     {% endif %}
@@ -90,16 +89,22 @@
   {% endif %}
   {% if user.can_update %}
   <br/>
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#updateUnitModal">
-  Update Unit
-  </button>
-  {% endif %}
-  {% if user.can_delete %}
-  <button type="button" class="btn btn-danger btn-sm"
-    data-bs-toggle="modal" data-bs-target="#deleteUnitModal">
-  Delete Unit
-  </button>
+  <div class="row gy-4 d-flex justify-content-md-start justify-content-center">
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary btn-sm"
+        data-bs-toggle="modal" data-bs-target="#updateUnitModal">
+      Update Unit
+      </button>
+    </div>
+    {% endif %}
+    {% if user.can_delete %}
+    <div class="col-auto">
+      <button type="button" class="btn btn-danger btn-sm"
+        data-bs-toggle="modal" data-bs-target="#deleteUnitModal">
+      Delete Unit
+      </button>
+    </div>
+  </div>
   {% endif %}
 
   <!-- Subunits -->
@@ -275,7 +280,6 @@
             {% include "unit-form.html" %}
           </form>
         </div>
-        <br/>
       </div>
     </div>
   </div>

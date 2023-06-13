@@ -12,8 +12,7 @@
   </style>
 {% endblock %}
 {% block content %}
-<br/>
-<div class="mx-auto col-10 col-md-10 col-lg-11">
+<div class="mx-auto col-lg-10">
   <!-- Contact Information -->
   <h3>{{ person.first_name }} {{ person.last_name }}</h3>
   {% if person.photo_url %}
@@ -88,15 +87,7 @@
   {% if address['room_number'] %}
     {{ address['room_number'] }} 
   {% endif %}
-  {{ address['building_name']}}
-  {% if user.can_update %}&nbsp;
-  <a role="button" class="btn btn-outline-primary btn-sm"
-    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;"
-    href="{{ url_for('views_bp.update_entity_address', entity_type='person', public_id=person.public_id, address_id=address['address_id']) }}">
-    Update Address
-  </a>
-  {% endif %}
-  <br/>
+  {{ address['building_name']}}<br/>
   {{ address['street_address']}}<br/>
   {% if address['address_2'] %}
     {{ address['address_2']}}<br/>
@@ -104,6 +95,14 @@
   {{ address['city'] }}, {{ address['state'] }}, 
   {{ address['zipcode'] }}<br/>
   {{ address['campus'] }} Campus
+  {% if user.can_update %}&nbsp;
+  <a role="button" class="btn btn-outline-primary btn-sm"
+    style="--bs-btn-padding-y: .05rem; --bs-btn-padding-x: .25rem; --bs-btn-font-size: .75rem;"
+    href="{{ url_for('views_bp.update_entity_address', entity_type='person', public_id=person.public_id, address_id=address['address_id']) }}">
+    Update Address
+  </a>
+  <br/>
+  {% endif %}
   {% if address != addresses[-1] %}
     <div style="height: 0.25em; display: block; margin-bottom: 0em;"></div>
   {% endif %}
@@ -127,16 +126,22 @@
   <br/>
   {% endif %}
   <br/>
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#updatePersonModal">
-  Update Person
-  </button>
-  {% endif %}
-  {% if user.can_delete %}
-  <button type="button" class="btn btn-danger btn-sm"
-    data-bs-toggle="modal" data-bs-target="#deletePersonModal">
-  Delete Person
-  </button>
+  <div class="row gy-4 d-flex justify-content-md-start justify-content-center">
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary btn-sm"
+        data-bs-toggle="modal" data-bs-target="#updatePersonModal">
+        Update Person
+      </button>
+    </div>
+      {% endif %}
+      {% if user.can_delete %}
+    <div class="col-auto">
+      <button type="button" class="btn btn-danger btn-sm"
+        data-bs-toggle="modal" data-bs-target="#deletePersonModal">
+        Delete Person
+      </button>
+    </div>
+  </div>
   {% endif %}
 
   <!-- Areas -->
@@ -178,10 +183,12 @@
   {% endif %}
   {% if user.can_update %}
   <br/>
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#addAreaModal">
-  Add an Area
-  </button>
+  <div class="d-flex justify-content-md-start justify-content-center"> 
+    <button type="button" class="btn btn-primary btn-sm"
+      data-bs-toggle="modal" data-bs-target="#addAreaModal">
+    Add an Area
+    </button>
+  </div>
   {% endif %}
 
   <!-- Methods -->
@@ -222,10 +229,12 @@
   {% endif %}
   {% if user.can_update %}
   <br/>
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#addMethodModal">
-  Add a Method
-  </button>
+  <div class="d-flex justify-content-md-start justify-content-center">
+    <button type="button" class="btn btn-primary btn-sm"
+      data-bs-toggle="modal" data-bs-target="#addMethodModal">
+    Add a Method
+    </button>
+  </div>
   {% endif %}
 
   {% if person_support['tools']|length > 0 or user.can_update %}
@@ -275,15 +284,15 @@
   {% endif %}
   {% if user.can_update %}
   <br/>
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#addToolModal">
-  Add a Tool
-  </button>
+  <div class="d-flex justify-content-md-start justify-content-center"> 
+    <button type="button" class="btn btn-primary btn-sm"
+      data-bs-toggle="modal" data-bs-target="#addToolModal">
+    Add a Tool
+    </button>
+  </div>
   {% endif %}
   <br/>
 </div>
-<br/>
-<br/>
 
 <!-- Update Person Form Modal -->
 <div class="modal fade" id="updatePersonModal" name="updatePersonModal" 
@@ -303,7 +312,6 @@
             {% include "person-form.html" %}
           </form>
         </div>
-        <br/>
       </div>
     </div>
   </div>
@@ -389,7 +397,6 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
-          <br/>
         </div>
       </div>
     </div>
@@ -413,7 +420,6 @@
             target="_self">
             {% include 'add-address.html' %}
           </form>
-          <br/>
         </div>
       </div>
     </div>
@@ -437,13 +443,6 @@
           <form method="POST" action="{{ url_for('views_bp.add_area', public_id=person.public_id) }}" 
             target="_parent">
             {% include "add-area.html" %}
-            <br/>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-              {% if not area %}
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              {% endif %}
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
           </form>
         </div>
       </div>

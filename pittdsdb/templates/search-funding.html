@@ -3,7 +3,6 @@
 <span style="color: black;">Search</span>
 {% endblock %}
 {% block content %}
-<br/>
 <form action="/search-funding" method="POST">
   <h3 align="center">Search Funding</h3>
   <br/>
@@ -133,18 +132,16 @@
   </div>
   <br />
   <hr />
-  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <div class="d-flex justify-content-center">
     <p><em>End of results.</em></p>
   </div>
   {% else %}
   <hr />
-  <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <div class="d-flex justify-content-center">
     <p><em>No matching results were found.</em></p>
   </div>
   {% endif %}
 </div>
-<br/>
-<br/>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {

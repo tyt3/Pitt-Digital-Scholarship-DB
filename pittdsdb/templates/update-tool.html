@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
-  <div class="mx-auto col-6 col-md-6 col-lg-4">
+  <div class="mx-auto col-sm-10 col-md-8 col-lg-6 col-xxl-4">
     <form method="POST" 
       action="{{ url_for('views_bp.update_tool', tool_name=tool.tool_name, public_id=person.public_id) }}">
       <div class="form-group">
@@ -159,7 +159,6 @@
     </form>
   </div>
 </div>
-<br/>
 
 <!-- Delete Tool Form Modal -->
 <div class="modal fade" id="deleteToolModal" name="deleteToolModal" 

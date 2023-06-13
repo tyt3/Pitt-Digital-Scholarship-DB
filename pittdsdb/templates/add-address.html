@@ -1,5 +1,5 @@
-<div class="row">
-  <div class="col">
+<div class="row gy-4">
+  <div class="col-sm">
     <label for="building"><span style="font-weight: 500">Building</span></label>
     <input 
     type="text" 
@@ -12,7 +12,7 @@
     value="{{ request.form['building'] }}">
     {% endif %}
   </div>
-  <div class="col">
+  <div class="col-sm">
     <label for="office"><span style="font-weight: 500">Office Room #</span></label>
     <input 
     type="text" 
@@ -58,8 +58,8 @@
   placeholder="1234 Main St">
 </div>
 <br/>
-<div class="row">
-  <div class="col">
+<div class="row gy-4">
+  <div class="col-sm">
     <label for="city"><span style="font-weight: 500">City</span></label>
     <input 
       type="text" 
@@ -73,7 +73,7 @@
       {% endif %}
       required>
   </div>
-  <div class="col">
+  <div class="col-sm">
     <label for="state"><span style="font-weight: 500">State</span></label>
     <select
       class="form-control" 
@@ -89,7 +89,7 @@
       >PA</option>
     </select>
   </div>
-  <div class="col">
+  <div class="col-sm">
     <label for="zipcode"><span style="font-weight: 500">Zipcode</span></label>
     <input 
       type="text" 
@@ -125,11 +125,11 @@
 </div>
 <br/>
 {% if not address %}
-<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+<div class="col-md-12 text-center">
   <button type="submit" class="btn btn-primary">Submit</button>
 </div>
 {% else %}
-<div class="row">
+<div class="row gy-4">
   <div class="col">
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
       {% if entity_type == 'person' %}

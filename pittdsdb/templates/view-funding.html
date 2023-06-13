@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<br/>
 <!-- Contact Information -->
-<div class="mx-auto col-10 col-md-10 col-lg-11">
+<div class="mx-auto col-lg-10">
   <h3>{{ funding.funding_name }}</h3>
   <p class="contact"><strong>Type:</strong> {{ funding.funding_type }}</p>
   <p class="contact">
@@ -62,20 +61,24 @@
   <p class="contact"><strong>Last Updated:</strong> {{ funding.last_modified }}</p>
   <br/>
   {% if user.can_update %}
-  <button type="button" class="btn btn-primary btn-sm"
-    data-bs-toggle="modal" data-bs-target="#updateFundingModal">
-  Update Funding
-  </button>
-  {% endif %}
-  {% if user.can_delete %}
-  <button type="button" class="btn btn-danger btn-sm"
-    data-bs-toggle="modal" data-bs-target="#deleteFundingModal">
-  Delete Funding
-  </button>
+  <div class="row gy-4 d-flex justify-content-md-start justify-content-center">
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary btn-sm"
+        data-bs-toggle="modal" data-bs-target="#updateFundingModal">
+      Update Funding
+      </button>
+      {% endif %}
+      </div>
+    <div class="col-auto"> 
+      {% if user.can_delete %}
+      <button type="button" class="btn btn-danger btn-sm"
+        data-bs-toggle="modal" data-bs-target="#deleteFundingModal">
+      Delete Funding
+      </button>
+    </div>
+  </div>
   {% endif %}
 </div>
-<br/>
-<br/>
 
 <!-- Update Funding Form Modal -->
 <div class="modal fade" id="updateFundingModal" name="updateFundingModal" 
