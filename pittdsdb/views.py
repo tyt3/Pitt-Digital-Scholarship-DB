@@ -34,7 +34,7 @@ def index():
     if current_user.is_authenticated:
         current_user.set_permissions()
     return render_template("index.html",
-                           title="Pitt Digital Scholarship Database",
+                           title="Home",
                            user=current_user)
 
 """Function to Show About Page"""
@@ -43,7 +43,7 @@ def about():
     if current_user.is_authenticated:
         current_user.set_permissions()
     return render_template("about.html", 
-                           title="Pitt Digital Scholarship Database",
+                           title="About",
                            user=current_user)
 
 
@@ -54,7 +54,7 @@ def documentation():
         current_user.set_permissions()
 
     return render_template("documentation.html",
-                           title="Documentation | Pitt Digital Scholarship Database",
+                           title="Documentation",
                            user=current_user)
 
 
@@ -63,11 +63,6 @@ def documentation():
 def contact():
     if current_user.is_authenticated:
         current_user.set_permissions()
-
-    if request.method == "GET":
-        return render_template("contact.html",
-                           title="Contact Us | Pitt Digital Scholarship Database",
-                           user=current_user)
     
     if request.method == "POST":
         full_name = request.form.get('full_name')
@@ -81,6 +76,10 @@ def contact():
 
         return redirect(url_for('views_bp.index'))
     
+    return render_template("contact.html",
+                           title="Contact Us",
+                           user=current_user)
+    
     
 """Functions to Show Search Pages"""
 @views_bp.route('/search')
@@ -88,7 +87,7 @@ def search():
     if current_user.is_authenticated:
         current_user.set_permissions()
     return render_template("search.html",
-                           title="Search | Pitt Digital Scholarship Database",
+                           title="Search",
                            user=current_user)
 
 
@@ -117,7 +116,7 @@ def search_people():
         search = True
     
     return render_template("search-people.html",
-                           title="Search People | Pitt Digital Scholarship Database",
+                           title="Search People",
                            user=current_user,
                            existing=existing,
                            search_results=search_results,
@@ -146,7 +145,7 @@ def search_units():
         search = True
     
     return render_template("search-units.html",
-                           title="Search Units | Pitt Digital Scholarship Database",
+                           title="Search Units",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -180,7 +179,7 @@ def search_fundings():
         search = True
 
     return render_template("search-funding.html",
-                           title="Search Funding | Pitt Digital Scholarship Database",
+                           title="Search Funding Opportunities",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -290,7 +289,7 @@ def add_person(public_id):
                                         public_id=public_id))
             
     return render_template("add-person.html",
-                           title="Add a Person | Pitt Digital Scholarship Database",
+                           title="Add a Person",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -442,7 +441,7 @@ def add_unit(public_id):
                 return redirect(url_for('views_bp.add_unit', public_id=public_id))
         
     return render_template("/add-unit.html",
-                           title="Add a Unit | Pitt Digital Scholarship Database",
+                           title="Add a Unit",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -527,7 +526,7 @@ def add_funding(public_id): # Change so that it asks for funding public id
                                         public_id=public_id))
     
     return render_template("/add-funding.html",
-                           title="Add a Funding Opportunity | Pitt Digital Scholarship Database",
+                           title="Add a Funding Opportunity",
                            user=current_user,
                            vocab=vocab,
                            existing=existing)
@@ -969,7 +968,7 @@ def update_entity_address(entity_type, public_id, address_id):
                                 public_id=entity.public_id)) 
 
     return render_template("update-address.html",
-                           title="Update an Area | Pitt Digital Scholarship Database",
+                           title="Update an Address",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
@@ -1029,7 +1028,7 @@ def update_area(area_name, public_id):
                                 public_id=person.public_id))
 
     return render_template("update-area.html",
-                           title="Update an Area | Pitt Digital Scholarship Database",
+                           title="Update an Area",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
@@ -1103,7 +1102,7 @@ def update_method(method_name, public_id):
                                 public_id=person.public_id))
 
     return render_template("update-method.html",
-                           title="Update a Method | Pitt Digital Scholarship Database",
+                           title="Update a Method",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
@@ -1186,7 +1185,7 @@ def update_tool(tool_name, public_id):
                                 public_id=person.public_id))
 
     return render_template("update-tool.html",
-                           title="Update a Method | Pitt Digital Scholarship Database",
+                           title="Update a Tool",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
@@ -1300,7 +1299,7 @@ def update_resource(resource_name, public_id):
                                 public_id=unit.public_id))
 
     return render_template("update-resource.html",
-                           title="Update a Method | Pitt Digital Scholarship Database",
+                           title="Update a Resource",
                            user=current_user,
                            existing=existing,
                            vocab=vocab,
@@ -1601,9 +1600,7 @@ def view_person(public_id):
     if not person:
         flash("404: Not Found. That person does not exist in the database.",
               category="error")
-        return render_template("index.html",
-                           title="Pitt Digital Scholarship Database",
-                           user=current_user)
+        return redirect(url_for('views_bp.index'))
     
     # Check if current user can update and/or delete person recor
     if current_user.is_authenticated:
@@ -1629,7 +1626,7 @@ def view_person(public_id):
     notes = get_markdown(person.notes)
 
     return render_template("view-person.html",
-                           title="View a Person | Pitt Digital Scholarship Database",
+                           title="View a Person",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -1652,9 +1649,7 @@ def view_unit(public_id):
     if not unit:
         flash("404: Not Found. That unit does not exist in the database.",
               category="error")
-        return render_template("index.html",
-                               title="Pitt Digital Scholarship Database",
-                               user=current_user)
+        return redirect(url_for('views_bp.index'))
     
     # Check if current user can update and/or delete person recor
     if current_user.is_authenticated:
@@ -1716,7 +1711,7 @@ def view_unit(public_id):
             session.pop('resource_form', None)
 
     return render_template("view-unit.html",
-                           title="View a Unit | Pitt Digital Scholarship Database",
+                           title="View a Unit",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -1744,9 +1739,7 @@ def view_funding(public_id):
     if not funding:
         flash("404: Not Found. That funding does not exist in the database.",
               category="error")
-        return render_template("index.html",
-                           title="Pitt Digital Scholarship Database",
-                           user=current_user)
+        return redirect(url_for('views_bp.index'))
     
     # Check if current user can update and/or delete person recor
     if current_user.is_authenticated:
@@ -1764,7 +1757,7 @@ def view_funding(public_id):
     notes = get_markdown(funding.notes)
         
     return render_template("view-funding.html",
-                           title="View a Funding Opportunity | Pitt Digital Scholarship Database",
+                           title="View a Funding Opportunity",
                            user=current_user,
                            vocab=vocab,
                            existing=existing,
@@ -1787,7 +1780,7 @@ def test(username):
     # delete_entity_area("method", 1, "Topic Modeling", [2], "Text Mining & Analysis")
     
     return render_template("test.html",
-                           title="Test | Pitt Digital Scholarship Database",
+                           title="Test",
                            user=current_user,
                            user_name=user_name,
                            vocab=vocab,
@@ -1850,5 +1843,5 @@ def webhook():
         commit_hash = pull_info[0].commit.hexsha
         build_commit = f'build_commit = "{commit_hash}"'
         print(f'{build_commit}')
-        
+
         return 'Updated PythonAnywhere server to commit {commit}'.format(commit=commit_hash)

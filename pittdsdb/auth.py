@@ -99,7 +99,7 @@ def sign_up():
         current_user.set_permissions()
         
     return render_template("sign-up.html", 
-                           title="Sign Up | Pitt Digital Scholarship Database",
+                           title="Sign Up",
                            user = current_user)
 
 
@@ -133,7 +133,7 @@ def login():
             flash("Email not registered.", category="error")
 
     return render_template("login.html",
-                           title="Login | Pitt Digital Scholarship Database",
+                           title="Log In",
                            user = current_user)
 
 
@@ -150,71 +150,67 @@ def logout():
 @auth_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    if current_user:
-        current_user.set_permissions()
-        if request.method == "GET":
-            return render_template("account.html",
-                        title="Account | Pitt Digital Scholarship Database",
-                        user=current_user)
-        if request.method == "POST":
-            first_name = request.form.get('first_name')
-            last_name = request.form.get('last_name')
-            user_name = request.form.get('user_name')
-            email = request.form.get('email')
-            cur_password = request.form.get('cur_password')
-            password = request.form.get('password')
-            password_conf = request.form.get('password_conf')
-            admin_code = request.form.get('admin_code')
-            # Check that email is from the Pitt domain
-            regex = '^[a-z0-9]+@pitt.edu$'
-            if not re.search(regex, email):
-                flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
+    current_user.set_permissions()
+            
+    if request.method == "POST":
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        user_name = request.form.get('user_name')
+        email = request.form.get('email')
+        cur_password = request.form.get('cur_password')
+        password = request.form.get('password')
+        password_conf = request.form.get('password_conf')
+        admin_code = request.form.get('admin_code')
+        # Check that email is from the Pitt domain
+        regex = '^[a-z0-9]+@pitt.edu$'
+        if not re.search(regex, email):
+            flash("Please register using your Pitt (@pitt.edu) email address.", category='error')
+        else:
+            if password:
+                if not sha256_crypt.verify(cur_password, current_user.user_password):
+                    flash("Password is incorrect.", category="error")
+                elif (len(password) < 8):
+                    flash("Password must be at least 8 characters.", category='error')
+                elif (len(password) > 16):
+                    flash("Password must be less than 16 characters.", category='error')
+                elif not re.search("[a-z]", password):
+                    flash("Password must contain at least 1 lowercase alphabet.", category='error')
+                elif not re.search("[A-Z]", password):
+                    flash("Password must contain at least 1 uppercase alphabet.", category='error')
+                elif not re.search("[0-9]", password):
+                    flash("Password must contain at least 1 number.", category='error')
+                elif not re.search("[_@()*&^%#<>,!$]", password):
+                    flash("Password must contain at least 1 special character.", category='error')
+                elif password != password_conf:
+                    flash("Passwords do not match.", category='error')
             else:
-                if password:
-                    if not sha256_crypt.verify(cur_password, current_user.user_password):
-                        flash("Password is incorrect.", category="error")
-                    elif (len(password) < 8):
-                        flash("Password must be at least 8 characters.", category='error')
-                    elif (len(password) > 16):
-                        flash("Password must be less than 16 characters.", category='error')
-                    elif not re.search("[a-z]", password):
-                        flash("Password must contain at least 1 lowercase alphabet.", category='error')
-                    elif not re.search("[A-Z]", password):
-                        flash("Password must contain at least 1 uppercase alphabet.", category='error')
-                    elif not re.search("[0-9]", password):
-                        flash("Password must contain at least 1 number.", category='error')
-                    elif not re.search("[_@()*&^%#<>,!$]", password):
-                        flash("Password must contain at least 1 special character.", category='error')
-                    elif password != password_conf:
-                        flash("Passwords do not match.", category='error')
-                else:
-                    password = current_user.user_password
-                # Check for valid admin code
-                permission_id = current_user.permission_level 
-                if admin_code:
-                    # Get all permission codes
-                    permission_codes = db_session.execute(
-                        select(Permission.permission_code)).all()
-                    # Check for a matching permission code
-                    for code in permission_codes:
-                        if sha256_crypt.verify(admin_code, code[0]):
-                            permission_id_result = db_session.execute(
-                                select(Permission.permission_id).where(
-                                Permission.permission_code == code[0])).first()
-                            permission_id = permission_id_result[0]
-                            break
-                # Save any updated user account variables
-                p_level = permission_id
-                current_user.first_name=first_name
-                current_user.last_name=last_name,
-                current_user.user_name=user_name,
-                current_user.email=email,
-                current_user.user_password=sha256_crypt.hash(password),
-                current_user.permission_level=p_level
-                db_session.commit()
-                # Alert user that account was created succesfully
-                flash("Account Details Updated!", category="success")
-    else:
-        flash("Login to view or update login details", category="error")
-        return redirect(url_for('auth_bp.login'))
-    return redirect(url_for('auth_bp.account'))
+                password = current_user.user_password
+            # Check for valid admin code
+            permission_id = current_user.permission_level 
+            if admin_code:
+                # Get all permission codes
+                permission_codes = db_session.execute(
+                    select(Permission.permission_code)).all()
+                # Check for a matching permission code
+                for code in permission_codes:
+                    if sha256_crypt.verify(admin_code, code[0]):
+                        permission_id_result = db_session.execute(
+                            select(Permission.permission_id).where(
+                            Permission.permission_code == code[0])).first()
+                        permission_id = permission_id_result[0]
+                        break
+            # Save any updated user account variables
+            p_level = permission_id
+            current_user.first_name=first_name
+            current_user.last_name=last_name,
+            current_user.user_name=user_name,
+            current_user.email=email,
+            current_user.user_password=sha256_crypt.hash(password),
+            current_user.permission_level=p_level
+            db_session.commit()
+            # Alert user that account was created succesfully
+            flash("Account Details Updated!", category="success")
+    
+    return render_template("account.html",
+                           title="Account",
+                           user=current_user)
