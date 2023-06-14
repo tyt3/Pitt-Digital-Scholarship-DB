@@ -81,10 +81,13 @@ def list_intersection(list1=list, list2=list):
     return list3
 
 
-def log_modification(description, timestamp):
+def log_modification(description=str, timestamp=str, user_id=None):
     description = re.sub(r'[^\S\r\n\t]{2,}', ' ', description)
+
+    if not user_id:
+        user_id = current_user.user_id
     modification = Modification(modification=description,
-                                modified_by=current_user.user_id,
+                                modified_by=user_id,
                                 modification_date=timestamp)
     
     # Add modification log to database

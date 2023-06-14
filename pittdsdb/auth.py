@@ -8,6 +8,7 @@ from passlib.hash import sha256_crypt
 import secrets
 from .database import db_session
 from .models import User, Permission
+from .add import add_user
 
 
 auth_bp = Blueprint('auth_bp', __name__)
@@ -76,19 +77,17 @@ def sign_up():
                         # Generate API key
                         api_key = secrets.token_hex(16)
                         # Create new user object
-                        new_user = User(first_name=first_name,
-                                        last_name=last_name,
-                                        user_name=user_name,
-                                        email=email,
-                                        user_password=sha256_crypt.hash(password),
-                                        api_key=api_key,
-                                        permission_level=p_level)
-                        # Add new user to database
-                        db_session.add(new_user)
-                        db_session.commit()
-                        # Alert user that account was created succesfully
-                        login_user(new_user)
-                        flash("Account created!", category="success")
+                        new_user = add_user(first_name=first_name,
+                                            last_name=last_name,
+                                            user_name=user_name,
+                                            email=email,
+                                            password=sha256_crypt.hash(password),
+                                            api_key=api_key,
+                                            permission_level=p_level)
+                        
+                        if new_user:
+                            # Log new user in
+                            login_user(new_user)
 
                         # Redirect to login page
                         return redirect(url_for('views_bp.index'))

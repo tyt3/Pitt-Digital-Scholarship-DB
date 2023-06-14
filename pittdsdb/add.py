@@ -300,6 +300,43 @@ def add_funding_to_db(funding_name, funding_type, duration, frequency,
         return False, None
 
 
+""" User Functions """
+def add_user(first_name=str, last_name=str, user_name=str, email=str, 
+             password=str, api_key=str, permission_level=str):
+    
+    # Create user object
+    new_user = User(first_name=first_name,
+                    last_name=last_name,
+                    user_name=user_name,
+                    email=email,
+                    user_password=password,
+                    api_key=api_key,
+                    permission_level=permission_level)
+    
+    try:
+        # Add new user to database
+        db_session.add(new_user)
+        db_session.commit()
+
+        # Alert user that account was created succesfully
+        flash("Account created!", category="success")
+    except:
+        # Notify user of failure
+        flash("Account could not be created. Please try again later.",
+              category="error")
+        
+    user = User.query.filter_by(email=email).first()
+    
+    if user:
+        # Log modification
+        description = f"add user {user.user_id}:{user.first_name} {user.last_name}"
+        log_modification(description, user.account_created, user.user_id)
+
+        return user
+    else:
+        return None
+
+
 """" Secondary Entity Functions """
 
 def add_address_to_db(building_name=str, room_number=str, street_address=str, 
