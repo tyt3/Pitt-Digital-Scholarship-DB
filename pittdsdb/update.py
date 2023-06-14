@@ -14,6 +14,30 @@ from .delete import *
 from .utilities import *
 
 
+def update_user(first_name=str, last_name=str, user_name=str, email=str,
+                password=str, permission_level=int):
+    current_user.first_name=first_name
+    current_user.last_name=last_name,
+    current_user.user_name=user_name,
+    current_user.email=email,
+    current_user.user_password=password,
+    current_user.fk_permission_id=permission_level
+
+    try:
+        db_session.commit()
+
+        # Alert user that account was created succesfully
+        flash("Account details updated!", category="success")
+        
+        # Log modification
+        description = f"update user {current_user.user_id}:{current_user.user.first_name} \
+            {current_user.last_name}"
+        log_modification(description, now(), current_user.user_id)
+    except:
+        # Alert user that account was created succesfully
+        flash("Account could not be updated.", category="error")
+
+
 def update_person(person=Person, first_name='', last_name='', pronouns='', 
                   title='', email='', phone='', scheduler_address='', 
                   other_contact='', preferred_contact='', web_address='', 
