@@ -1014,10 +1014,11 @@ def update_area(area_name, public_id):
                                  area.area_id)[0]
     
     if request.method == "POST":
+        new_area = request.form.get('new_area')
         updated_proficiency = request.form.get('proficiency')
         updated_notes = request.form.get('notes')
         result = manage_person_area('update', current_user.user_id, 
-                                     person.person_id, area.area_name, None,
+                                     person.person_id, area.area_name, new_area,
                                      updated_proficiency, updated_notes)
         
 
