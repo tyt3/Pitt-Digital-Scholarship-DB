@@ -61,7 +61,6 @@ def contact():
     user_id = 2
     if current_user.is_authenticated:
         current_user.set_permissions()
-    else:
         user_id = current_user.user_id
     
     if request.method == "POST":
