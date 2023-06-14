@@ -58,8 +58,11 @@ def documentation():
 """Function to Show Contact Page"""
 @views_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
+    user_id = 2
     if current_user.is_authenticated:
         current_user.set_permissions()
+    else:
+        user_id = current_user.user_id
     
     if request.method == "POST":
         full_name = request.form.get('full_name')
@@ -67,9 +70,12 @@ def contact():
         subject = request.form.get('subject')
         message = request.form.get('message')
 
-        msg = Message(subject, sender='pittdsdb@gmail.com', recipients=['tyt3@pitt.edu'])
-        msg.body = f"From: {full_name} <{email}> {message}" 
-        mail.send(msg)
+        # msg = Message(subject, sender='pittdsdb@gmail.com', recipients=['tyt3@pitt.edu'])
+        # msg.body = f"From: {full_name} <{email}> {message}" 
+        # mail.send(msg)
+        new_inquiry = Inquiry(full_name, email, subject, message, user_id)
+        db_session.add(new_inquiry)
+        db_session.commit()
 
         return redirect(url_for('views_bp.index'))
     

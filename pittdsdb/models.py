@@ -464,6 +464,27 @@ class Modification(Base):
     
     def get_id(self):
         return (self.modification_id)
+    
+
+class Inquiry(Base):
+    __tablename__ = 'inquiry'
+
+    inquiry_id = Column(Integer, primary_key=True)
+    full_name = Column(String(100), nullable=False)
+    email = Column(String(256), nullable=False)
+    subject = Column(String(100), nullable=False)
+    message = Column(String(500), nullable=False)
+    sent_by = Column(ForeignKey('user.user_id'), nullable=False, index=True)
+    send_date = Column(DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+
+    user = relationship('User')
+
+    def __init__(self, full_name, email, subject, message, sent_by):
+        self.full_name = full_name
+        self. email = email
+        self.subject = subject
+        self.message = message
+        self.sent_by = sent_by
 
 
 """ VIEWS """
