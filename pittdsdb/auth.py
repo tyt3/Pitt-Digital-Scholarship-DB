@@ -50,7 +50,7 @@ def sign_up():
                     flash("Password must contain at least 1 uppercase alphabet.", category='error')
                 elif not re.search("[0-9]", password):
                     flash("Password must contain at least 1 number.", category='error')
-                elif not re.search("[_@()*&^%#<>,$]", password):
+                elif not re.search("[_@()*&^%#<>,$!]", password):
                     flash("Password must contain at least 1 special character.", category='error')
                 elif password != password_conf:
                     flash("Passwords do not match.", category='error')
