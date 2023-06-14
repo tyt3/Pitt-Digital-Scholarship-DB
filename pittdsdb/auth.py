@@ -27,7 +27,6 @@ def sign_up():
         email = request.form.get('email')
         password = request.form.get('password')
         password_conf = request.form.get('password_conf')
-        admin_code = request.form.get('admin_code')
 
         # Check if user email is already in the database
         user = User.query.filter_by(email=email).first()
@@ -56,43 +55,23 @@ def sign_up():
                 elif password != password_conf:
                     flash("Passwords do not match.", category='error')
                 else:
-                    # Check for valid admin code
-                    p_level = permission_id = 1
-                    if admin_code:
-                        # Get all permission codes
-                        permission_codes = db_session.execute(
-                            select(Permission.permission_code)).all()
-                        # Check for a matching permission code
-                        for code in permission_codes:
-                            if sha256_crypt.verify(admin_code, code[0]):
-                                permission_id_result = db_session.execute(
-                                    select(Permission.permission_id).where(
-                                    Permission.permission_code == code[0])).first()
-                                permission_id = permission_id_result[0]
-                                break
-                        # Check if given permission code, if any, was matched
-                        # and update permission level accordingly
-                    if permission_id or not admin_code:
-                        p_level = permission_id
-                        # Generate API key
-                        api_key = secrets.token_hex(16)
-                        # Create new user object
-                        new_user = add_user(first_name=first_name,
-                                            last_name=last_name,
-                                            user_name=user_name,
-                                            email=email,
-                                            password=sha256_crypt.hash(password),
-                                            api_key=api_key,
-                                            permission_level=p_level)
-                        
-                        if new_user:
-                            # Log new user in
-                            login_user(new_user)
+                    # Generate API key
+                    api_key = secrets.token_hex(16)
+                    # Create new user object
+                    new_user = add_user(first_name=first_name,
+                                        last_name=last_name,
+                                        user_name=user_name,
+                                        email=email,
+                                        password=sha256_crypt.hash(password),
+                                        api_key=api_key,
+                                        permission_level=2)
+                    if new_user:
+                        # Log new user in
+                        login_user(new_user)
 
-                        # Redirect to login page
-                        return redirect(url_for('views_bp.index'))
-                    else:
-                        flash("Please enter a valid Administrator code.", category='error')
+                    # Redirect to login page
+                    return redirect(url_for('views_bp.index'))
+
     
     if current_user.is_authenticated:
         current_user.set_permissions()
