@@ -30,7 +30,7 @@ def update_user(first_name=str, last_name=str, user_name=str, email=str,
         flash("Account details updated!", category="success")
         
         # Log modification
-        description = f"update user {current_user.user_id}:{current_user.user.first_name} \
+        description = f"update user {current_user.user_id}:{current_user.first_name} \
             {current_user.last_name}"
         log_modification(description, now(), current_user.user_id)
     except:

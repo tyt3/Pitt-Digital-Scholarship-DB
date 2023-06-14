@@ -9,6 +9,7 @@ import secrets
 from .database import db_session
 from .models import User, Permission
 from .add import add_user
+from .update import update_user
 
 
 auth_bp = Blueprint('auth_bp', __name__)
@@ -177,17 +178,12 @@ def account():
                             Permission.permission_code == code[0])).first()
                         permission_id = permission_id_result[0]
                         break
+
             # Save any updated user account variables
-            p_level = permission_id
-            current_user.first_name=first_name
-            current_user.last_name=last_name,
-            current_user.user_name=user_name,
-            current_user.email=email,
-            current_user.user_password=sha256_crypt.hash(password),
-            current_user.fk_permission_id=p_level
-            db_session.commit()
-            # Alert user that account was created succesfully
-            flash("Account Details Updated!", category="success")
+            update_user(first_name=first_name, last_name=last_name, 
+                        user_name=user_name, email=email, 
+                        password=sha256_crypt.hash(password), 
+                        permission_level=permission_id)
     
     return render_template("account.html",
                            title="Account",
