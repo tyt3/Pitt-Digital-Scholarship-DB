@@ -1772,6 +1772,15 @@ def view_funding(public_id):
                            notes=notes)
 
 
+@views_bp.route('/network')
+def view_network():
+    if current_user.is_authenticated:
+        current_user.set_permissions()
+    return render_template("network.html",
+                           title="Network",
+                           user=current_user)
+
+
 @views_bp.route('/test/<username>', methods=['GET', 'POST'])
 def test(username):
     if current_user.is_authenticated:

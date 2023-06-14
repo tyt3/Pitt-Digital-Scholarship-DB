@@ -1,260 +1,40 @@
 {% extends 'base.html' %}
-  {% block head %}
-        <style type="text/css">
-            #viz {
-                height: 700px;
-                font: 10
-            }
-        </style>
-        <script src="https://rawgit.com/neo4j-contrib/neovis.js/master/dist/neovis.js"></script>
-        
-         <script
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-   {% endblock %} 
-   {% block body_tag %}onload="draw()"{% endblock %}
-   {% block content %}
-    <script>
-        function draw() {
-            let neoViz;
-            
-            var config = {
-                containerId: "viz",
-                neo4j: {
-                    serverUrl: "neo4j://34.138.97.57:7687",
-                    serverUser: "neo4j",
-                    serverPassword: "INFSCI2710"
-                },
-                visConfig: {
-                        nodes: {
-                            shape: 'circle',
-                            labelHighlightBold: false,
-                        },
-                        edges: {
-                            arrows: {
-                                to: {enabled: true}
-                            },
-                        }
-                    },
-                 labels: {
-                    "Person": {
-                        label: "name",
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "orange",
-                                shape:'image',
-                                image: "../static/profile.jpeg"
-							},
-						}
-                    },
-                     
-                     "Unit": {
-                        label: "name",
-                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "green",
-                                shape:'image',
-                                image: "../static/unit.png"
-							},
-						}
-                    },
-                     
-                     "SubUnit": {
-                        label: "name",
-                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "light green",
-                                shape:'image',
-                                image: "../static/subunit.png"
-							},
-						}
-                        
-                    },
-                     
-                     "Area": {
-                        label: "name",
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "violet",
-                                shape:'image',
-                                image: "../static/area.jpeg"
-							},
-						}
-                    },
-                     
-                     "Method": {
-                        label: "name",
-                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "blue",
-                                shape:'image',
-                                image: "../static/method.png"
-							},
-						}
-                    },
-                     
-                     "Tool": {
-                        label: "name",
-                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "light blue",
-                                shape:'image',
-                                image: "../static/tool.jpeg"
-							},
-						}
-                    },
-                     
-                     "Resource": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "yellow",
-                                shape:'image',
-                                image: "../static/resource.jpeg"
-							},
-						}
-                    },
-                     
-                     "Funding": {
-                        label: "name",  
-                         [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-							function: {
-								title: NeoVis.objectToTitleHtml
-							},
-                            static: {
-								color: "pink",
-                                shape:'image',
-                                image: "../static/funding.png"
-							},
-						}
-                    }
-                },
-                relationships: {
-                    "SUPPORTS": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"SUPPORTS"
-							},
-						} 
-                    },
-                    "SUPPORTED_BY": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"SUPPORTED_BY",
-							},
-						}
-                    },
-                    "PART_OF": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"PART_OF",
-							},
-						}
-                    },
-                    "INCLUDES": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"INCLUDES",
-							},
-						}
-                    },
-                    "PROVIDES": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"PROVIDES",
-							},
-						}
-                    },
-                    "PROVIDED_BY": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"PROVIDED_BY",
-							},
-						}
-                    },
-                    "HOUSES": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"HOUSES",
-							},
-						}
-                    },
-                    "HOUSED_IN": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"HOUSED_IN",
-							},
-						}
-                    },
-                    "OFFERS": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"OFFERS",
-							},
-						}
-                    },
-                    "OFFERED_BY": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"OFFERED_BY",
-							},
-						}
-                    },
-                    "USES": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"USES",
-							},
-						}
-                    },
-                    "USED_FOR": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"USED_FOR",
-							},
-						}
-                    },
-                    "TYPE_OF": {
-                        [NeoVis.NEOVIS_ADVANCED_CONFIG]: {
-                            static: {
-                                label:"TYPE_OF",
-							},
-						}
-                    }
-                },
-                arrows: true,
-                initialCypher: "MATCH p = (n)-[r]->(m) RETURN p"
-            };
+{% block head%}
+<!-- Custom styles for jumbotron -->
+<link href="css/jumbotron.css" rel="stylesheet">
+{% endblock %}
+{% block jumbotron %}
 
-            var viz = new NeoVis.default(config);
-            viz.render();
-            viz.registerOnEvent('clickNode', (e) => {
-                if (e.node.raw.labels[0] == "Person"){
-                    window.open(e.node.raw.properties['profile_uri'],'_self')
-                }
-            });
-        }
-    </script>
-        <div id="viz"></div>
+<div class="p-5 text-bg-warning">
+    <div class="container py-5">
+        <h1>Welcome to the Pitt Digital Scholarship Database!</h1>
+        <h4>The Pitt Digital Scholarship Database (PittDSDB) enables users to search for 
+            practitioners and supporters of digital scholarship
+            at the University of Pittsburgh. Sign up to get started!
+        </h4>
+            <br/>
+        <p><a class="btn btn-primary btn-lg" href="sign-up" role="button">Get Started &raquo;</a></p>
+    </div>
+</div>
+{% endblock%}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-4">
+      <h2>Search the Database</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
+      <p><a class="btn btn-primary" href="#" role="button">Search &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>Add Records</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
+      <p><a class="btn btn-primary" href="#" role="button">Add Info &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>View the network</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
+      <p><a class="btn btn-primary" href="network" role="button">View Graph &raquo;</a></p>
+    </div>
+  </div>
+
 {% endblock %}

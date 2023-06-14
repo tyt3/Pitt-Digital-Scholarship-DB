@@ -78,6 +78,11 @@
               </li>
                 {% endblock %}
               {% endif %}
+              {% block navbar_network %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('views_bp.view_network') }}">View Network</a>
+              </li>
+              {% endblock %}
               {% block navbar_documentation %}
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('views_bp.documentation') }}">Documentation</a>
@@ -140,6 +145,7 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+    {% block jumbotron %}{% endblock%}
     <br/>
     <div class="container">
       <br/>
