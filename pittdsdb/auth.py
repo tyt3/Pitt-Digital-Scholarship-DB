@@ -79,7 +79,7 @@ def sign_up():
         
     return render_template("sign-up.html", 
                            title="Sign Up",
-                           user = current_user)
+                           user=current_user)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -105,7 +105,7 @@ def login():
                 #flash("Login successful!", category="success")
                 return render_template("index.html",
                                        title="Pitt Digital Scholarship Database",
-                                       user = current_user)
+                                       user=current_user)
             else:
                 flash("Password is incorrect.", category="error")
         else:
@@ -113,7 +113,7 @@ def login():
 
     return render_template("login.html",
                            title="Log In",
-                           user = current_user)
+                           user=current_user)
 
 
 @auth_bp.route('/logout')
@@ -167,17 +167,23 @@ def account():
             # Check for valid admin code
             permission_id = current_user.fk_permission_id
             if admin_code:
+                valid_code = False
                 # Get all permission codes
                 permission_codes = db_session.execute(
                     select(Permission.permission_code)).all()
                 # Check for a matching permission code
-                for code in permission_codes:
-                    if sha256_crypt.verify(admin_code, code[0]):
+                for res in permission_codes:
+                    code = res[0]
+                    if sha256_crypt.verify(admin_code, code):
                         permission_id_result = db_session.execute(
                             select(Permission.permission_id).where(
-                            Permission.permission_code == code[0])).first()
+                            Permission.permission_code == code)).first()
                         permission_id = permission_id_result[0]
+                        valid_code = True
                         break
+                if not valid_code:
+                    flash("Admininstrative code was not updated. Please enter a valid administrative code.",
+                            category="error")
 
             # Save any updated user account variables
             update_user(first_name=first_name, last_name=last_name, 
