@@ -185,7 +185,7 @@ def account():
             else:
                 password = current_user.user_password
             # Check for valid admin code
-            permission_id = current_user.permission_level 
+            permission_id = current_user.fk_permission_id
             if admin_code:
                 # Get all permission codes
                 permission_codes = db_session.execute(
