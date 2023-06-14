@@ -205,7 +205,7 @@ def account():
             current_user.user_name=user_name,
             current_user.email=email,
             current_user.user_password=sha256_crypt.hash(password),
-            current_user.permission_level=p_level
+            current_user.fk_permission_idl=p_level
             db_session.commit()
             # Alert user that account was created succesfully
             flash("Account Details Updated!", category="success")
