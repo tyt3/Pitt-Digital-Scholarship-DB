@@ -157,7 +157,7 @@
               {{ person['support_type'] }}<br/>
               <a href="mailto:{{ person['email'] }}">{{ person['email'] }}</a>
             </p>
-          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+          <div class="col-md-12 text-center">
             <a href="{{ url_for('views_bp.view_person', public_id=person['person_public_id']) }}" 
               class="btn btn-primary btn-sm">View Page</a>
           </div>
