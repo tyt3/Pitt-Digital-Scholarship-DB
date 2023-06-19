@@ -6,7 +6,7 @@
 {% block jumbotron %}
 
 <div class="p-5 pitt-gold">
-    <div class="container py-5">
+    <div class="container py-4">
         <h1>Welcome to the Pitt Digital Scholarship Database!</h1>
         <br/>
         <h4>The Pitt Digital Scholarship Database (PittDSDB) enables users to find
@@ -24,17 +24,34 @@
     <div class="col-md-4">
       <h2>Search the Database</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
-      <p><a class="btn btn-outline-primary" href="#" role="button">Search DB  &raquo;</a></p>
+      <!-- <p><a class="btn btn-outline-primary dropdown-toggle" href="#" role="button">Search DB  &raquo;</a></p> -->
+      <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Search DB
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{{ url_for('views_bp.search_people') }}">People</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('views_bp.search_units') }}">Units</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('views_bp.search_fundings') }}">Funding</a></li>
+      </div>
     </div>
     <div class="col-md-4">
       <h2>Add Records</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
-      <p><a class="btn btn-outline-primary" href="#" role="button">Add Records &raquo;</a></p>
+      <!-- <p><a class="btn btn-outline-primary" href="#" role="button">Add Records &raquo;</a></p> -->
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Add to DB
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{{ url_for('views_bp.add_person', public_id='new') }}">Person</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('views_bp.add_unit', public_id='new') }}">Unit</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('views_bp.add_funding', public_id='new') }}">Funding</a></li>
+      </ul>
     </div>
     <div class="col-md-4">
       <h2>View the Network</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
-      <p><a class="btn btn-outline-primary" href="network" role="button">View Network &raquo;</a></p>
+      <p><a class="btn btn-outline-primary" href="http://pittdsdb.pythonanywhere.com/network" role="button">View Network</a></p>
     </div>
   </div>
 
