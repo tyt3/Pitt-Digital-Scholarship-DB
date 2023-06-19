@@ -1,6 +1,6 @@
 """Module for Views"""
 from flask import Blueprint, render_template, redirect, request, session, \
-    flash, url_for, abort
+    flash, url_for, abort, Markup
 from flask_login import login_required, current_user
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -1776,6 +1776,13 @@ def view_funding(public_id):
 def view_network():
     if current_user.is_authenticated:
         current_user.set_permissions()
+
+    flash(Markup("Don't see the network? Check it out \
+                 <a href='http://pittdsdb.pythonanywhere.com/network' \
+                 class='alert-link' target='_blank'>here</a>! \
+                 Try refreshing the page if you encounter an error. Our \
+                 apologies--we are currently experiencing issues with Neo4J."), 
+                 category="warning")
     return render_template("network.html",
                            title="Network",
                            user=current_user)

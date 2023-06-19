@@ -85,7 +85,7 @@
           {% endif %}
           {% block navbar_network %}
           <li class="nav-item">
-            <a class="nav-link" href="http://pittdsdb.pythonanywhere.com/network">View Network</a>
+            <a class="nav-link" href="{{ url_for('views_bp.view_network') }}">View Network</a>
           </li>
           {% endblock %}
           {% block navbar_documentation %}
@@ -149,29 +149,9 @@
       </div>
     </div>
   </nav>
-  {% with messages = get_flashed_messages(with_categories=True) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  {% if category=='error' %}
-  <div class="alert alert-danger alert-dismissable fade show" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-bs-dismiss="alert">
-    <span aria-hidden="true">&times</span>
-    </button>
-  </div>
-  {% elif category!='modal-form-error' %}
-  <div class="alert alert-success alert-dismissable fade show" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-bs-dismiss="alert">
-    <span aria-hidden="true">&times</span>
-    </button>
-  </div>
-  {% endif %}
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
+  {% include 'messages.html' %}
   {% block jumbotron %}{% endblock%}
-  <div class="container my-4">
+  <div class="container my-5">
     {% block content %}
     {% endblock %}
   </div>
