@@ -23,7 +23,9 @@
     src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png">
   {% endif %}
   <br/>
+  {% if person.pronouns %}
   <p class="contact"><strong>Pronouns:</strong> {{ person.pronouns }}</p>
+  {% endif %}
   <p class="contact"><strong>Unit:</strong>
     {% if units|length > 1 or units|length == 0 %}
     <br/>
