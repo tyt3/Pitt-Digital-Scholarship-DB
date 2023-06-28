@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% block head%}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 <!-- Custom styles for jumbotron -->
 <link href="css/jumbotron.css" rel="stylesheet">
 {% endblock %}
 {% block jumbotron %}
 
-<div class="p-5 pitt-gold">
+<div class="p-5 bg-pitt-gold">
     <div class="container py-4">
         <h1>Welcome to the Pitt Digital Scholarship Database!</h1>
         <br/>
@@ -14,7 +15,7 @@
             at the University of Pittsburgh to get support and collaborate. Sign up to get started!
         </h4>
             <br/>
-        <p><a class="btn btn-primary btn-lg" href="sign-up" role="button">Get Started &raquo;</a></p>
+        <p><a class="btn btn-primary btn-lg bg-pitt-royal border-pitt-royal" href="sign-up" role="button">Get Started &raquo;</a></p>
     </div>
 </div>
 {% endblock%}
@@ -26,7 +27,7 @@
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
       <!-- <p><a class="btn btn-outline-primary dropdown-toggle" href="#" role="button">Search DB  &raquo;</a></p> -->
       <div class="dropdown">
-        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-warning bg-pitt-gold border-pitt-gold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Search DB
         </button>
         <ul class="dropdown-menu">
@@ -39,7 +40,7 @@
       <h2>Add Records</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
       <!-- <p><a class="btn btn-outline-primary" href="#" role="button">Add Records &raquo;</a></p> -->
-      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn btn-warning bg-pitt-gold border-pitt-gold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Add to DB
       </button>
       <ul class="dropdown-menu">
@@ -51,7 +52,7 @@
     <div class="col-md-4">
       <h2>View the Network</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque aliquet sapien eget pulvinar venenatis. Quisque imperdiet dolor at cursus hendrerit. In consectetur porttitor ultrices. Nulla in volutpat risus. Aliquam ipsum ante, ultricies quis justo mollis, pulvinar luctus lorem.</p>
-      <p><a class="btn btn-outline-primary" href="{{ url_for('views_bp.view_network') }}" role="button">View Network</a></p>
+      <p><a class="btn btn-warning bg-pitt-gold border-pitt-gold" href="{{ url_for('views_bp.view_network') }}" role="button">View Network</a></p>
     </div>
   </div>
 
