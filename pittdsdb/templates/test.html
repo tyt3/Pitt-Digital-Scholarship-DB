@@ -3,11 +3,87 @@
   {% block navbar_add_active %}
     <span style="color: black;">Add Info</span>
   {% endblock %}
+  {% block head %}
+  <style>
+    .card {
+      flex-direction: row;
+      align-items: center;
+    }
+    .card-title {
+      font-weight: bold;
+    }
+    .card img {
+      width: 9em;
+      min-width: 9em;
+      max-width: 9em;
+      max-height: 9em;
+      object-fit: cover;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: calc(0.25rem - 1px);
+    }
+    @media only screen and (max-width: 768px) {
+      a {
+        display: none;
+      }
+      .card-body {
+        padding: 0.5em 1.2em;
+      }
+      .card-body .card-text {
+        margin: 0;
+      }
+      .card img {
+        width: 9em;
+        min-width: 9em;
+        max-width: 9em;
+        min-height: 9em;
+        max-height: 9em;
+      }
+    }
+    @media only screen and (max-width: 1200px) {
+      .card img {
+        width: 9em;
+        min-width: 9em;
+        max-width: 9em;
+        max-height: 9em;
+      }
+    }
+  </style>
+  {% endblock %}
   {% block content %}
   <h1>Hi, {{user_name}}!</h1>
 
   <a href="myModal" data-remote="url_for('views_bp.about')" data-bs-toggle="modal" data-bs-target="#myModal">Open Modal</a>
 
+
+  
+<div class="row">
+  <div class="col sm-6">
+    <div class="card">
+      <img src="https://libapps.s3.amazonaws.com/accounts/149605/profiles/144309/Profile_Photo.jpg" class="card-img-top" />
+      <div class="card-body">
+        <h5 class="card-title">Card Title</h5>
+        <p class="card-text" align="center">
+          Some quick example text to build on the card title and make up the
+          bulk of the card's content.
+        </p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+  <div class="col sm-6">
+    <div class="card">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="card-img-top" />
+      <div class="card-body">
+        <h5 class="card-title">Card Title</h5>
+        <p class="card-text">
+          Some quick example text to build on the card title and make up the
+          bulk of the card's content.
+        </p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -33,6 +109,7 @@ $('#myModal').on('show.bs.modal', function (e) {
 });
 </script>
  
+
   <!--<form>
     <div class="">
         <div class="col-lg-12">
@@ -105,4 +182,5 @@ $("body").on("click", "#DeleteRow", function () {
       </div>
     </div>
   </div>-->
+
   {% endblock %}
